@@ -1,7 +1,7 @@
 AM_CPPFLAGS=-I${top_srcdir}/test/
 
-LDADD=${PRESET_LDADD}
-AM_LDFLAGS=-lpthread -lm -lcrypto
+LDADD=${PRESET_LDADD} -lcrypto -lm
+AM_LDFLAGS=-lpthread -lm -lcrypto -lssl
 noinst_PROGRAMS = packet_test
 TESTS = $(noinst_PROGRAMS)
 packet_test_SOURCES = packet_test.c \
