@@ -106,7 +106,8 @@ endif
 
 BIN_LDADD= ${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
 		   ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
-		   $(top_builddir)/src/common/libsnappy.a
+		   $(top_builddir)/src/common/libsnappy.a \
+		   -lpthread -lcrypto -lssl
 
 sbin_PROGRAMS=tairclient keycleantool manipulate_ds_to_cs
 

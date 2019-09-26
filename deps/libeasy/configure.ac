@@ -30,6 +30,7 @@ AC_CHECK_HEADERS([sys/inotify.h])
 # Checks for library functions.
 AC_CHECK_LIB([pthread], [main], [], exit 1)
 AC_CHECK_LIB([ssl], [SSL_CTX_new], [], exit 1)
+AC_CHECK_LIB([crypto], [X509_free], [], exit 1)
 
 MOSTLYCLEANFILES=
 AC_SUBST(MOSTLYCLEANFILES)

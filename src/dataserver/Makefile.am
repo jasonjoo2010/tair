@@ -37,7 +37,7 @@ LDADD=$(top_builddir)/src/client/.libs/libtairclientapi.a \
 	  $(top_builddir)/src/common/libtair_common.a \
 	  ${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
 	  ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
-	  -lssl -lz -lrt -lpthread \
+	  -lcrypto -lssl -lz -lrt -lpthread \
 	  -ldl -lcurl
 
 sbin_PROGRAMS=tair_server repair_rsync

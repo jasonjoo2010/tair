@@ -140,7 +140,7 @@ int file_util::change_conf(const char *group_file_name, const char *section_name
         return TAIR_RETURN_FAILED;
     }
     for (i = 0; i < lines.size(); ++i) {
-        fprintf(fd, lines[i].c_str());
+        fputs(lines[i].c_str(), fd);
     }
     fclose(fd);
     if (0 == rename(tmpfile, group_file_name)) {

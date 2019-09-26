@@ -15,7 +15,8 @@ LDADD=${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
       $(top_builddir)/src/plugin/libtair_plugins.a \
       $(top_builddir)/src/packets/libtair_packets.a \
       ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
-      $(top_builddir)/src/common/libtair_common.a
+      $(top_builddir)/src/common/libtair_common.a \
+      -lssl -lcrypto
 
 base_src=stat_info.cpp \
 		 server_conf_thread.cpp \

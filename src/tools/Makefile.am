@@ -19,9 +19,9 @@ LDADD=$(top_srcdir)/src/client/.libs/libtairclientapi.a \
 			${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
 			${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
 			$(COMPRESS_LDFLAGS) \
-			-lz -lrt
+			-lz -lrt -lcrypto -lssl
 
-AM_LDFLAGS=-lpthread -lcurl -lssl -lz -lrt ${GCOV_LIB} -lcrypto
+AM_LDFLAGS=-lpthread -lcurl -lssl -lz -lrt ${GCOV_LIB}
 
 sbin_PROGRAMS=dump_transfer
 
