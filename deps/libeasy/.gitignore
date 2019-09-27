@@ -1,0 +1,9 @@
+/sample/easy_kfc_*
+/sample/*_client*
+/sample/*_server*
+/sample/http_status
+/sample/*_test
+!/sample/*.c
+!/sample/*.h
+/test-driver
+/test/*/*_test

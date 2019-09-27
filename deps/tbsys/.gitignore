@@ -1,0 +1,10 @@
+COPYING
+INSTALL
+/test/testfileutil
+/test/testlog
+/test/testnetutil
+/test/teststringutil
+/test/testtimer
+/test/testtimeutil
+/test/testwarningbuffer
+/src/.libs/
