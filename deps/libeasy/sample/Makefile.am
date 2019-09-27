@@ -2,7 +2,9 @@ AM_CFLAGS= -I${top_srcdir}/src/include     \
         -I${top_srcdir}/src/util           \
         -I${top_srcdir}/src/thread         \
         -I${top_srcdir}/src/io             \
-        -I${top_srcdir}/src/packet/http
+        -I${top_srcdir}/src/packet/http    \
+        -Wno-error=unused-result           \
+        -Wno-error=format-security
 
 EXTRA_DIST = echo_packet.h echo_packet_tbnet.h Makefile.sample http_status.init ssl.conf ca.key ca.crt
 AM_LDFLAGS=-lpthread -lm -lrt -lcrypto

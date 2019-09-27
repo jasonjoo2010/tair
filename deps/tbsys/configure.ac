@@ -18,6 +18,7 @@ CXXFLAGS="-g -Wall -fPIC -Wno-deprecated"
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h string.h strings.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_LIB([pthread], [main], [], exit 1)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

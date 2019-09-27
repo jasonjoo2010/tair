@@ -32,6 +32,12 @@ AC_CHECK_LIB([pthread], [main], [], exit 1)
 AC_CHECK_LIB([ssl], [SSL_CTX_new], [], exit 1)
 AC_CHECK_LIB([crypto], [X509_free], [], exit 1)
 
+# ceil is a built-in function, remove -Werror
+CFLAGS="-g $PRESET_CFLAGS -Wall -fPIC -fno-strict-aliasing"
+AC_CHECK_LIB([m], [ceil], [], exit 1)
+# restore CFLAGS
+CFLAGS="-g $PRESET_CFLAGS -Wall -Werror -fPIC -fno-strict-aliasing"
+
 
 MOSTLYCLEANFILES=
 AC_SUBST(MOSTLYCLEANFILES)
