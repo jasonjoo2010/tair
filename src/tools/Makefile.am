@@ -16,8 +16,8 @@ endif
 LDADD=$(top_srcdir)/src/client/.libs/libtairclientapi.a \
 			$(top_srcdir)/src/common/libtair_common.a \
 			$(top_builddir)/src/common/libsnappy.a \
-			${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
-			${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
+			${top_srcdir}/deps/tbsys-install/lib/libtbsys.la \
+			${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
 			$(COMPRESS_LDFLAGS) \
 			-lz -lrt
 

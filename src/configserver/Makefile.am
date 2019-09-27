@@ -11,10 +11,10 @@ AM_LDFLAGS= -rdynamic ${GCOV_LIB} \
       -lssl -lz -lrt -lpthread \
       -ldl -lcrypto
 
-LDADD=${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
+LDADD=${top_srcdir}/deps/tbsys-install/lib/libtbsys.la \
       $(top_builddir)/src/plugin/libtair_plugins.a \
       $(top_builddir)/src/packets/libtair_packets.a \
-      ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
+      ${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
       $(top_builddir)/src/common/libtair_common.a
 
 base_src=stat_info.cpp \

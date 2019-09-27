@@ -11,6 +11,8 @@
 *.la
 *.a
 
+.libs/
+
 Makefile
 Makefile.in
 .deps/

@@ -104,8 +104,8 @@ if WITH_READLINE
 READLINE_LOADFLAGS= -lreadline -ltermcap
 endif
 
-BIN_LDADD= ${top_srcdir}/deps/tbsys-install/lib/libtbsys.a \
-		   ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
+BIN_LDADD= ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la \
+		   ${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
 		   $(top_builddir)/src/common/libsnappy.a
 
 sbin_PROGRAMS=tairclient keycleantool manipulate_ds_to_cs

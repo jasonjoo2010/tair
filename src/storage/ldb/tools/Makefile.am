@@ -10,7 +10,7 @@ AM_CPPFLAGS=-DWITH_TBUTIL \
 	    -I.
 
 AM_LDFLAGS=-lpthread ${GCOV_LIB}
-AM_CXXFLAGS= -Werror -fPIC
+AM_CXXFLAGS= -Werror -fPIC -Wno-error=format-security
 
 ldb_path=${top_srcdir}/src/storage/ldb
 ldb_libs=${ldb_path}/libldb.a \
@@ -18,8 +18,8 @@ ldb_libs=${ldb_path}/libldb.a \
 	 ${top_builddir}/src/common/libsnappy.a \
 	 ${top_builddir}/src/common/libtair_common.a \
 	 ${top_builddir}/src/storage/mdb/.libs/libmdb.a \
-	 ${top_srcdir}/deps/libeasy-install/lib64/libeasy.a \
-	 ${top_srcdir}/deps/tbsys-install/lib/libtbsys.a -lrt -lz -lssl -lcrypto
+	 ${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
+	 ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la -lrt -lz -lssl -lcrypto
 
 util_srcs=ldb_util.cpp ldb_util.hpp
 
@@ -39,7 +39,7 @@ sbin_PROGRAMS=view_cache_stat \
 	      statistics_verify
 
 view_cache_stat_SOURCES=view_cache_stat.cpp
-view_cache_stat_LDADD=${ldb_path}/libldb.a ${top_builddir}/src/common/libtair_common.a ${top_srcdir}/deps/tbsys-install/lib/libtbsys.a -lrt
+view_cache_stat_LDADD=${ldb_path}/libldb.a ${top_builddir}/src/common/libtair_common.a ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la -lrt
 
 ldb_rsync_SOURCES=ldb_rsync.cpp ${top_builddir}/src/dataserver/cluster_handler.cpp ${util_srcs}
 ldb_rsync_CPPFLAGS=${AM_CPPFLAGS} -I${top_srcdir}/src/packets -I${top_srcdir}/src/dataserver \
