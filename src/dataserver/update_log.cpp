@@ -24,6 +24,10 @@ using namespace std;
 using namespace tair::storage;
 using namespace __gnu_cxx;
 
+static const size_t LOG_PAGE_HDR_SIZE = align_round(offsetof(log_file_control_page, pad));
+static const uint64_t MIN_LSN = sizeof(log_file_control_page);
+static const uint64_t FILE_PAYLOAD = LOG_FIZE_SIZE - LOG_PAGE_HDR_SIZE;
+
 update_log *
 update_log::open(const char *dir, const char *name, uint32_t log_file_number, bool is_migrating, uint32_t file_size) {
     update_log *log = new update_log(is_migrating);

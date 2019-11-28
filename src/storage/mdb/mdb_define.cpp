@@ -58,7 +58,9 @@ char *open_shared_mem(const char *path, int64_t size) {
     if ((fd = shm_open(path, O_RDWR | O_CREAT, 0644)) < 0) {
         return 0;
     }
-    ftruncate(fd, size);
+    if (ftruncate(fd, size) != 0) {
+        // error, just ignore
+    }
     ptr = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     close(fd);
     return (MAP_FAILED == ptr) ? 0 : static_cast<char *>(ptr);

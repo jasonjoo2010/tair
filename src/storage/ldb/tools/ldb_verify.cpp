@@ -1775,14 +1775,18 @@ thread(void *args) {
 std::string
 abs_dirname(const std::string &path) {
     char tmp[1024];
-    realpath(path.c_str(), tmp);
+    if (realpath(path.c_str(), tmp) == 0) {
+        // error, just ignore now
+    }
     return dirname(tmp);
 }
 
 std::string
 abs_path(const std::string &path) {
     char tmp[1024];
-    realpath(path.c_str(), tmp);
+    if (realpath(path.c_str(), tmp) == 0) {
+        // error, just ignore now
+    }
     return tmp;
 }
 

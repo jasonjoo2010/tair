@@ -12,7 +12,7 @@
 #include <malloc.h>
 
 #ifdef WITH_TCMALLOC
-#include <google/malloc_extension.h>
+#include <gperftools/malloc_extension.h>
 #endif
 
 #include "packets/mupdate_packet.hpp"

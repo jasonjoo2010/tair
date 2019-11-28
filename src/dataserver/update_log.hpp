@@ -112,10 +112,6 @@ inline T align_round(T v) {
     return (v + 7) & ~7;
 }
 
-static const size_t LOG_PAGE_HDR_SIZE = align_round(offsetof(log_file_control_page, pad));
-static const uint64_t MIN_LSN = sizeof(log_file_control_page);
-static const uint64_t FILE_PAYLOAD = LOG_FIZE_SIZE - LOG_PAGE_HDR_SIZE;
-
 class update_log {
     friend class log_writer;
 

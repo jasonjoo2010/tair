@@ -7,7 +7,7 @@ AM_CPPFLAGS= -I${top_srcdir}/src \
 						 -I${top_srcdir}/src/dataserver \
 						 -I${top_srcdir}/src/plugin
 
-AM_CXXFLAGS= -Werror -fPIC
+AM_CXXFLAGS= -Werror -fPIC -Wno-error=unused-result
 
 if WITH_COMPRESS
 COMPRESS_LDFLAGS= -lsnappy
