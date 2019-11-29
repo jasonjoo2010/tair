@@ -776,15 +776,6 @@ void tair_client::print_help(const char *cmd) {
         );
     }
 
-    if (cmd == NULL || strcmp(cmd, "reset_ns") == 0) {
-        fprintf(stderr,
-                "------------------------------------------------\n"
-                        "SYNOPSIS   : reset_ns namepsace\n"
-                        "DESCRIPTION: reset namespace for dump\n"
-                        "\tnamespace : namespace to be resetting\n"
-        );
-    }
-
     if (cmd == NULL || strcmp(cmd, "switch_ns") == 0) {
         fprintf(stderr,
                 "------------------------------------------------\n"

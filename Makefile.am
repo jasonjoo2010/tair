@@ -15,8 +15,8 @@ EXTRA_DIST=bootstrap.sh \
 TMP_DIR:=/tmp/tair-tmp.$(shell echo $$$$)
 #PREFIX:=$(shell [ x$(PREFIX) = x ] && PREFIX=/home/admin/tair && echo "$${PREFIX}")
 PREFIX:=$(shell [ x$(PREFIX) = x ] && PREFIX=/usr/local/tair-$(VERSION) && echo "$${PREFIX}")
-SVN_URL := $(shell svn info > svninfo && awk '/URL/{print $$NF}' svninfo)
-SVN_VER := $(shell awk '/Last Changed Rev/{print $$NF}' svninfo && rm -f svninfo)
+REPO_URL := $(shell git remote get-url origin)
+REPO_VER := $(shell git show |head -1 |awk '{print $2}')
 
 rpms: dist-gzip packages/$(PACKAGE).spec
 	mkdir -p $(TMP_DIR)
@@ -32,7 +32,7 @@ rpms: dist-gzip packages/$(PACKAGE).spec
 	rpmbuild --define "_topdir $(TMP_DIR)" \
 		 --define "NAME $(PACKAGE)" \
 		 --define "VERSION $(VERSION)" \
-		 --define "svn $(SVN_URL)@$(SVN_VER)" \
+		 --define "svn $(REPO_URL)@$(REPO_VER)" \
 		 --define "_prefix $(PREFIX)" \
 		-ba $(TMP_DIR)/BUILD/$(PACKAGE)-$(VERSION)/packages/$(PACKAGE).spec
 	find $(TMP_DIR)/RPMS/ -name "*.rpm" -exec mv '{}' . \;
