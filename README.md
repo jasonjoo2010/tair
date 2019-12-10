@@ -76,3 +76,12 @@ Distributed locks are usually used to prevent data inconsistency and logical cha
 # Contribution
 
 The source code is available user the GPL version 2. We are avtively looking for contributors so if you have any ideas, bug reports, or patchs you would like to contribute please do not hesitate to do so.
+
+# Changelog
+## 3.3.0
+* get_range support reversed traversal.
+* enlarge expire to int64.
+* enlarge counter to int64.
+
+Storage and clients is not compatible to version `3.2.4`.
+

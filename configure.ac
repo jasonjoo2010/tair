@@ -1,4 +1,4 @@
-AC_INIT([tair], [3.2.4], [opensource@taobao.com])
+AC_INIT([tair], [3.3.0], [opensource@taobao.com])
 
 AM_INIT_AUTOMAKE([foreign])
 AC_PROG_CXX
