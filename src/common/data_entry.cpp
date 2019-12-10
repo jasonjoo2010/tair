@@ -164,9 +164,9 @@ bool data_entry::decode(DataBuffer *input, bool need_decompress) {
     // prefixsize  int32     4B
     // valsize     int32     4B
     // flag        int8      1B
-    // cdate       int32     4B
-    // mdate       int32     4B
-    // edate       int32     4B
+    // cdate       int64     8B
+    // mdate       int64     8B
+    // edate       int64     8B
     if (data_meta.decode(input) == false) {
         return false;
     }
@@ -213,13 +213,13 @@ bool data_entry::decode(DataBuffer *input, bool need_decompress) {
 void value_entry::encode(DataBuffer *output) const {
     d_entry.encode(output);
     output->writeInt16(version);
-    output->writeInt32(expire);
+    output->writeInt64(expire);
 }
 
 bool value_entry::decode(DataBuffer *input) {
     if (!d_entry.decode(input)) return false;
     if (!input->readInt16(&version)) return false;
-    if (!input->readInt32((uint32_t *) &expire)) return false;
+    if (!input->readInt64((uint64_t *) &expire)) return false;
 
     return true;
 }

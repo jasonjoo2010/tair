@@ -160,7 +160,7 @@ int LdbBalancer::Balancer::do_one_balance(const Unit &unit) {
     write_options.sync = false;
     leveldb::Status status;
 
-    int32_t start_time = time(NULL);
+    int64_t start_time = time(NULL);
 
     // all writes is synced because all data's
     // job(rsync eg.) has been done in from_db

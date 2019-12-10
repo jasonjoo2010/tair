@@ -363,7 +363,7 @@ void tair_client_impl::update_send_count_if_rsync_mode(uint64_t dataserver, int 
 int tair_client_impl::put(int area,
                           const data_entry &key,
                           const data_entry &data,
-                          int expired, int version, bool fill_cache,
+                          int64_t expired, int version, bool fill_cache,
                           TAIRCALLBACKFUNC pfunc, void *parg) {
     if (!(key_entry_check(key)) || (!data_entry_check(data))) {
         return TAIR_RETURN_ITEMSIZE_ERROR;
@@ -570,19 +570,23 @@ int tair_client_impl::direct_update(std::vector<uint64_t> &servers, tair_operc_v
     return ret;
 }
 
-int tair_client_impl::set_count(int area, const data_entry &key, int count,
-                                int expire, int version) {
+int tair_client_impl::set_count(int area, const data_entry &key, int64_t count,
+                                int64_t expire, int version) {
     // This is an ugly trick, 'cause Tair's key/value has two bits flag to indicate
     // type in Java client implementation but count type's flag is added in server,
     // we don't want to add a new packet for this set_count() function, so we add two
     // bits type flag here and use put() to make following incr()/decr() happy.
     // We ignore compress type here as same as what CPP client always does.
 #ifdef WITH_COMPRESS
-                                                                                                                            char buf[INCR_DATA_SIZE - 2];
+    char buf[INCR_DATA_SIZE - 2];
     buf[0] = (count & 0xFF);
     buf[1] = ((count >> 8) & 0xFF);
     buf[2] = ((count >> 16) & 0xFF);
     buf[3] = ((count >> 24) & 0xFF);
+    buf[4] = ((count >> 32) & 0xFF);
+    buf[5] = ((count >> 40) & 0xFF);
+    buf[6] = ((count >> 48) & 0xFF);
+    buf[7] = ((count >> 56) & 0xFF);
     data_entry value;
     value.set_data(buf, INCR_DATA_SIZE - 2, false);
 #else
@@ -658,7 +662,7 @@ int tair_client_impl::lock(int area, const data_entry &key, LockType type) {
     return ret;
 }
 
-int tair_client_impl::expire(int area, const data_entry &key, int expired) {
+int tair_client_impl::expire(int area, const data_entry &key, int64_t expired) {
     if (!key_entry_check(key)) {
         return TAIR_RETURN_ITEMSIZE_ERROR;
     }
@@ -1601,7 +1605,7 @@ int tair_client_impl::prefix_gets(int area, const data_entry &pkey, const tair_d
 }
 
 int tair_client_impl::prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                                 const data_entry &value, int expire, int version) {
+                                 const data_entry &value, int64_t expire, int version) {
     if (area < 0 || area >= TAIR_MAX_AREA_COUNT) {
         return TAIR_RETURN_INVALID_ARGUMENT;
     }
@@ -2167,10 +2171,9 @@ int tair_client_impl::mdelete(int area, const vector<data_entry *> &keys) {
 // add count
 
 int tair_client_impl::add_count(int area,
-
                                 const data_entry &key,
-                                int count, int *ret_count,
-                                int init_value /*=0*/, int expire_time  /*=0*/) {
+                                int64_t count, int64_t *ret_count,
+                                int64_t init_value /*=0*/, int64_t expire_time  /*=0*/) {
     if (area < 0 || area >= TAIR_MAX_AREA_COUNT || expire_time < 0) {
         return TAIR_RETURN_INVALID_ARGUMENT;
     }
@@ -2581,7 +2584,7 @@ int tair_client_impl::mc_ops(int8_t mc_opcode,
                              int area,
                              const data_entry *key,
                              const data_entry *value,
-                             int expire,
+                             int64_t expire,
                              int version,
                              callback_mc_ops_pt callback, void *args) {
     if (key == NULL) {

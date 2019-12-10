@@ -508,7 +508,7 @@ int tair_manager::prefix_hides(request_prefix_hides *request, int heart_version,
 }
 
 int tair_manager::prefix_incdec(request_prefix_incdec *request, int heart_version,
-                                int low_bound, int upper_bound, bool bound_care, response_prefix_incdec *resp) {
+                                int64_t low_bound, int64_t upper_bound, bool bound_care, response_prefix_incdec *resp) {
     int rc = TAIR_RETURN_SUCCESS;
     size_t ndone = 0;
     request_prefix_incdec::key_counter_map_t *key_counter_map = request->key_counter_map;
@@ -518,7 +518,7 @@ int tair_manager::prefix_incdec(request_prefix_incdec *request, int heart_versio
         data_entry *key = it->first;
         key->server_flag = request->server_flag;
         counter_wrapper *wrapper = it->second;
-        int ret_value;
+        int64_t ret_value;
         bucket_number = get_bucket_number(*key);
         int32_t op_flag = get_op_flag(bucket_number, key->server_flag);
         if (!should_write_local(bucket_number, key->server_flag, op_flag, rc)) {
@@ -565,7 +565,7 @@ int tair_manager::prefix_incdec(request_prefix_incdec *request, int heart_versio
 }
 
 int
-tair_manager::put(int area, data_entry &key, data_entry &value, int expire_time, base_packet *request, int heart_vesion,
+tair_manager::put(int area, data_entry &key, data_entry &value, int64_t expire_time, base_packet *request, int heart_vesion,
                   bool with_stat) {
     if (verify_key(key) == false) {
         return TAIR_RETURN_ITEMSIZE_ERROR;
@@ -729,8 +729,8 @@ int tair_manager::direct_remove(data_entry &key, bool update_stat) {
     return rc;
 }
 
-int tair_manager::add_count(int area, data_entry &key, int count, int init_value, int low_bound, int upper_bound,
-                            int *result_value, int expire_time, base_packet *request, int heart_version) {
+int tair_manager::add_count(int area, data_entry &key, int64_t count, int64_t init_value, int64_t low_bound, int64_t upper_bound,
+                            int64_t *result_value, int64_t expire_time, base_packet *request, int heart_version) {
     if (status != STATUS_CAN_WORK) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
@@ -801,8 +801,8 @@ int tair_manager::add_count(int area, data_entry &key, int count, int init_value
     //the exist counter
     if (rc == TAIR_RETURN_SUCCESS && storage_mgr->test_flag(key.data_meta.flag, TAIR_ITEM_FLAG_ADDCOUNT)) {
         // old value exist
-        int32_t *v = (int32_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
-        log_debug("old count: %d, new count: %d, init value: %d, low bound: %d, upper bound; %d",
+        int64_t *v = (int64_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
+        log_debug("old count: %ld, new count: %ld, init value: %ld, low bound: %ld, upper bound; %ld",
                   (*v), count, init_value, low_bound, upper_bound);
 
         if (util::boundary_available(*v + count, low_bound, upper_bound)) {
@@ -908,7 +908,7 @@ int tair_manager::get_range(int32_t area, data_entry &key_start, data_entry &key
     // TAIR_RETURN_SUCCESS success, otherwise fail.
     int32_t key_num = (int32_t) result.size();
     // if CMD_RANGE_ALL, vector contains key and value, so key_num = vector.size()/2;
-    if (CMD_RANGE_ALL == type)
+    if (CMD_RANGE_ALL == type || CMD_RANGE_ALL_REVERSE)
         key_num = (key_num >> 1);
 
     stat_->update(area, OP_GET_RANGE_KEY, key_num);
@@ -2150,7 +2150,7 @@ int tair_manager::get_op_flag(int bucket_number, int server_flag) {
     return flag;
 }
 
-int tair_manager::expire(int area, data_entry &key, int expire_time, base_packet *request, int heart_version) {
+int tair_manager::expire(int area, data_entry &key, int64_t expire_time, base_packet *request, int heart_version) {
     if (status != STATUS_CAN_WORK) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
@@ -2269,9 +2269,9 @@ int tair_manager::do_mc_ops(request_mc_ops *req, response_mc_ops *&resp, int hea
         case 0x05: // INCR
         {
             PROFILER_BEGIN("INCR");
-            uint64_t delta = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data()));
-            uint64_t init = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data() + sizeof(uint64_t)));
-            uint64_t result = 0;
+            int64_t delta = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data()));
+            int64_t init = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data() + sizeof(uint64_t)));
+            int64_t result = 0;
             if (migrate_log != NULL || need_duplicate) {
                 p_new_value = &new_value;
             }
@@ -2297,9 +2297,9 @@ int tair_manager::do_mc_ops(request_mc_ops *req, response_mc_ops *&resp, int hea
         case 0x06: // DECR
         {
             PROFILER_BEGIN("DECR");
-            uint64_t delta = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data()));
-            uint64_t init = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data() + sizeof(uint64_t)));
-            uint64_t result = 0;
+            int64_t delta = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data()));
+            int64_t init = bswap_64(*reinterpret_cast<uint64_t *>(req->value.get_data() + sizeof(uint64_t)));
+            int64_t result = 0;
             if (migrate_log != NULL || need_duplicate) {
                 p_new_value = &new_value;
             }

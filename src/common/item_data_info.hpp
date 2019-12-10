@@ -26,9 +26,9 @@ typedef struct _item_meta {
     uint32_t prefixsize; // prefix size
     uint32_t valsize : 24; // value size
     uint8_t flag; // for extends
-    uint32_t cdate; // item create time
-    uint32_t mdate; // item last modified time
-    uint32_t edate; // expire date
+    int64_t cdate; // item create time
+    int64_t mdate; // item last modified time
+    int64_t edate; // expire date
 
     void encode(DataBuffer *output, bool is_new = false) const;
 
@@ -43,7 +43,7 @@ typedef struct _item_meta {
 
     void log_self() {
         log_debug(
-                "meta info of data: keysize[%d], valsize[%d], prefixsize[%d], version[%d], flag[%d], cdate[%d], mdate[%d], edate[%d]",
+                "meta info of data: keysize[%d], valsize[%d], prefixsize[%d], version[%d], flag[%d], cdate[%ld], mdate[%ld], edate[%ld]",
                 keysize, valsize, prefixsize, version, flag, cdate, mdate, edate);
     }
 } item_meta_info;

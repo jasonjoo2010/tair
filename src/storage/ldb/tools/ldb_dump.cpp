@@ -96,16 +96,16 @@ int32_t encode_ldb_kv(char *buf, LdbKey &key, LdbItem &value, bool with_meta,
         // uint8_t  meta_version_;
         // uint8_t  flag_;
         // uint16_t version_;
-        // uint32_t cdate_;
-        // uint32_t mdate_;
-        // uint32_t edate_;
+        // int64_t cdate_;
+        // int64_t mdate_;
+        // int64_t edate_;
         // meta_version not need
         uint8_t meta_version = 0;
         uint8_t flag = value.flag();
         uint16_t version = value.version();
-        uint32_t cdate = value.cdate();
-        uint32_t mdate = value.mdate();
-        uint32_t edate = value.edate();
+        int64_t cdate = value.cdate();
+        int64_t mdate = value.mdate();
+        int64_t edate = value.edate();
         uint16_t area = *(uint16_t *) key.key();
         memcpy(buf + size, &meta_version, sizeof(uint8_t));
         size += sizeof(uint8_t);
@@ -113,12 +113,12 @@ int32_t encode_ldb_kv(char *buf, LdbKey &key, LdbItem &value, bool with_meta,
         size += sizeof(uint8_t);
         memcpy(buf + size, &version, sizeof(uint16_t));
         size += sizeof(uint16_t);
-        memcpy(buf + size, &cdate, sizeof(uint32_t));
-        size += sizeof(uint32_t);
-        memcpy(buf + size, &mdate, sizeof(uint32_t));
-        size += sizeof(uint32_t);
-        memcpy(buf + size, &edate, sizeof(uint32_t));
-        size += sizeof(uint32_t);
+        memcpy(buf + size, &cdate, sizeof(uint64_t));
+        size += sizeof(int64_t);
+        memcpy(buf + size, &mdate, sizeof(uint64_t));
+        size += sizeof(int64_t);
+        memcpy(buf + size, &edate, sizeof(uint64_t));
+        size += sizeof(int64_t);
         // uint16_t area;
         memcpy(buf + size, &area, sizeof(uint16_t));
         size += sizeof(uint16_t);
@@ -212,15 +212,15 @@ int do_dump(const char *db_path, const char *manifest, const char *cmp_desc,
                 }
 
                 // appropriate size
-                size = ldb_key.key_size() + ldb_item.value_size() + 3 * sizeof(int32_t);
+                size = ldb_key.key_size() + ldb_item.value_size() + 3 * sizeof(int64_t);
                 if (with_meta == true) {
                     // uint8_t  meta_version_;
                     // uint8_t  flag_;
                     // uint16_t version_;
-                    // uint32_t cdate_;
-                    // uint32_t mdate_;
-                    // uint32_t edate_;
-                    size += 2 * sizeof(uint8_t) + sizeof(uint16_t) + 3 * sizeof(uint32_t);
+                    // int64_t cdate_;
+                    // int64_t mdate_;
+                    // int64_t edate_;
+                    size += 2 * sizeof(uint8_t) + sizeof(uint16_t) + 3 * sizeof(uint64_t);
                     // uint16_t area;
                     size += sizeof(uint16_t);
                 }

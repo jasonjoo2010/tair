@@ -606,7 +606,7 @@ int request_processor::process(request_inc_dec *request, bool &send_return, uint
 
     request->key.server_flag = request->server_flag;
 
-    int ret_value = 0;
+    int64_t ret_value = 0;
     PROFILER_START("addcounter operation start");
     plugin::plugins_root *plugin_root = NULL;
     PROFILER_BEGIN("do request plugin");
@@ -618,8 +618,8 @@ int request_processor::process(request_inc_dec *request, bool &send_return, uint
         log_debug("plugin return %d, skip excute", plugin_ret);
         rc = TAIR_RETURN_PLUGIN_ERROR;
     } else {
-        int low_bound = 0;
-        int upper_bound = 0;
+        int64_t low_bound = 0;
+        int64_t upper_bound = 0;
         request_inc_dec_bounded *req = dynamic_cast<request_inc_dec_bounded *>(request);
         if (req != NULL) {
             //bounded counter

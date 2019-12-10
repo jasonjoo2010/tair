@@ -37,7 +37,7 @@ public:
     }
 
     virtual size_t size() const {
-        return 1 + 2 + 4 + key.encoded_size() + 16; //simple, so no need to read getDataLen()
+        return 1 + 2 + 8 + key.encoded_size() + 16; //simple, so no need to read getDataLen()
     }
 
     virtual base_packet::Type get_type() {
@@ -51,7 +51,7 @@ public:
     bool encode(DataBuffer *output) {
         output->writeInt8(server_flag);
         output->writeInt16(area);
-        output->writeInt32(expired);
+        output->writeInt64(expired);
         key.encode(output);
         return true;
     }
@@ -59,12 +59,12 @@ public:
     bool decode(DataBuffer *input, PacketHeader *header) {
         //  int8   server_flag   1B     (must)
         //  int16  area          2B     (must)
-        //  int32  expire        4B     (must)
+        //  int64  expire        8B     (must)
         //  ------------------------
-        //  total                7B
+        //  total                11B
         if (input->readInt8((uint8_t *) &server_flag) == false ||
             input->readInt16((uint16_t *) &area) == false ||
-            input->readInt32((uint32_t *) &expired) == false) {
+            input->readInt64((int64_t *) &expired) == false) {
             log_warn("buffer data too few, buffer length %d", header->_dataLen);
             return false;
         }
@@ -73,7 +73,7 @@ public:
 #if TAIR_MAX_AREA_COUNT < 65536
         if (area >= TAIR_MAX_AREA_COUNT) {
             log_warn("area overflow: "
-                             "server_flag %x, area %d, expired %d",
+                             "server_flag %x, area %d, expired %ld",
                      server_flag, area, expired);
             return false;
         }
@@ -81,7 +81,7 @@ public:
 
         if (!key.decode(input)) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, expired %d",
+                             "server_flag %x, area %d, expired %ld",
                      server_flag, area, expired);
             return false;
         }
@@ -91,7 +91,7 @@ public:
 
 public:
     uint16_t area;
-    int32_t expired;
+    int64_t expired;
     data_entry key;
 };
 }

@@ -74,7 +74,8 @@ ThreadPool::~ThreadPool()
 {
     assert(_destroyed);
     _monitor.lock();
-    TBSYS_LOG(DEBUG,"_workItem.size: %d,_listSize: %d,_procSize: %d", _workItems.size(),_listSize,_procSize);
+    TBSYS_LOG(DEBUG, "_workItem.size: %ld, _listSize: %d, _procSize: %d",
+            _workItems.size(), _listSize, _procSize);
     while( !_workItems.empty() ) 
     {
         ThreadPoolWorkItem* workItem = _workItems.front();

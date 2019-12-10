@@ -326,20 +326,19 @@ public:
             output->writeInt64(server_id);
             output->writeInt32(packet_id);
         }
-        key_code_map_t::iterator it;
         if (nsuccess > 0) {
             assert(success_key_value_map != NULL);
-            it = success_key_value_map->begin();
+            key_value_map_t::iterator it = success_key_value_map->begin();
             while (it != success_key_value_map->end()) {
                 it->first->encode(output);
-                output->writeInt32(it->second);
+                output->writeInt64(it->second);
                 ++it;
             }
         }
         output->writeInt32(nfailed);
         if (nfailed > 0) {
             assert(failed_key_code_map != NULL);
-            it = failed_key_code_map->begin();
+            key_code_map_t::iterator it = failed_key_code_map->begin();
             while (it != failed_key_code_map->end()) {
                 it->first->encode(output);
                 output->writeInt32(it->second);
@@ -361,11 +360,11 @@ public:
         server_id = input->readInt64();
         packet_id = input->readInt32();
         if (nsuccess > 0) {
-            success_key_value_map = new key_code_map_t;
+            success_key_value_map = new key_value_map_t;
             for (uint32_t i = 0; i < nsuccess; ++i) {
                 data_entry *key = new data_entry();
                 key->decode(input);
-                int value = input->readInt32();
+                int value = input->readInt64();
                 success_key_value_map->insert(make_pair(key, value));
             }
         }
@@ -388,22 +387,23 @@ public:
         if (UNLIKELY(getDataLen() != 0))
             return getDataLen() + 16;
 
-        size_t total = 4 + 4 + 4;
+        size_t total = 4; //config version
+        total += 4; // code
+        total += 4; // succ count
         if (server_flag != TAIR_SERVERFLAG_CLIENT)
-            total += 4 + 8 + 4;
-        key_code_map_t::iterator it;
+            total += 4 + 8 + 4; // bucket, server, packet id
         if (nsuccess > 0) {
             assert(success_key_value_map != NULL);
-            it = success_key_value_map->begin();
+            key_value_map_t::iterator it = success_key_value_map->begin();
             while (it != success_key_value_map->end()) {
-                total += it->first->encoded_size() + 4;
+                total += it->first->encoded_size() + 8; // value (long)
                 ++it;
             }
         }
         total += 4;
         if (nfailed > 0) {
             assert(failed_key_code_map != NULL);
-            it = failed_key_code_map->begin();
+            key_code_map_t::iterator it = failed_key_code_map->begin();
             while (it != failed_key_code_map->end()) {
                 total += it->first->encoded_size() + 4;
                 ++it;
@@ -412,12 +412,12 @@ public:
         return total + 16; //header 16 bytes
     }
 
-    void add_key_value(data_entry *key, int32_t value, bool copy = false) {
+    void add_key_value(data_entry *key, int64_t value, bool copy = false) {
         if (copy) {
             key = new data_entry(*key);
         }
         if (success_key_value_map == NULL) {
-            success_key_value_map = new key_code_map_t;
+            success_key_value_map = new key_value_map_t;
         }
         success_key_value_map->insert(make_pair(key, value));
         ++nsuccess;
@@ -452,10 +452,9 @@ private:
         server_id = rhs.server_id;
         packet_id = rhs.packet_id;
 
-        key_code_map_t::const_iterator it;
         if (rhs.success_key_value_map != NULL) {
-            success_key_value_map = new key_code_map_t;
-            it = rhs.success_key_value_map->begin();
+            success_key_value_map = new key_value_map_t;
+            key_value_map_t::const_iterator it = rhs.success_key_value_map->begin();
             while (it != rhs.success_key_value_map->end()) {
                 data_entry *key = new data_entry(*it->first);
                 success_key_value_map->insert(make_pair(key, it->second));
@@ -467,7 +466,7 @@ private:
 
         if (rhs.failed_key_code_map != NULL) {
             failed_key_code_map = new key_code_map_t;
-            it = rhs.failed_key_code_map->begin();
+            key_code_map_t::const_iterator it = rhs.failed_key_code_map->begin();
             while (it != rhs.failed_key_code_map->end()) {
                 data_entry *key = new data_entry(*it->first);
                 failed_key_code_map->insert(make_pair(key, it->second));
@@ -487,7 +486,7 @@ public:
     int32_t bucket_id;
     uint64_t server_id;
     uint32_t packet_id;
-    key_code_map_t *success_key_value_map;
+    key_value_map_t *success_key_value_map;
     key_code_map_t *failed_key_code_map;
 };
 }

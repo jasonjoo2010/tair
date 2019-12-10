@@ -203,7 +203,7 @@ void LdbCompactTask::compact_gc(GcType gc_type, bool &all_done) {
             all_done = true;
             log_warn("[%d] gc all done, type: %d", db_->index(), gc_type);
         } else {
-            uint32_t start_time = time(NULL);
+            int64_t start_time = time(NULL);
             // get scan key to gc
             std::vector<ScanKey> gc_scan_keys;
             build_scan_key(gc_type, gc_node.key_, gc_scan_keys);

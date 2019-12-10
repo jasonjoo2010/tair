@@ -55,7 +55,7 @@ public:
         if (LIKELY(getDataLen() != 0))
             return getDataLen() + 16;
 
-        size_t total = 1 + 2 + 2 + 4 + 2;
+        size_t total = 1 + 2 + 2 + 8 + 2;
 
         total += 4 + key.get_size();
         total += 4 + value.get_size();
@@ -81,7 +81,7 @@ public:
         output->writeInt8(server_flag);
         output->writeInt16(area);
         output->writeInt16(version);
-        output->writeInt32(expire);
+        output->writeInt64(expire);
         output->writeInt16(mc_opcode);
 
         output->writeInt32(key.get_size());
@@ -103,7 +103,7 @@ public:
         server_flag = input->readInt8();
         area = input->readInt16();
         version = input->readInt16();
-        expire = input->readInt32();
+        expire = input->readInt64();
         mc_opcode = input->readInt16();
 
         bool success = true;
@@ -162,7 +162,7 @@ public:
 public:
     uint16_t area;
     uint16_t version;
-    int32_t expire;
+    int64_t expire;
     int16_t mc_opcode;
     data_entry key;
     data_entry value;

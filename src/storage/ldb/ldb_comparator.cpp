@@ -88,7 +88,7 @@ void BitcmpLdbComparatorImpl::FindShortSuccessor(std::string *key) const {
     // *key is a run of 0xffs.  Leave it alone.
 }
 
-bool BitcmpLdbComparatorImpl::ShouldDrop(const char *key, int64_t sequence, uint32_t will_gc) const {
+bool BitcmpLdbComparatorImpl::ShouldDrop(const char *key, int64_t sequence, int64_t will_gc) const {
     if (gc_ == NULL || gc_->empty()) {
         return false;
     }
@@ -101,7 +101,7 @@ bool BitcmpLdbComparatorImpl::ShouldDrop(const char *key, int64_t sequence, uint
     //  by gc.
 
     // key format
-    //     expired_time  fixed32
+    //     expired_time  fixed64
     //     bucket_number 3bytes
     //     area_number   2bytes
     //     user_key      ...
@@ -131,10 +131,10 @@ bool BitcmpLdbComparatorImpl::ShouldDrop(const char *key, int64_t sequence, uint
     return drop;
 }
 
-bool BitcmpLdbComparatorImpl::ShouldDropMaybe(const char *key, int64_t sequence, uint32_t now) const {
+bool BitcmpLdbComparatorImpl::ShouldDropMaybe(const char *key, int64_t sequence, int64_t now) const {
     UNUSED(sequence);
     // check expired time here. see ShouldDrop()
-    uint32_t expired_time = tair::util::coding_util::decode_fixed32(key);
+    int64_t expired_time = tair::util::coding_util::decode_fixed64(key);
     return expired_time > 0 && expired_time < (now > 0 ? now : time(NULL));
 }
 

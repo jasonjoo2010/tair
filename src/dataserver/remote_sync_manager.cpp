@@ -221,7 +221,7 @@ int RemoteSyncManager::do_remote_sync(int32_t index, RecordLogger *input_logger,
 
         // has refed 1
         DataEntryWrapper *key_wrapper = new DataEntryWrapper(key);
-        log_debug("@@ %s type: %d, %d, fg: %d, key: %s %d %d %u",
+        log_debug("@@ %s type: %d, %d, fg: %d, key: %s %d %d %ld",
                   cluster_info.size() > 16 ? cluster_info.c_str() + 16 : "", type, bucket_num, force_reget,
                   key->get_size() > 6 ? key->get_data() + 6 : "", key->get_size(), key->get_prefix_size(),
                   key->data_meta.mdate);

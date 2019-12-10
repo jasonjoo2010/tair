@@ -39,7 +39,7 @@ struct key_value_pack_t {
     data_entry *key;
     data_entry *value;
     int version;
-    int expire;
+    int64_t expire;
 };
 }
 }

@@ -54,7 +54,7 @@
       ret;                                      \
    })
 
-#define INCR_DATA_SIZE 6
+#define INCR_DATA_SIZE 10
 // add JavaClient header, little-endian encode INT
 #define SET_INCR_DATA_COUNT(buf, count)         \
   do {                                          \
@@ -62,8 +62,12 @@
      (buf)[1] = '\026';                         \
      (buf)[2] = (count) & 0xFF;                 \
      (buf)[3] = ((count) >> 8) & 0xFF;          \
-     (buf)[4] = ((count) >> 16) & 0xFF;         \
-     (buf)[5] = ((count) >> 24) & 0xFF;         \
+     (buf)[4] = ((count) >> 16) & 0xFF;          \
+     (buf)[5] = ((count) >> 24) & 0xFF;          \
+     (buf)[6] = ((count) >> 32) & 0xFF;          \
+     (buf)[7] = ((count) >> 40) & 0xFF;          \
+     (buf)[8] = ((count) >> 48) & 0xFF;         \
+     (buf)[9] = ((count) >> 56) & 0xFF;         \
   } while (0)
 
 #define TAIR_SLEEP(stop, interval) ({int count=interval*5; while(count-->0 && !stop) usleep(200000);})
@@ -396,7 +400,7 @@ enum {
     TAIR_ITEM_FLAG_NEWMETA = 0x10,
 };
 
-// 'cause key's data_entry.data_meta.flag is meaningless when requsting,
+// 'cause key's data_entry.data_meta.flag is meaningless when requesting,
 // here is a trick to set flag in client to data_entry.data_meta.flag to deliver
 // some information to server, newbi
 enum {
@@ -463,11 +467,11 @@ enum {
     TAIR_RETURN_SHOULD_PROXY = -3967,
 
     // for lock
-            TAIR_RETURN_LOCK_EXIST = -3975,
+    TAIR_RETURN_LOCK_EXIST = -3975,
     TAIR_RETURN_LOCK_NOT_EXIST = -3974,
 
     // remove/update and mtime_care but mtime is early
-            TAIR_RETURN_MTIME_EARLY = -3976,
+    TAIR_RETURN_MTIME_EARLY = -3976,
 
     TAIR_RETURN_REMOVE_NOT_ON_MASTER = -4101,
     TAIR_RETURN_REMOVE_ONE_FAILED = -4102,
@@ -641,7 +645,7 @@ typedef enum {
     CMD_RANGE_VALUE_ONLY_REVERSE,
     CMD_RANGE_KEY_ONLY_REVERSE,
     // all GET_RANGE_CMD should < DEL_RANGE_CMD
-            CMD_DEL_RANGE,
+    CMD_DEL_RANGE,
     CMD_DEL_RANGE_REVERSE,
 } RangeCmdType;
 

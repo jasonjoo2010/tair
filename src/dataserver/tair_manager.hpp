@@ -82,15 +82,15 @@ public:
 
     int prefix_hides(request_prefix_hides *request, int version, uint32_t &resp_size);
 
-    int prefix_incdec(request_prefix_incdec *request, int version, int low_bound, int upper_bound, bool bound_care,
+    int prefix_incdec(request_prefix_incdec *request, int version, int64_t low_bound, int64_t upper_bound, bool bound_care,
                       response_prefix_incdec *resp);
 
-    int put(int area, data_entry &key, data_entry &value, int expire_time, base_packet *request = NULL, int version = 0,
+    int put(int area, data_entry &key, data_entry &value, int64_t expire_time, base_packet *request = NULL, int version = 0,
             bool with_stat = true);
 
-    //int put(int area, data_entry &key, data_entry &value, int expire_time,request_put *request,int version);
-    int add_count(int area, data_entry &key, int count, int init_value, int low_bound, int upper_bound,
-                  int *result_value, int expire_time, base_packet *request, int version);
+    //int put(int area, data_entry &key, data_entry &value, int64_t expire_time,request_put *request,int version);
+    int add_count(int area, data_entry &key, int64_t count, int64_t init_value, int64_t low_bound, int64_t upper_bound,
+            int64_t *result_value, int64_t expire_time, base_packet *request, int version);
 
     int get(int area, data_entry &key, data_entry &value, bool with_stat = true);
 
@@ -112,7 +112,7 @@ public:
 
     int op_cmd(ServerCmdType cmd, std::vector<std::string> &params, std::vector<std::string> &infos);
 
-    int expire(int area, data_entry &key, int expire_time, base_packet *request = NULL, int version = 0);
+    int expire(int area, data_entry &key, int64_t expire_time, base_packet *request = NULL, int version = 0);
 
     int do_mc_ops(request_mc_ops *req, response_mc_ops *&resp, int heart_version);
 

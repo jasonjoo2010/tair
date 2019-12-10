@@ -125,7 +125,7 @@ private:
         return area;
     }
 
-    inline uint32_t get_time(const cache_stat *stat) {
+    inline uint64_t get_time(const cache_stat *stat) {
         return stat->space_usage;
     }
 

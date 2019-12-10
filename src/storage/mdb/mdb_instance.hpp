@@ -43,25 +43,25 @@ public:
     //void stop() { stop_flag = true; }
 
     int put(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
-            bool version_care, int expire_time);
+            bool version_care, int64_t expire_time);
 
     int get(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool with_stat = true);
 
     int remove(int bucket_num, data_entry &key, unsigned int hv, bool version_care);
 
-    int add_count(int bucket_num, data_entry &key, unsigned int hv, int count, int init_value,
-                  int low_bound, int upper_bound, int expire_time, int &result_value);
+    int add_count(int bucket_num, data_entry &key, unsigned int hv, int64_t count, int64_t init_value,
+            int64_t low_bound, int64_t upper_bound, int64_t expire_time, int64_t &result_value);
 
     bool lookup(int bucket_num, data_entry &key, unsigned int hv);
 
     int mc_set(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
-               bool version_care, int expire);
+               bool version_care, int64_t expire);
 
     int add(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
-            bool version_care, int expire);
+            bool version_care, int64_t expire);
 
     int replace(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
-                bool version_care, int expire);
+                bool version_care, int64_t expire);
 
     int append(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
                bool version_care, data_entry *new_value = NULL);
@@ -69,14 +69,14 @@ public:
     int prepend(int bucket_num, data_entry &key, unsigned int hv, data_entry &value,
                 bool version_care, data_entry *new_value = NULL);
 
-    int incr_decr(int bucket, data_entry &key, unsigned int hv, uint64_t delta, uint64_t init,
-                  bool is_incr, int expire, uint64_t &result, data_entry *new_value = NULL);
+    int incr_decr(int bucket, data_entry &key, unsigned int hv, int64_t delta, int64_t init,
+                  bool is_incr, int64_t expire, int64_t &result, data_entry *new_value = NULL);
 
     // raw put/get/remove for embedded cache use
     // Not consider any meta, just key ==> value, cause operating those stuff is up to cache-user.
 public:
     int raw_put(const char *key, int32_t key_len, unsigned int hv,
-                const char *value, int32_t value_len, int flag, uint32_t expired, int32_t prefix_len,
+                const char *value, int32_t value_len, int flag, int64_t expired, int32_t prefix_len,
                 bool is_mc = false);
 
     int raw_get(const char *key, int32_t key_len, unsigned int hv, std::string &value, bool update);
@@ -132,7 +132,7 @@ public:
 
     int get_meta(data_entry &key, unsigned int hv, item_meta_info &meta);
 
-    int touch(int bucket_num, data_entry &key, unsigned int hv, int expire);
+    int touch(int bucket_num, data_entry &key, unsigned int hv, int64_t expire);
 
     void set_area_quota(int area, uint64_t quota);
 
@@ -175,28 +175,28 @@ public:
 private:
     //do_put,do_get,do_remove should lock first.
     int do_put(int bucket_num, data_entry &key, unsigned int hv, data_entry &data, bool version_care,
-               int expired, bool is_mc = false);
+               int64_t expired, bool is_mc = false);
 
     int do_get(int bucket_num, data_entry &key, unsigned int hv, data_entry &data, bool with_stat = true);
 
     int do_remove(int bucket_num, data_entry &key, unsigned int hv, bool version_care);
 
-    int do_add_count(int bucket_num, data_entry &key, unsigned int hv, int count, int init_value,
-                     int low_bound, int upper_bound, int expired, int &result_value);
+    int do_add_count(int bucket_num, data_entry &key, unsigned int hv, int64_t count, int64_t init_value,
+            int64_t low_bound, int64_t upper_bound, int64_t expired, int64_t &result_value);
 
     bool do_lookup(int bucket_num, data_entry &key, unsigned int hv);
 
-    int do_set(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int expire);
+    int do_set(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int64_t expire);
 
-    int do_add(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int expire);
+    int do_add(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int64_t expire);
 
-    int do_replace(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int expire);
+    int do_replace(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int64_t expire);
 
     int do_pending(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, bool pre,
                    data_entry *new_value);
 
-    int do_incr_decr(int bucket, data_entry &key, unsigned int hv, uint64_t delta, uint64_t init,
-                     bool is_incr, int expire, uint64_t &result, data_entry *new_value);
+    int do_incr_decr(int bucket, data_entry &key, unsigned int hv, int64_t delta, int64_t init,
+                     bool is_incr, int64_t expire, int64_t &result, data_entry *new_value);
 
     mdb_item *alloc_counter_item(data_entry &key);
 

@@ -21,7 +21,7 @@ namespace tbsys {
      * queueName: 
      * maxFileSize: 最大文件大小
      */
-    CFileQueue::CFileQueue(char *rootPath, char *queueName, int maxFileSize)
+    CFileQueue::CFileQueue(const char *rootPath, const char *queueName, int maxFileSize)
     {
         char tmp[256];
         sprintf(tmp, "%s/%s", rootPath, queueName);
@@ -200,8 +200,8 @@ namespace tbsys {
                 if ((ret = read(m_readFd, item, size)) != size) {
                     // 重新读
                     int64_t curPos = lseek(m_readFd, 0-ret-retSize, SEEK_CUR);
-                    TBSYS_LOG(WARN, "读文件不正确:%d<>%d,curPos:%d,readOff:%d,retry:%d,seqno:%u,m_readFd:%d", 
-                        ret, size, curPos, m_head.read_offset, retryReadCount, m_head.read_seqno,m_readFd);
+                    TBSYS_LOG(WARN, "读文件不正确:%d<>%d, curPos:%ld, readOff:%d, retry:%d, seqno:%u, m_readFd:%d",
+                        ret, size, curPos, m_head.read_offset, retryReadCount, m_head.read_seqno, m_readFd);
                     retryReadCount ++;
                     free(item);
                     item = NULL;
@@ -214,7 +214,7 @@ namespace tbsys {
                 if (item->flag != TBFQ_FILE_QUEUE_FLAG) {
                      // 重新读
                     int64_t curPos = lseek(m_readFd, 0-ret-retSize, SEEK_CUR);
-                    TBSYS_LOG(WARN, "flag不正确:item->flag(%d)<>FLAG(%d),curPos:%d,readOff:%d,retry:%d,seqno:%u,m_readFd:%d", 
+                    TBSYS_LOG(WARN, "flag不正确: item->flag(%d)<>FLAG(%d), curPos:%ld, readOff:%d, retry:%d, seqno:%u, m_readFd:%d",
                         item->flag, TBFQ_FILE_QUEUE_FLAG, curPos, m_head.read_offset, 
                         retryReadCount, m_head.read_seqno,m_readFd);
                     retryReadCount ++;
@@ -229,9 +229,9 @@ namespace tbsys {
                 if (item->len + (int)sizeof(queue_item) != size) {
                     // 重新读
                     int64_t curPos = lseek(m_readFd, 0-ret-retSize, SEEK_CUR);
-                    TBSYS_LOG(WARN, "读出的len不正确:%d<>%d,curPos:%d,readOff:%d,retry:%d,seqno:%u,m_readFd:%d", 
+                    TBSYS_LOG(WARN, "读出的len不正确: %d<>%d, curPos:%ld, readOff:%d, retry:%d, seqno:%u, m_readFd:%d",
                         item->len + sizeof(queue_item), size, curPos, m_head.read_offset, 
-                        retryReadCount, m_head.read_seqno,m_readFd);
+                        retryReadCount, m_head.read_seqno, m_readFd);
                     retryReadCount ++;
                     free(item);
                     item = NULL;

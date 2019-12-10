@@ -53,7 +53,7 @@ public:
 
         fprintf(stderr,
                 "put:\n\t"
-                        "area: %d, expire: %d, version: %d, packet size: %lu, server_flag:%d\n\t"
+                        "area: %d, expire: %ld, version: %d, packet size: %lu, server_flag:%d\n\t"
                         "key: %s\n",
                 area, expired, version, size(), server_flag, ascii_key);
     }
@@ -61,7 +61,7 @@ public:
     virtual size_t size() const {
         if (LIKELY(getDataLen() != 0))
             return getDataLen() + 16;
-        return 1 + 2 + 2 + 4 + key.encoded_size() + data.encoded_size() + 16;
+        return 1 + 2 + 2 + 8 + key.encoded_size() + data.encoded_size() + 16;
     }
 
     virtual base_packet::Type get_type() {
@@ -79,7 +79,7 @@ public:
         output->writeInt8(server_flag);
         output->writeInt16(area);
         output->writeInt16(version);
-        output->writeInt32(expired);
+        output->writeInt64(expired);
         key.encode(output);
         data.encode_with_compress(output);
         return true;
@@ -89,13 +89,13 @@ public:
         //  int8    server_flag   1B      (must)
         //  int16   area          2B      (must)
         //  int16   version       2B      (must)
-        //  int32   expired       4B      (must)
+        //  int32   expired       8B      (must)
         //  -------------------------
-        //  total                 9B
+        //  total                 13B
         if (input->readInt8(&server_flag) == false ||
             input->readInt16(&area) == false ||
             input->readInt16(&version) == false ||
-            input->readInt32((uint32_t *) &expired) == false) {
+            input->readInt64((uint64_t *) &expired) == false) {
             log_warn("buffer data too few, buffer length %d", header->_dataLen);
             return false;
         }
@@ -111,14 +111,14 @@ public:
 
         if (!key.decode(input)) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, version %d, expired %d",
+                             "server_flag %x, area %d, version %d, expired %ld",
                      server_flag, area, version, expired);
             return false;
         }
 
         if (!data.decode(input)) {
             log_warn("data decode failed: "
-                             "server_flag %x, area %d, version %d, expired %d",
+                             "server_flag %x, area %d, version %d, expired %ld",
                      server_flag, area, version, expired);
             return false;
         }
@@ -131,7 +131,7 @@ public:
 public:
     uint16_t area;
     uint16_t version;
-    int32_t expired;
+    int64_t expired;
     data_entry key;
     data_entry data;
 };

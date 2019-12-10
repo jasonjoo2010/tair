@@ -157,7 +157,7 @@ int do_rsync(std::vector<int32_t> &buckets, DataFilter &filter,
 
     bool skip_in_bucket = false;
     bool skip_in_area = false;
-    uint32_t start_time = 0;
+    int64_t start_time = 0;
     int32_t bucket = -1;
     int32_t area = -1;
 
@@ -231,7 +231,7 @@ int do_rsync(std::vector<int32_t> &buckets, DataFilter &filter,
                     }
 
                     if (ret == TAIR_RETURN_SUCCESS) {
-                        log_debug("@@ k:%d %s %d %d %u %u %u.v:%s %d %d %u %u %u", key->get_area(),
+                        log_debug("@@ k:%d %s %d %d %ld %ld %ld.v:%s %d %d %ld %ld %ld", key->get_area(),
                                   key->get_size() > 6 ? key->get_data() + 6 : "", key->get_size(),
                                   key->get_prefix_size(), key->data_meta.cdate, key->data_meta.mdate,
                                   key->data_meta.edate, value->get_size() > 4 ? value->get_data() + 4 : "",
@@ -444,7 +444,7 @@ int main(int argc, char *argv[]) {
 
         log_warn("start rsync data, g_wait_ms: %"PRI64_PREFIX"d, mtime_care: %s", g_wait_ms, mtime_care ? "yes" : "no");
         // do data rsync
-        uint32_t start_time = time(NULL);
+        int64_t start_time = time(NULL);
         ret = do_rsync(bucket_container, filter,
                        db_path, manifest_file, cmp_desc,
                        local_handler, remote_handler,

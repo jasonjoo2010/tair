@@ -84,7 +84,7 @@ public:
 
     void setup_cache(int area, size_t capacity);
 
-    void setup_cache(int area, size_t capacity, uint64_t expire_time);
+    void setup_cache(int area, size_t capacity, int64_t expire_time);
 
     void set_timeout_ms(int a_timeout_ms);
 

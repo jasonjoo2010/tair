@@ -106,7 +106,7 @@ mdb_manager::~mdb_manager() {
 }
 
 int mdb_manager::put(int bucket_num, data_entry &key, data_entry &value,
-                     bool version_care, int expire_time) {
+                     bool version_care, int64_t expire_time) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->put(bucket_num, key, hv, value, version_care, expire_time);
 }
@@ -122,7 +122,7 @@ int mdb_manager::remove(int bucket_num, data_entry &key, bool version_care) {
 }
 
 int mdb_manager::raw_put(const char *key, int32_t key_len, const char *value,
-                         int32_t value_len, int flag, uint32_t expired, int32_t prefix_len, bool is_mc) {
+                         int32_t value_len, int flag, int64_t expired, int32_t prefix_len, bool is_mc) {
     unsigned int hv = hash(key, key_len);
     return get_mdb_instance(hv)->raw_put(key, key_len, hv, value, value_len, flag, expired, prefix_len, is_mc);
 }
@@ -154,8 +154,8 @@ void mdb_manager::raw_update_stats(mdb_area_stat *stat) {
     }
 }
 
-int mdb_manager::add_count(int bucket_num, data_entry &key, int count, int init_value,
-                           int low_bound, int upper_bound, int expire_time, int &result_value) {
+int mdb_manager::add_count(int bucket_num, data_entry &key, int64_t count, int64_t init_value,
+        int64_t low_bound, int64_t upper_bound, int64_t expire_time, int64_t &result_value) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->add_count(bucket_num, key, hv, count, init_value,
                                            low_bound, upper_bound, expire_time, result_value);
@@ -167,19 +167,19 @@ bool mdb_manager::lookup(int bucket_num, data_entry &key) {
 }
 
 int mdb_manager::mc_set(int bucket_num, data_entry &key, data_entry &value,
-                        bool version_care, int expire) {
+                        bool version_care, int64_t expire) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->mc_set(bucket_num, key, hv, value, version_care, expire);
 }
 
 int mdb_manager::add(int bucket_num, data_entry &key, data_entry &value,
-                     bool version_care, int expire) {
+                     bool version_care, int64_t expire) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->add(bucket_num, key, hv, value, version_care, expire);
 }
 
 int mdb_manager::replace(int bucket_num, data_entry &key, data_entry &value,
-                         bool version_care, int expire) {
+                         bool version_care, int64_t expire) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->replace(bucket_num, key, hv, value, version_care, expire);
 }
@@ -196,8 +196,8 @@ int mdb_manager::prepend(int bucket_num, data_entry &key, data_entry &value,
     return get_mdb_instance(hv)->prepend(bucket_num, key, hv, value, version_care, new_value);
 }
 
-int mdb_manager::incr_decr(int bucket, data_entry &key, uint64_t delta, uint64_t init,
-                           bool is_incr, int expire, uint64_t &result, data_entry *new_value) {
+int mdb_manager::incr_decr(int bucket, data_entry &key, int64_t delta, int64_t init,
+                           bool is_incr, int64_t expire, int64_t &result, data_entry *new_value) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->incr_decr(bucket, key, hv, delta, init, is_incr, expire, result, new_value);
 }
@@ -361,7 +361,7 @@ int mdb_manager::get_meta(data_entry &key, item_meta_info &meta) {
     return get_mdb_instance(hv)->get_meta(key, hv, meta);
 }
 
-int mdb_manager::touch(int bucket_num, data_entry &key, int expire) {
+int mdb_manager::touch(int bucket_num, data_entry &key, int64_t expire) {
     unsigned int hv = hash(key);
     return get_mdb_instance(hv)->touch(bucket_num, key, hv, expire);
 }

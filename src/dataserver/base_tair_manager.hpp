@@ -31,9 +31,9 @@ public:
 
     virtual ~base_tair_manager() {}
 
-    virtual int put(int area, data_entry &key, data_entry &data, uint16_t vesion, int expired) = 0;
+    virtual int put(int area, data_entry &key, data_entry &data, uint16_t vesion, int64_t expired) = 0;
 
-    virtual bool add_count(int area, data_entry &key, int count, int initValue, int *ret_value) = 0;
+    virtual bool add_count(int area, data_entry &key, int64_t count, int64_t initValue, int64_t *ret_value) = 0;
 
     virtual bool get(int area, data_entry &key, data_entry &data) = 0;
 

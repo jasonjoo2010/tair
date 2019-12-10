@@ -15,7 +15,7 @@
 namespace tair {
 
 void _item_meta::encode(DataBuffer *output, bool is_new) const {
-    // 29 bytes
+    // 41 bytes
     output->writeInt16(magic);
     output->writeInt16(checksum);
     output->writeInt16(keysize);
@@ -26,9 +26,9 @@ void _item_meta::encode(DataBuffer *output, bool is_new) const {
         output->writeInt8(flag | TAIR_ITEM_FLAG_COMPRESS);
     else
         output->writeInt8(flag);
-    output->writeInt32(cdate);
-    output->writeInt32(mdate);
-    output->writeInt32(edate);
+    output->writeInt64(cdate);
+    output->writeInt64(mdate);
+    output->writeInt64(edate);
 }
 
 bool _item_meta::decode(DataBuffer *input) {
@@ -40,9 +40,9 @@ bool _item_meta::decode(DataBuffer *input) {
     if (!input->readInt32(&prefixsize)) return false;
     if (!input->readInt32(&valsize_i)) return false;
     if (!input->readInt8(&flag)) return false;
-    if (!input->readInt32(&cdate)) return false;
-    if (!input->readInt32(&mdate)) return false;
-    if (!input->readInt32(&edate)) return false;
+    if (!input->readInt64(&cdate)) return false;
+    if (!input->readInt64(&mdate)) return false;
+    if (!input->readInt64(&edate)) return false;
 
     valsize = valsize_i & 0xFFFFFF;
     return true;

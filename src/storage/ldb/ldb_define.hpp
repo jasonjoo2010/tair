@@ -32,7 +32,7 @@ class Reader;
 namespace tair {
 namespace storage {
 namespace ldb {
-const static int LDB_EXPIRED_TIME_SIZE = sizeof(uint32_t);
+const static int LDB_EXPIRED_TIME_SIZE = sizeof(int64_t);
 const static int LDB_KEY_BUCKET_NUM_SIZE = 3;
 const static int LDB_KEY_META_SIZE = LDB_KEY_BUCKET_NUM_SIZE + LDB_EXPIRED_TIME_SIZE;
 const static int LDB_KEY_AREA_SIZE = 2;
@@ -86,7 +86,7 @@ public:
     LdbKey() : data_(NULL), data_size_(0), alloc_(false) {
     }
 
-    LdbKey(const char *key_data, int32_t key_size, int32_t bucket_number, uint32_t expired_time = 0) :
+    LdbKey(const char *key_data, int32_t key_size, int32_t bucket_number, int64_t expired_time = 0) :
             data_(NULL), data_size_(0), alloc_(false) {
         set(key_data, key_size, bucket_number, expired_time);
     }
@@ -95,7 +95,7 @@ public:
         free();
     }
 
-    inline void build_key_meta(int32_t bucket_number, uint32_t expired_time = 0) {
+    inline void build_key_meta(int32_t bucket_number, int64_t expired_time = 0) {
         // consistent key len SCAN_KEY_LEN
         // big-endian to use default bitewise comparator.
         // consider: varintint may be space-saved,
@@ -105,7 +105,7 @@ public:
         build_key_meta(data_, bucket_number, expired_time);
     }
 
-    inline void set(const char *key_data, int32_t key_size, int32_t bucket_number, uint32_t expired_time) {
+    inline void set(const char *key_data, int32_t key_size, int32_t bucket_number, int64_t expired_time) {
         if (key_data != NULL && key_size > 0) {
             free();
             data_size_ = key_size + LDB_KEY_META_SIZE;
@@ -158,14 +158,14 @@ public:
                 index--;
     }
 
-    static void build_key_meta(char *buf, int32_t bucket_number, uint32_t expired_time = 0) {
+    static void build_key_meta(char *buf, int32_t bucket_number, int64_t expired_time = 0) {
         // consistent key len SCAN_KEY_LEN
         // big-endian to use default bitewise comparator.
         // consider: varintint may be space-saved,
         // but user defined comparator need caculate datalen every time.
 
         // encode expired time
-        tair::util::coding_util::encode_fixed32(buf, expired_time);
+        tair::util::coding_util::encode_fixed64(buf, expired_time);
         encode_bucket_number(buf + LDB_EXPIRED_TIME_SIZE, bucket_number);
     }
 
@@ -206,7 +206,7 @@ public:
     }
 
     static int32_t decode_expire_with_key(const char *key_buf) {
-        return tair::util::coding_util::decode_fixed32(key_buf);
+        return tair::util::coding_util::decode_fixed64(key_buf);
     }
 
     static int32_t decode_area_with_key(const char *key_buf) {
@@ -248,9 +248,9 @@ struct LdbItemMetaBase {
     uint8_t meta_version_; // meta data version
     uint8_t flag_;         // flag
     uint16_t version_;      // version
-    uint32_t cdate_;        // create time
-    uint32_t mdate_;        // modify time
-    uint32_t edate_;        // expired time(for meta when get value. dummy with key)
+    int64_t cdate_;        // create time
+    int64_t mdate_;        // modify time
+    int64_t edate_;        // expired time(for meta when get value. dummy with key)
 };
 
 struct LdbItemMeta   // change value() and set() ,if you want to add new metadata
@@ -376,15 +376,15 @@ public:
             meta_.prefix_size_ = size;
     }
 
-    inline uint32_t cdate() const {
+    inline int64_t cdate() const {
         return meta_.base_.cdate_;
     }
 
-    inline uint32_t mdate() const {
+    inline int64_t mdate() const {
         return meta_.base_.mdate_;
     }
 
-    inline uint32_t edate() const {
+    inline int64_t edate() const {
         return meta_.base_.edate_;
     }
 

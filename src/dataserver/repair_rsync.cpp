@@ -103,7 +103,7 @@ int do_rsync_data(ClusterHandler &local_handler, ClusterHandler &remote_handler,
         key.data_meta.version = value->data_meta.version;
     }
 
-    log_debug("@@ k:%d %s %d %d %u %u %u.v:%s %d %d", key.get_area(), key.get_size() > 6 ? key.get_data() + 6 : "",
+    log_debug("@@ k:%d %s %d %d %ld %ld %ld.v:%s %d %d", key.get_area(), key.get_size() > 6 ? key.get_data() + 6 : "",
               key.get_size(), key.get_prefix_size(), key.data_meta.cdate, key.data_meta.mdate, key.data_meta.edate,
               (value != NULL && value->get_size() > 4) ? value->get_data() + 4 : "",
               value != NULL ? value->get_size() : 0, value != NULL ? value->data_meta.flag : -1);
@@ -116,7 +116,7 @@ int do_rsync_data(ClusterHandler &local_handler, ClusterHandler &remote_handler,
         switch (type) {
             case TAIR_REMOTE_SYNC_TYPE_PUT:
                 if (ret == TAIR_RETURN_SUCCESS) {
-                    log_debug("@@ edate : %d %d %d", key.data_meta.mdate, key.data_meta.edate, value->data_meta.edate);
+                    log_debug("@@ edate : %ld %ld %ld", key.data_meta.mdate, key.data_meta.edate, value->data_meta.edate);
                     ret = remote_handler.client()->put(key.get_area(), key, *value, value->data_meta.edate,
                                                        value->data_meta.version, false);
                     if (ret == TAIR_RETURN_MTIME_EARLY) {

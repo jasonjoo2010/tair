@@ -109,7 +109,7 @@ mdb_instance::~mdb_instance() {
 }
 
 int mdb_instance::put(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care,
-                      int expire_time) {
+                      int64_t expire_time) {
     lock_guard guard(mdb_lock);
     return do_put(bucket_num, key, hv, value, version_care, expire_time);
 }
@@ -126,11 +126,11 @@ int mdb_instance::remove(int bucket_num, data_entry &key, unsigned int hv, bool 
 
 int mdb_instance::raw_put(const char *key, int32_t key_len,
                           unsigned int hv, const char *value,
-                          int32_t value_len, int flag, uint32_t expired,
+                          int32_t value_len, int flag, int64_t expired,
                           int32_t prefix_size, bool is_mc) {
     int total_size = key_len + value_len + sizeof(mdb_item);
     int old_expire = -1;
-    log_debug("start put: key:%u,area:%d,value:%u,flag:%d,exp:%u", key_len,
+    log_debug("start put: key:%u,area:%d,value:%u,flag:%d,exp:%ld", key_len,
               KEY_AREA (key), value_len, flag, expired);
 
     uint32_t crrnt_time = static_cast < uint32_t > (time(NULL));
@@ -189,17 +189,11 @@ int mdb_instance::raw_put(const char *key, int32_t key_len,
     it->update_time = crrnt_time;
     it->version = 0;        // just ignore..
 
-    if (expired > 0) {
-        if (is_mc) {
-            it->exptime = static_cast < uint32_t > (expired) > 30 * 24 * 60 * 60 ? expired : crrnt_time + expired;
-        } else {
-            // expired must be absolute time
-            it->exptime = expired;
-        }
-    } else if (expired < 0) {
-        it->exptime = old_expire < 0 ? 0 : old_expire;
+    if (expired >= 0) {
+        it->exptime = time_util::get_real_expiration(expired, crrnt_time);
     } else {
-        it->exptime = 0;
+        // negative to keep the old ttl
+        it->exptime = old_expire < 0 ? 0 : old_expire;
     }
 
     it->flags = (flag | old_flag);
@@ -308,9 +302,9 @@ bool mdb_instance::raw_remove_if_expired(const char *key, int32_t key_len,
 }
 
 int mdb_instance::add_count(int bucket_num, data_entry &key,
-                            unsigned int hv, int count, int init_value,
-                            int low_bound, int upper_bound,
-                            int expire_time, int &result_value) {
+                            unsigned int hv, int64_t count, int64_t init_value,
+                            int64_t low_bound, int64_t upper_bound,
+                            int64_t expire_time, int64_t &result_value) {
     lock_guard guard(mdb_lock);
     return do_add_count(bucket_num, key, hv, count, init_value, low_bound, upper_bound, expire_time, result_value);
 }
@@ -320,19 +314,19 @@ bool mdb_instance::lookup(int bucket_num, data_entry &key, unsigned int hv) {
     return do_lookup(bucket_num, key, hv);
 }
 
-int mdb_instance::mc_set(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int expire) {
+int mdb_instance::mc_set(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int64_t expire) {
     lock_guard guard(mdb_lock);
     return do_set(bucket_num, key, hv, value, version_care, expire);
 }
 
-int mdb_instance::add(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int expire) {
+int mdb_instance::add(int bucket_num, data_entry &key, unsigned int hv, data_entry &value, bool version_care, int64_t expire) {
     lock_guard guard(mdb_lock);
     return do_add(bucket_num, key, hv, value, version_care, expire);
 }
 
 int mdb_instance::replace(int bucket_num, data_entry &key,
                           unsigned int hv, data_entry &value,
-                          bool version_care, int expire) {
+                          bool version_care, int64_t expire) {
     lock_guard guard(mdb_lock);
     return do_replace(bucket_num, key, hv, value, version_care, expire);
 }
@@ -352,8 +346,8 @@ int mdb_instance::prepend(int bucket_num, data_entry &key,
 }
 
 int mdb_instance::incr_decr(int bucket, data_entry &key, unsigned int hv,
-                            uint64_t delta, uint64_t init, bool is_incr,
-                            int expire, uint64_t &result,
+                            int64_t delta, int64_t init, bool is_incr,
+                            int64_t expire, int64_t &result,
                             data_entry *new_value) {
     lock_guard guard(mdb_lock);
     return do_incr_decr(bucket, key, hv, delta, init, is_incr, expire, result, new_value);
@@ -502,7 +496,7 @@ bool mdb_instance::get_next_items(md_info &info, vector<item_data_info *> &list,
 #endif
 
 int mdb_instance::do_put(int bucket_num, data_entry &key, unsigned int hv,
-                         data_entry &data, bool version_care, int expire,
+                         data_entry &data, bool version_care, int64_t expire,
                          bool is_mc) {
     int total_size = key.get_size() + data.get_size() + sizeof(mdb_item);
     int old_expire = -1;
@@ -526,7 +520,8 @@ int mdb_instance::do_put(int bucket_num, data_entry &key, unsigned int hv,
     }
 
     uint16_t version = key.get_version();
-    if (it != 0) {                //exists
+    if (it != 0) {
+        //exists
         bool expired = is_item_expired(it, crrnt_time, bucket_num);
         // test lock.
         if ((data.server_flag & TAIR_OPERATION_UNLOCK) == 0 &&
@@ -614,11 +609,7 @@ int mdb_instance::do_put(int bucket_num, data_entry &key, unsigned int hv,
     }
     log_debug("actually put,version:%d,key.getVersion():%d\n", it->version, key.get_version());
     if (expire > 0) {
-        if (!is_mc) {
-            it->exptime = static_cast < uint32_t > (expire) >= crrnt_time - 30 * 24 * 60 * 60 ? expire : crrnt_time + expire;
-        } else {
-            it->exptime = static_cast < uint32_t > (expire) > 30 * 24 * 60 * 60 ? expire : crrnt_time + expire;
-        }
+        it->exptime = time_util::get_real_expiration(expire, crrnt_time);
     } else if (expire < 0) {
         it->exptime = old_expire < 0 ? 0 : old_expire;
     } else {
@@ -709,9 +700,9 @@ int mdb_instance::do_remove(int bucket_num, data_entry &key,
 }
 
 int mdb_instance::do_add_count(int bucket_num, data_entry &key,
-                               unsigned int hv, int count, int init_value,
-                               int low_bound, int upper_bound, int expired,
-                               int &result_value) {
+                               unsigned int hv, int64_t count, int64_t init_value,
+                               int64_t low_bound, int64_t upper_bound, int64_t expired,
+                               int64_t &result_value) {
     data_entry old_value;
 
     //todo:: get and just replace it.it should be done with new mdb version.
@@ -722,9 +713,9 @@ int mdb_instance::do_add_count(int bucket_num, data_entry &key,
             //exists && iscounter && not hidden
             if (!test_flag(key.data_meta.flag, TAIR_ITEM_FLAG_DELETED)) {            //! exists && iscounter && not hidden
                 //old value exist
-                int32_t *v =
-                        (int32_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
-                log_debug("old count: %d, new count: %d, init value: %d", (*v), count, init_value);
+                int64_t *v =
+                        (int64_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
+                log_debug("old count: %ld, new count: %ld, init value: %ld", (*v), count, init_value);
                 if (util::
                 boundary_available((*v) + count, low_bound, upper_bound)) {
                     //ok, available
@@ -762,7 +753,7 @@ int mdb_instance::do_add_count(int bucket_num, data_entry &key,
         }
     }
 
-    char fv[INCR_DATA_SIZE];    // 2 + sizeof(int)
+    char fv[INCR_DATA_SIZE];    // 2 + sizeof(uint64_t)
     SET_INCR_DATA_COUNT(fv, result_value);
     old_value.set_data(fv, INCR_DATA_SIZE);
     set_flag(old_value.data_meta.flag, TAIR_ITEM_FLAG_ADDCOUNT);
@@ -790,13 +781,13 @@ bool mdb_instance::do_lookup(int bucket_num, data_entry &key,
 }
 
 int mdb_instance::do_set(int bucket_num, data_entry &key, unsigned int hv,
-                         data_entry &value, bool version_care, int expire) {
+                         data_entry &value, bool version_care, int64_t expire) {
     //TODO: reuse do_put for now
     return do_put(bucket_num, key, hv, value, version_care, expire, true);
 }
 
 int mdb_instance::do_add(int bucket_num, data_entry &key, unsigned int hv,
-                         data_entry &value, bool version_care, int expire) {
+                         data_entry &value, bool version_care, int64_t expire) {
     //TODO: reuse do_put for now
     mdb_item *it = NULL;
     remove_if_expired(bucket_num, key, it, hv);
@@ -807,7 +798,7 @@ int mdb_instance::do_add(int bucket_num, data_entry &key, unsigned int hv,
 
 int mdb_instance::do_replace(int bucket_num, data_entry &key,
                              unsigned int hv, data_entry &value,
-                             bool version_care, int expire) {
+                             bool version_care, int64_t expire) {
     //TODO: reuse do_put for now
     mdb_item *it = NULL;
     remove_if_expired(bucket_num, key, it, hv);
@@ -955,12 +946,12 @@ mdb_item *mdb_instance::alloc_counter_item(data_entry &key) {
 }
 
 int mdb_instance::do_incr_decr(int bucket, data_entry &key,
-                               unsigned int hv, uint64_t delta,
-                               uint64_t init, bool is_incr, int expire,
-                               uint64_t &result, data_entry *new_value) {
+                               unsigned int hv, int64_t delta,
+                               int64_t init, bool is_incr, int64_t expire,
+                               int64_t &result, data_entry *new_value) {
     mdb_item *new_item = NULL;
     mdb_item *item = NULL;
-    uint64_t curr_val = 0;
+    int64_t curr_val = 0;
     remove_if_expired(bucket, key, item, hv);
 
     if (item == NULL) {
@@ -1030,9 +1021,10 @@ int mdb_instance::do_incr_decr(int bucket, data_entry &key,
     }
 
     time_t current_time = time(NULL);
+    /* if expire == -1, don't modify existed key's expire */
     if (expire != -1) {
-        new_item->exptime = expire > 30 * 24 * 60 * 60 ? expire : (expire == 0 ? 0 : current_time + expire);
-    }                /* if expire == -1, don't modify existed key's expire */
+        new_item->exptime = time_util::get_real_expiration(expire, current_time);
+    }
     new_item->update_time = current_time;
     if (new_value != NULL) {
         char *data = new char[new_item->data_len];
@@ -1070,7 +1062,7 @@ int mdb_instance::get_meta(data_entry &key, unsigned int hv, item_meta_info &met
 }
 
 int mdb_instance::touch(int bucket_num, data_entry &key, unsigned int hv,
-                        int expire) {
+                        int64_t expire) {
     lock_guard guard(mdb_lock);
     int ret = TAIR_RETURN_DATA_NOT_EXIST;
     mdb_item *it = NULL;
@@ -1079,10 +1071,8 @@ int mdb_instance::touch(int bucket_num, data_entry &key, unsigned int hv,
     if (!(expired = remove_if_expired(bucket_num, key, it, hv))
         && it != NULL) {
         it->update_time = time(NULL);
-        if (expire > 0) {
-            it->exptime = static_cast < uint32_t > (expire) > 30 * 24 * 60 * 60 ? expire : crrnt_time + expire;
-        } else if (expire == 0) {
-            it->exptime = 0;
+        if (expire >= 0) {
+            it->exptime = time_util::get_real_expiration(expire, crrnt_time);
         }
         key.data_meta.version = it->version;
         ret = TAIR_RETURN_SUCCESS;

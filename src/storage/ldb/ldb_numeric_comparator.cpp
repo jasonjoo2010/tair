@@ -127,12 +127,12 @@ void NumericalComparatorImpl::FindShortestSeparator(
 }
 
 
-bool NumericalComparatorImpl::ShouldDrop(const char *key, int64_t sequence, uint32_t will_gc) const {
+bool NumericalComparatorImpl::ShouldDrop(const char *key, int64_t sequence, int64_t will_gc) const {
     return ldb_comparator_->ShouldDrop(key, sequence, will_gc);
 }
 
 
-bool NumericalComparatorImpl::ShouldDropMaybe(const char *key, int64_t sequence, uint32_t now) const {
+bool NumericalComparatorImpl::ShouldDropMaybe(const char *key, int64_t sequence, int64_t now) const {
     return ldb_comparator_->ShouldDropMaybe(key, sequence, now);
 }
 

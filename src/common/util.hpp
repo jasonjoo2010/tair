@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef TAIR_MHASH_HPP
-#define TAIR_MHASH_HPP
+#ifndef TAIR_COMMON_UTIL_HPP
+#define TAIR_COMMON_UTIL_HPP
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -254,6 +254,14 @@ public:
 
     inline static int str_to_time(const std::string str, time_t *t) {
         return s2time(str.c_str(), t);
+    }
+
+    static int get_real_expiration(int64_t expire, int64_t now) {
+        int64_t edate = 0;
+        if (expire > 0) {
+            edate = expire >= now - 30 * 24 * 3600 ? expire : now + expire;
+        }
+        return edate;
     }
 };
 

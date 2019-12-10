@@ -41,10 +41,10 @@ struct mdb_item {
     uint64_t h_next;                //~ next in hash bucket, or next in free list
     uint64_t prev;                  //~ doubly-list used for LRU
     uint64_t next;                  //~ doubly-list used for LRU
-    uint32_t exptime;               //~ time to be expired, in seconds, 0 for persistent
+    uint64_t exptime;               //~ time to be expired, in seconds, 0 for persistent
     uint32_t key_len:12;            //~ size of key
     uint32_t data_len:20;           //~ size of value
-    uint32_t update_time;           //~ last modified time
+    uint64_t update_time;           //~ last modified time
     uint16_t version;               //~ CAS, an optimistic lock
     char data[0];                   //~ start of user data, with `area' in the leading two bytes
 };

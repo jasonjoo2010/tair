@@ -244,7 +244,7 @@ void cluster_controller::setup_cache(int area, size_t capacity) {
     }
 }
 
-void cluster_controller::setup_cache(int area, size_t capacity, uint64_t expire_time) {
+void cluster_controller::setup_cache(int area, size_t capacity, int64_t expire_time) {
     client_vector_sptr temp_all_cluster;
     get_all_cluster_vector(temp_all_cluster);
 

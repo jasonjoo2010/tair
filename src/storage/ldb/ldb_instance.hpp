@@ -54,7 +54,7 @@ public:
 
     int put(int bucket_number, tair::common::data_entry &key,
             tair::common::data_entry &value,
-            bool version_care, int expire_time, bool mc_ops = false);
+            bool version_care, int64_t expire_time, bool mc_ops = false);
 
     int direct_mupdate(int bucket_number, const std::vector<operation_record *> &kvs);
 
@@ -66,14 +66,14 @@ public:
 
     // for mc_proxy
     int update(int bucket_number, tair::common::data_entry &key, tair::common::data_entry &value,
-               uint8_t ldb_update_type, bool version_care, int expire_time, bool mc_ops = true,
+               uint8_t ldb_update_type, bool version_care, int64_t expire_time, bool mc_ops = true,
                tair::common::data_entry *new_data = NULL);
 
     int add(int bucket_number, tair::common::data_entry &key, tair::common::data_entry &value, bool version_care,
-            int expire_time);
+            int64_t expire_time);
 
-    int incr_decr(int bucket, tair::common::data_entry &key, uint64_t delta,
-                  uint64_t init, bool is_incr, int expire, uint64_t &result, tair::common::data_entry *new_data = NULL);
+    int incr_decr(int bucket, tair::common::data_entry &key, int64_t delta,
+                  int64_t init, bool is_incr, int64_t expire, int64_t &result, tair::common::data_entry *new_data = NULL);
 
     int get_range(int bucket_number, tair::common::data_entry &key_start, tair::common::data_entry &end_key, int offset,
                   int limit, int type, std::vector<tair::common::data_entry *> &result, bool &has_next);
@@ -136,7 +136,7 @@ private:
     int do_remove(LdbKey &ldb_key, bool synced, bool from_other_unit, tair::common::entry_tailer *tailer = NULL);
 
     int do_put_and_set_meta(tair::common::data_entry &key, LdbKey &ldb_key, LdbItem &ldb_item, int bucket_number,
-                            int data_size, int use_size, int item_count, int expire,
+                            int data_size, int use_size, int item_count, int64_t expire,
                             bool version_care, uint8_t ldb_update_type, tair::common::data_entry *value);
 
     bool is_mtime_care(const tair::common::data_entry &key);
@@ -162,8 +162,6 @@ private:
     void sanitize_option();
 
     tbsys::CThreadMutex *get_mutex(const tair::common::data_entry &key);
-
-    int get_real_edate(int expire, int now, bool mc_ops);
 
     void append_specify_compact_status(std::vector<std::string> &infos);
 

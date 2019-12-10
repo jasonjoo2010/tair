@@ -38,10 +38,10 @@ public:
     virtual void FindShortSuccessor(std::string *key) const;
 
     // should drop this key no matter what condition.(user defined)
-    virtual bool ShouldDrop(const char *key, int64_t sequence, uint32_t will_gc = 0) const;
+    virtual bool ShouldDrop(const char *key, int64_t sequence, int64_t will_gc = 0) const;
 
     // should drop this key based on some condition. (user defined)
-    virtual bool ShouldDropMaybe(const char *key, int64_t sequence, uint32_t now = 0) const;
+    virtual bool ShouldDropMaybe(const char *key, int64_t sequence, int64_t now = 0) const;
 
     // should stop build sst before `key based on `start_key
     virtual bool ShouldStopBefore(const leveldb::Slice &start_key, const leveldb::Slice &key) const;
@@ -69,10 +69,10 @@ public:
     virtual void FindShortSuccessor(std::string *key) const;
 
     // should drop this key no matter what condition.(user defined)
-    virtual bool ShouldDrop(const char *key, int64_t sequence, uint32_t will_gc = 0) const;
+    virtual bool ShouldDrop(const char *key, int64_t sequence, int64_t will_gc = 0) const;
 
     // should drop this key based on some condition. (user defined)
-    virtual bool ShouldDropMaybe(const char *key, int64_t sequence, uint32_t now = 0) const;
+    virtual bool ShouldDropMaybe(const char *key, int64_t sequence, int64_t now = 0) const;
 
     // should stop build sst before `key based on `start_key
     virtual bool ShouldStopBefore(const leveldb::Slice &start_key, const leveldb::Slice &key) const;

@@ -44,7 +44,7 @@ public:
     /**
      * 把字节串转成时间(当地时间)
      */
-    static int strToTime(char *str);
+    static int strToTime(const char *str);
 };
 
 }

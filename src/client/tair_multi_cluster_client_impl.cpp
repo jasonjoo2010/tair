@@ -98,7 +98,7 @@ int tair_multi_cluster_client_impl::get(int area, const data_entry &key, callbac
 }
 
 int tair_multi_cluster_client_impl::put(int area, const data_entry &key, const data_entry &data,
-                                        int expire, int version, bool fill_cache, TAIRCALLBACKFUNC pfunc, void *arg) {
+                                        int64_t expire, int version, bool fill_cache, TAIRCALLBACKFUNC pfunc, void *arg) {
     int ret = TAIR_RETURN_SERVER_CAN_NOT_WORK;
     ALL_CLUSTER_HANDLER_OP(ret, key, put(area, key, data, expire, version, fill_cache, pfunc, arg));
     return ret;
@@ -110,22 +110,22 @@ int tair_multi_cluster_client_impl::remove(int area, const data_entry &key, TAIR
     return ret;
 }
 
-int tair_multi_cluster_client_impl::incr(int area, const data_entry &key, int count, int *ret_count,
-                                         int init_value, int expire) {
+int tair_multi_cluster_client_impl::incr(int area, const data_entry &key, int64_t count, int64_t *ret_count,
+                                         int64_t init_value, int64_t expire) {
     int ret = TAIR_RETURN_SERVER_CAN_NOT_WORK;
     ALL_CLUSTER_HANDLER_OP(ret, key, add_count(area, key, count, ret_count, init_value, expire));
     return ret;
 }
 
-int tair_multi_cluster_client_impl::decr(int area, const data_entry &key, int count, int *ret_count,
-                                         int init_value, int expire) {
+int tair_multi_cluster_client_impl::decr(int area, const data_entry &key, int64_t count, int64_t *ret_count,
+                                         int64_t init_value, int64_t expire) {
     int ret = TAIR_RETURN_SERVER_CAN_NOT_WORK;
     ALL_CLUSTER_HANDLER_OP(ret, key, add_count(area, key, (-count), ret_count, init_value, expire));
     return ret;
 }
 
-int tair_multi_cluster_client_impl::add_count(int area, const data_entry &key, int count,
-                                              int *ret_count, int init_value, int expire_time) {
+int tair_multi_cluster_client_impl::add_count(int area, const data_entry &key, int64_t count,
+                                              int64_t *ret_count, int64_t init_value, int64_t expire_time) {
     int ret = TAIR_RETURN_SERVER_CAN_NOT_WORK;
     ALL_CLUSTER_HANDLER_OP(ret, key, add_count(area, key, count, ret_count, init_value, expire_time));
     return ret;
@@ -163,7 +163,7 @@ int tair_multi_cluster_client_impl::prefix_gets(int area, const data_entry &pkey
 }
 
 int tair_multi_cluster_client_impl::prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                                               const data_entry &value, int expire, int version) {
+                                               const data_entry &value, int64_t expire, int version) {
     int ret = TAIR_RETURN_SERVER_CAN_NOT_WORK;
     ALL_CLUSTER_HANDLER_OP(ret, pkey, prefix_put(area, pkey, skey, value, expire, version));
     return ret;

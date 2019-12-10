@@ -78,13 +78,13 @@ void mdb_destroy(mdb_t db);
  * @param expire: lifetime of the entry, by seconds, absolute or relative
  */
 int mdb_put(mdb_t db, int area, const data_entry_t *key, const data_entry_t *value,
-            int version, bool version_care, int expire);
+            int version, bool version_care, int64_t expire);
 /*
  * get
  * @param version: if not NULL, version of the entry would be got
  * @param expire: if not NULL, expire of the entry would be got
  */
-int mdb_get(mdb_t db, int area, const data_entry_t *key, data_entry_t *value, int *version, int *expire);
+int mdb_get(mdb_t db, int area, const data_entry_t *key, data_entry_t *value, int *version, int64_t *expire);
 /*
  * delete
  */
@@ -95,8 +95,8 @@ int mdb_del(mdb_t db, int area, const data_entry_t *key, bool version_care);
  * @param init_value: base value if not existing
  * @param result: result of the incrementation
  */
-int mdb_add_count(mdb_t db, int area, const data_entry_t *key, int count,
-                  int init_value, int expire, int *result);
+int mdb_add_count(mdb_t db, int area, const data_entry_t *key, int64_t count,
+        int64_t init_value, int64_t expire, int64_t *result);
 /*
  * test existence
  */

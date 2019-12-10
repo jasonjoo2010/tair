@@ -126,7 +126,7 @@ public:
     int put(int area,
             const data_entry &key,
             const data_entry &data,
-            int expire,
+            int64_t expire,
             int version,
             bool fill_cache = true,
             TAIRCALLBACKFUNC pfunc = NULL, void *arg = NULL);
@@ -211,7 +211,7 @@ public:
                     tair_keyvalue_map &result_map, key_code_map_t &failed_map);
 
     int prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                   const data_entry &value, int expire, int version);
+                   const data_entry &value, int64_t expire, int version);
 
     int prefix_puts(int area, const data_entry &pkey,
                     const vector<key_value_pack_t *> &skey_value_packs, key_code_map_t &failed_map);
@@ -242,19 +242,19 @@ public:
 
     int add_count(int area,
                   const data_entry &key,
-                  int count,
-                  int *retCount,
-                  int init_value = 0,
-                  int expire_time = 0);
+                  int64_t count,
+                  int64_t *retCount,
+                  int64_t init_value = 0,
+                  int64_t expire_time = 0);
 
-    int set_count(int area, const data_entry &key, int count,
-                  int expire, int version);
+    int set_count(int area, const data_entry &key, int64_t count,
+                  int64_t expire, int version);
 
     int lock(int area, const data_entry &key, LockType type);
 
     int expire(int area,
                const data_entry &key,
-               int expire);
+               int64_t expire);
 
     int uniq_remove(int area,
                     int bucket,
@@ -285,7 +285,7 @@ public:
                int area,
                const data_entry *key,
                const data_entry *value,
-               int expire,
+               int64_t expire,
                int version,
                callback_mc_ops_pt callback, void *arg);
 

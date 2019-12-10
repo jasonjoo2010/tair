@@ -50,24 +50,24 @@ public:
         //  [ request_inc_dec
         //  | int8   server_flag    1B      (must)
         //  | int16  area           2B      (must)
-        //  | int32  add_count      4B      (must)
-        //  | int32  init_value     4B      (must)
-        //  | int32  expire         4B      (must)
+        //  | int64  add_count      8B      (must)
+        //  | int64  init_value     8B      (must)
+        //  | int64  expire         8B      (must)
         //  | -------------------------
-        //  | total                15B
+        //  | total                27B
         //  |
         //  | dataentry  key         decode  (must)
 
-        //  int32  low_bound      4B         (must)
-        //  int32  high_bound     4B         (must)
+        //  int32  low_bound      8B         (must)
+        //  int32  high_bound     8B         (must)
         if (request_inc_dec::decode(input, header) == false) {
             return false;
         }
 
-        if (input->readInt32((uint32_t *) &low_bound) == false ||
-            input->readInt32((uint32_t *) &upper_bound) == false) {
+        if (input->readInt64((uint64_t *) &low_bound) == false ||
+            input->readInt64((uint64_t *) &upper_bound) == false) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, add_count %d, init_value %d, expired %d",
+                             "server_flag %x, area %d, add_count %ld, init_value %ld, expired %ld",
                      server_flag, area, add_count, init_value, expired);
             return false;
         }
@@ -81,18 +81,18 @@ public:
         return request_inc_dec::size() + 4 + 4;
     }
 
-    inline int32_t get_low_bound() {
+    inline int64_t get_low_bound() {
         return low_bound;
     }
 
-    inline int32_t get_upper_bound() {
+    inline int64_t get_upper_bound() {
         return upper_bound;
     }
 
 protected:
     //value belong to [low_bound, upper_bound]
-    int32_t low_bound;
-    int32_t upper_bound;
+    int64_t low_bound;
+    int64_t upper_bound;
 private:
     request_inc_dec_bounded(const request_inc_dec_bounded &);
 };

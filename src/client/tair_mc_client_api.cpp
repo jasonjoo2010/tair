@@ -43,7 +43,7 @@ void tair_mc_client_api::setup_cache(int area, size_t capacity) {
     controller.setup_cache(area, capacity);
 }
 
-void tair_mc_client_api::setup_cache(int area, size_t capacity, uint64_t expire_time) {
+void tair_mc_client_api::setup_cache(int area, size_t capacity, int64_t expire_time) {
     // add namespace_offset is in controller
     controller.setup_cache(area, capacity, expire_time);
 }
@@ -62,7 +62,7 @@ const string &tair_mc_client_api::get_data_group_id() {
 }
 
 int tair_mc_client_api::put(int area, const data_entry &key, const data_entry &data,
-                            int expire, int version, bool fill_cache) {
+                            int64_t expire, int version, bool fill_cache) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -193,7 +193,7 @@ int tair_mc_client_api::prefix_gets(int area, const data_entry &pkey, const tair
 }
 
 int tair_mc_client_api::prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                                   const data_entry &value, int expire, int version) {
+                                   const data_entry &value, int64_t expire, int version) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -345,7 +345,7 @@ int tair_mc_client_api::minvalid(int area, vector<data_entry *> &key) {
     return (*write_clients)[0]->delegate.minvalid(new_area, key);
 }
 
-int tair_mc_client_api::incr(int area, const data_entry &key, int count, int *ret_count, int init_value, int expire) {
+int tair_mc_client_api::incr(int area, const data_entry &key, int64_t count, int64_t *ret_count, int64_t init_value, int64_t expire) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -359,7 +359,7 @@ int tair_mc_client_api::incr(int area, const data_entry &key, int count, int *re
     return code;
 }
 
-int tair_mc_client_api::decr(int area, const data_entry &key, int count, int *ret_count, int init_value, int expire) {
+int tair_mc_client_api::decr(int area, const data_entry &key, int64_t count, int64_t *ret_count, int64_t init_value, int64_t expire) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -373,7 +373,7 @@ int tair_mc_client_api::decr(int area, const data_entry &key, int count, int *re
     return code;
 }
 
-int tair_mc_client_api::add_count(int area, const data_entry &key, int count, int *ret_count, int init_value) {
+int tair_mc_client_api::add_count(int area, const data_entry &key, int64_t count, int64_t *ret_count, int64_t init_value) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -387,7 +387,7 @@ int tair_mc_client_api::add_count(int area, const data_entry &key, int count, in
     return code;
 }
 
-int tair_mc_client_api::set_count(int area, const data_entry &key, int count, int expire, int version) {
+int tair_mc_client_api::set_count(int area, const data_entry &key, int64_t count, int64_t expire, int version) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 
@@ -429,7 +429,7 @@ int tair_mc_client_api::unlock(int area, const data_entry &key) {
     return code;
 }
 
-int tair_mc_client_api::expire(int area, const data_entry &key, int expire) {
+int tair_mc_client_api::expire(int area, const data_entry &key, int64_t expire) {
     client_vector_sptr write_clients;
     controller.get_write_cluster_vector(write_clients);
 

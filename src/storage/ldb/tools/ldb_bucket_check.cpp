@@ -339,7 +339,7 @@ int do_check(std::vector<int32_t> &buckets, int32_t bucket_number,
 
     int ret = TAIR_RETURN_SUCCESS;
 
-    uint32_t start_time = 0;
+    int64_t start_time = 0;
     int32_t bucket = -1;
     int32_t area = -1;
 
@@ -545,7 +545,7 @@ int main(int argc, char *argv[]) {
         // init data stat
         CheckStat stat;
 
-        uint32_t start_time = time(NULL);
+        int64_t start_time = time(NULL);
         log_warn("start check data");
 
         // do data check

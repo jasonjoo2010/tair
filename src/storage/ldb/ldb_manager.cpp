@@ -672,7 +672,7 @@ int LdbManager::destroy() {
     return TAIR_RETURN_SUCCESS;
 }
 
-int LdbManager::put(int bucket_number, data_entry &key, data_entry &value, bool version_care, int expire_time) {
+int LdbManager::put(int bucket_number, data_entry &key, data_entry &value, bool version_care, int64_t expire_time) {
     log_debug("ldb::put");
     int rc = TAIR_RETURN_SUCCESS;
     LdbInstance *db_instance = get_db_instance(bucket_number);
@@ -702,7 +702,7 @@ int LdbManager::direct_mupdate(int bucket_number, const tair_operc_vector &kvs) 
     return rc;
 }
 
-int LdbManager::add(int bucket_number, data_entry &key, data_entry &value, bool version_care, int expire_time) {
+int LdbManager::add(int bucket_number, data_entry &key, data_entry &value, bool version_care, int64_t expire_time) {
     log_debug("ldb::add"); //put if not existed
     LdbInstance *db_instance = get_db_instance(bucket_number);
     int rc = TAIR_RETURN_SUCCESS;
@@ -718,7 +718,7 @@ int LdbManager::add(int bucket_number, data_entry &key, data_entry &value, bool 
     return rc;
 }
 
-int LdbManager::mc_set(int bucket_number, data_entry &key, data_entry &value, bool version_care, int expire_time) {
+int LdbManager::mc_set(int bucket_number, data_entry &key, data_entry &value, bool version_care, int64_t expire_time) {
     log_debug("ldb::mc_set");
     LdbInstance *db_instance = get_db_instance(bucket_number);
     int rc = TAIR_RETURN_SUCCESS;
@@ -732,7 +732,7 @@ int LdbManager::mc_set(int bucket_number, data_entry &key, data_entry &value, bo
     return rc;
 }
 
-int LdbManager::touch(int bucket_number, data_entry &key, int expire_time) {
+int LdbManager::touch(int bucket_number, data_entry &key, int64_t expire_time) {
     static data_entry dummy;
     log_debug("ldb::incr_decr");
     LdbInstance *db_instance = get_db_instance(bucket_number);
@@ -748,8 +748,8 @@ int LdbManager::touch(int bucket_number, data_entry &key, int expire_time) {
     return rc;
 }
 
-int LdbManager::incr_decr(int bucket_number, data_entry &key, uint64_t delta, uint64_t init,
-                          bool is_incr, int expire_time, uint64_t &result, data_entry *new_value) {
+int LdbManager::incr_decr(int bucket_number, data_entry &key, int64_t delta, int64_t init,
+                          bool is_incr, int64_t expire_time, int64_t &result, data_entry *new_value) {
     log_debug("ldb::incr_decr");
     LdbInstance *db_instance = get_db_instance(bucket_number);
     int rc = TAIR_RETURN_SUCCESS;
@@ -763,7 +763,7 @@ int LdbManager::incr_decr(int bucket_number, data_entry &key, uint64_t delta, ui
     return rc;
 }
 
-int LdbManager::replace(int bucket_number, data_entry &key, data_entry &value, bool version_care, int expire_time) {
+int LdbManager::replace(int bucket_number, data_entry &key, data_entry &value, bool version_care, int64_t expire_time) {
     log_debug("ldb::replace"); //update if existed
     LdbInstance *db_instance = get_db_instance(bucket_number);
     int rc = TAIR_RETURN_SUCCESS;

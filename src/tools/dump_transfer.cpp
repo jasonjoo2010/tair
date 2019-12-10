@@ -60,9 +60,9 @@ private:
                 *value;
         uint32_t key_len,
                 value_len;
-        uint32_t area,
-                mdate,
-                edate;
+        uint32_t area;
+        int64_t  mdate,
+                 edate;
         uint16_t version;
     };
 
@@ -238,9 +238,9 @@ void DumpTransfer::parse_ldb_dump_file() {
             uint8_t meta_version = 0;
             uint8_t flag = 0;
             uint16_t version = 0;
-            uint32_t cdate = 0;
-            uint32_t mdate = 0;
-            uint32_t edate = 0;
+            int64_t cdate = 0;
+            int64_t mdate = 0;
+            int64_t edate = 0;
 
             size_t rd_size = fread(&keysize, sizeof(int32_t), 1, dump_fd_);
             if (rd_size == 0) {
@@ -287,9 +287,9 @@ void DumpTransfer::parse_ldb_dump_file() {
             // uint8_t  meta_version_;
             // uint8_t  flag_;
             // uint16_t version_;
-            // uint32_t cdate_;
-            // uint32_t mdate_;
-            // uint32_t edate_;
+            // int64_t cdate_;
+            // int64_t mdate_;
+            // int64_t edate_;
             // uint16_t area;
             rd_size = fread(&meta_version, sizeof(uint8_t), 1, dump_fd_);
             if (rd_size < 1) {
@@ -306,24 +306,24 @@ void DumpTransfer::parse_ldb_dump_file() {
                 log_error("parse version: file format error");
                 exit(1);
             }
-            rd_size = fread(&cdate, sizeof(uint32_t), 1, dump_fd_);
+            rd_size = fread(&cdate, sizeof(int64_t), 1, dump_fd_);
             if (rd_size < 1) {
                 log_error("parse cdate: file format error");
                 exit(1);
             }
-            rd_size = fread(&mdate, sizeof(uint32_t), 1, dump_fd_);
+            rd_size = fread(&mdate, sizeof(int64_t), 1, dump_fd_);
             if (rd_size < 1) {
                 log_error("parse mdate: file format error");
                 exit(1);
             }
-            rd_size = fread(&edate, sizeof(uint32_t), 1, dump_fd_);
+            rd_size = fread(&edate, sizeof(int64_t), 1, dump_fd_);
             if (rd_size < 1) {
                 log_error("parse edate: file format error");
                 exit(1);
             }
             rd_size = fread(&area, sizeof(uint16_t), 1, dump_fd_);
             if (rd_size < 1) {
-                log_error("parse edate: file format error");
+                log_error("parse area: file format error");
                 exit(1);
             }
 
@@ -383,7 +383,7 @@ void DumpTransfer::parse_dump_file() {
     char *kbuf = new char[kbuf_size];
     char *vbuf = new char[vbuf_size];
 
-    uint32_t cdate;
+    int64_t cdate;
     while (!_stop) {
         kv_pair *kv = new kv_pair();
         int rd_size;
@@ -394,16 +394,18 @@ void DumpTransfer::parse_dump_file() {
             delete kv;
             break;
         }
-        fread(&kv->version, sizeof(uint16_t), 1, dump_fd_);
-        fread(&cdate, sizeof(uint32_t), 1, dump_fd_);
-        fread(&kv->mdate, sizeof(uint32_t), 1, dump_fd_);
-        fread(&kv->edate, sizeof(uint32_t), 1, dump_fd_);
-        fread(&kv->key_len, sizeof(uint32_t), 1, dump_fd_);
+        int unused = 0;
+        unused = fread(&kv->version, sizeof(uint16_t), 1, dump_fd_);
+        unused = fread(&cdate, sizeof(int64_t), 1, dump_fd_);
+        unused = fread(&kv->mdate, sizeof(int64_t), 1, dump_fd_);
+        unused = fread(&kv->edate, sizeof(int64_t), 1, dump_fd_);
+        unused = fread(&kv->key_len, sizeof(uint32_t), 1, dump_fd_);
         assert(kv->key_len <= (size_t) kbuf_size);
-        fread(kbuf, sizeof(char), kv->key_len, dump_fd_);
-        fread(&kv->value_len, sizeof(uint32_t), 1, dump_fd_);
+        unused = fread(kbuf, sizeof(char), kv->key_len, dump_fd_);
+        unused = fread(&kv->value_len, sizeof(uint32_t), 1, dump_fd_);
         assert(kv->value_len <= (size_t) vbuf_size);
-        fread(vbuf, sizeof(char), kv->value_len, dump_fd_);
+        unused = fread(vbuf, sizeof(char), kv->value_len, dump_fd_);
+        UNUSED(unused);
 
         char *key = new char[kv->key_len];
         memcpy(key, kbuf, kv->key_len);

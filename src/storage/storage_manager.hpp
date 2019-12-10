@@ -58,7 +58,7 @@ public:
     }
 
     virtual int put(int bucket_number, data_entry &key, data_entry &value,
-                    bool version_care, int expire_time) = 0;
+                    bool version_care, int64_t expire_time) = 0;
 
     virtual int
     direct_mupdate(int bucket_number, const std::vector<operation_record *> &kvs) { return TAIR_RETURN_NOT_SUPPORTED; }
@@ -72,27 +72,27 @@ public:
     virtual int remove(int bucket_number, data_entry &key,
                        bool version_care) = 0;
 
-    virtual int add_count(int bucket_num, data_entry &key, int count, int init_value,
-                          int low_bound, int upper_bound, int expire_time, int &result_value) {
+    virtual int add_count(int bucket_num, data_entry &key, int64_t count, int64_t init_value,
+            int64_t low_bound, int64_t upper_bound, int64_t expire_time, int64_t &result_value) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
-    virtual int touch(int bucket_num, data_entry &key, int expire) {
+    virtual int touch(int bucket_num, data_entry &key, int64_t expire) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
     virtual int mc_set(int bucket_num, data_entry &key, data_entry &value,
-                       bool version_care, int expire) {
+                       bool version_care, int64_t expire) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
     virtual int add(int bucket_num, data_entry &key, data_entry &value,
-                    bool version_care, int expire) {
+                    bool version_care, int64_t expire) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
     virtual int replace(int bucket_num, data_entry &key, data_entry &value,
-                        bool version_care, int expire) {
+                        bool version_care, int64_t expire) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
@@ -106,8 +106,8 @@ public:
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 
-    virtual int incr_decr(int bucket, data_entry &key, uint64_t delta, uint64_t init,
-                          bool is_incr, int expire, uint64_t &result, data_entry *new_value = NULL) {
+    virtual int incr_decr(int bucket, data_entry &key, int64_t delta, int64_t init,
+                          bool is_incr, int64_t expire, int64_t &result, data_entry *new_value = NULL) {
         return TAIR_RETURN_NOT_SUPPORTED;
     }
 

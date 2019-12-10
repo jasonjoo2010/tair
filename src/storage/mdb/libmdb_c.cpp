@@ -54,7 +54,7 @@ void mdb_destroy(mdb_t db) {
 }
 
 int mdb_put(mdb_t db, int area, const data_entry_t *key, const data_entry_t *value,
-            int version, bool version_care, int expire) {
+            int version, bool version_care, int64_t expire) {
     data_entry mkey(key->data, key->size, false);
     mkey.merge_area(area);
     mkey.set_version(version);
@@ -63,7 +63,7 @@ int mdb_put(mdb_t db, int area, const data_entry_t *key, const data_entry_t *val
     return _db->put(0, mkey, mvalue, version_care, expire);
 }
 
-int mdb_get(mdb_t db, int area, const data_entry_t *key, data_entry_t *value, int *version, int *expire) {
+int mdb_get(mdb_t db, int area, const data_entry_t *key, data_entry_t *value, int *version, int64_t *expire) {
     data_entry mkey(key->data, key->size, false);
     mkey.merge_area(area);
     data_entry mvalue;
@@ -91,8 +91,8 @@ int mdb_del(mdb_t db, int area, const data_entry_t *key, bool version_care) {
     return _db->remove(0, mkey, version_care);
 }
 
-int mdb_add_count(mdb_t db, int area, const data_entry_t *key, int count,
-                  int init_value, int expire, int *result) {
+int mdb_add_count(mdb_t db, int area, const data_entry_t *key, int64_t count,
+        int64_t init_value, int64_t expire, int64_t *result) {
     data_entry mkey(key->data, key->size, false);
     mkey.merge_area(area);
     mdb_manager *_db = reinterpret_cast<mdb_manager *>(db);

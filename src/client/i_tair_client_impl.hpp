@@ -48,16 +48,16 @@ public:
     virtual int get(int area, const data_entry &key, callback_get_pt cb = NULL, void *args = NULL) = 0;
 
     virtual int put(int area, const data_entry &key, const data_entry &data,
-                    int expire, int version, bool fill_cache = true, TAIRCALLBACKFUNC pfunc = NULL,
+                    int64_t expire, int version, bool fill_cache = true, TAIRCALLBACKFUNC pfunc = NULL,
                     void *arg = NULL) = 0;
 
     virtual int remove(int area, const data_entry &key, TAIRCALLBACKFUNC pfunc = NULL, void *arg = NULL) = 0;
 
-    virtual int add_count(int area, const data_entry &key, int count, int *ret_count,
-                          int init_value = 0, int expire_time = 0) = 0;
+    virtual int add_count(int area, const data_entry &key, int64_t count, int64_t *ret_count,
+            int64_t init_value = 0, int64_t expire_time = 0) = 0;
 
     virtual int
-    set_count(int area, const data_entry &key, int count, int expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
+    set_count(int area, const data_entry &key, int count, int64_t expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
 
     virtual int mget(int area, const std::vector<data_entry *> &keys, tair::common::tair_keyvalue_map &data) = 0;
 
@@ -67,7 +67,7 @@ public:
 
     virtual int lock(int area, const data_entry &key, LockType type) { return TAIR_RETURN_NOT_SUPPORTED; }
 
-    virtual int expire(int area, const data_entry &key, int expire) { return TAIR_RETURN_NOT_SUPPORTED; }
+    virtual int expire(int area, const data_entry &key, int64_t expire) { return TAIR_RETURN_NOT_SUPPORTED; }
 
     virtual int invalidate(int area, const data_entry &key, const char *groupname,
                            bool is_sync = true) { return TAIR_RETURN_NOT_SUPPORTED; }
@@ -90,7 +90,7 @@ public:
                             key_code_map_t &failed_map) { return TAIR_RETURN_NOT_SUPPORTED; }
 
     virtual int prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                           const data_entry &value, int expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
+                           const data_entry &value, int64_t expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
 
     virtual int prefix_puts(int area, const data_entry &pkey,
                             const vector<tair::common::key_value_pack_t *> &skey_value_packs,
@@ -125,7 +125,7 @@ public:
                        int area,
                        const data_entry *key,
                        const data_entry *value,
-                       int expire,
+                       int64_t expire,
                        int version,
                        callback_mc_ops_pt callback, void *arg) { return TAIR_RETURN_NOT_SUPPORTED; }
 

@@ -111,9 +111,9 @@ LOCAL_CACHE_CLASS::put_if_absent(const KeyT &key, const ValueT &val, ValueT &cur
         // update entry value and utime
         // update first, some meta info
         fill_value(iter, curtVal);
-        uint64_t now = tbutil::Time::now().toMilliSeconds();
+        int64_t now = tbutil::Time::now().toMilliSeconds();
         assert(expire != 0);
-        if (now - entry_utime(iter) > expire) {
+        if (now - (int64_t)entry_utime(iter) > expire) {
             // expired
             set_entry_utime(iter->second, now);
             res = EXPIRED;
@@ -200,9 +200,9 @@ LOCAL_CACHE_CLASS::get(const KeyT &key, ValueT &value) {
     // whatever, find entry, fill value
     fill_value(iter, value);
     // check whether entry was expired
-    uint64_t now = tbutil::Time::now().toMilliSeconds();
+    int64_t now = tbutil::Time::now().toMilliSeconds();
     assert(expire != 0);
-    if (now - entry_utime(iter) > expire) {
+    if (now - (int64_t)entry_utime(iter) > expire) {
         // expired
         set_entry_utime(iter->second, now);
         return EXPIRED;

@@ -54,9 +54,9 @@ class Comparator {
   virtual void FindShortSuccessor(std::string* key) const = 0;
 
   // should drop this key no matter what condition.(user defined)
-  virtual bool ShouldDrop(const char* key, int64_t sequence, uint32_t now = 0) const { return false;}
+  virtual bool ShouldDrop(const char* key, int64_t sequence, int64_t now = 0) const { return false;}
   // should drop this key based on some condition. (user defined)
-  virtual bool ShouldDropMaybe(const char* key, int64_t sequence, uint32_t now = 0) const { return false;}
+  virtual bool ShouldDropMaybe(const char* key, int64_t sequence, int64_t now = 0) const { return false;}
   // should stop build sst before `key based on `start_key
   virtual bool ShouldStopBefore(const Slice& start_key, const Slice& key) const { return false;}
 };

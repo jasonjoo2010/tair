@@ -66,7 +66,7 @@ struct GcNode {
     int32_t key_;
     uint64_t sequence_;
     uint64_t file_number_;
-    uint32_t when_;
+    int64_t when_;
 };
 
 struct GcLogRecord {

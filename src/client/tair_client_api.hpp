@@ -40,7 +40,7 @@ public:
   // expire, entry expire time, unit ms
   // now, just support cache read
   void setup_cache(int area, size_t capacity = 30);
-  void setup_cache(int area, size_t capacity ,uint64_t expire_time );
+  void setup_cache(int area, size_t capacity ,int64_t expire_time );
   //~ set number of I/O threads of libeasy
   void set_thread_count(uint32_t thread_count);
   void set_light_mode();
@@ -106,7 +106,7 @@ public:
   int put(int area,
           const data_entry &key,
           const data_entry &data,
-          int expire,
+          int64_t expire,
           int version,
           bool fill_cache = true);
   /**
@@ -156,7 +156,7 @@ public:
   int async_put(int area,
                 const data_entry &key,
                 const data_entry &data,
-                int expire,
+                int64_t expire,
                 int version,
                 void (*cb)(int ret, void *args),
                 void *args);
@@ -296,7 +296,7 @@ public:
    * @param expire&version: expire & version
    */
   int prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                 const data_entry &value, int expire, int version);
+                 const data_entry &value, int64_t expire, int version);
   /**
    * @brief to put multiple items with prefix key
    * @param area: namespace
@@ -416,17 +416,17 @@ public:
    */
   int incr(int area,
            const data_entry& key,
-           int count,
-           int *ret_count,
-           int init_value = 0,
-           int expire = 0);
+           int64_t count,
+           int64_t *ret_count,
+           int64_t init_value = 0,
+           int64_t expire = 0);
   // opposite to incr
   int decr(int area,
            const data_entry& key,
-           int count,
-           int *ret_count,
-           int init_value = 0,
-           int expire = 0);
+           int64_t count,
+           int64_t *ret_count,
+           int64_t init_value = 0,
+           int64_t expire = 0);
 
   /**
    *
@@ -444,9 +444,9 @@ public:
    */
   int add_count(int area,
                 const data_entry &key,
-                int count,
-                int *ret_count,
-                int init_value = 0);
+                int64_t count,
+                int64_t *ret_count,
+                int64_t init_value = 0);
 
   /**
    * @brief set count to key's value, ignore whether this key exists or is not
@@ -460,7 +460,7 @@ public:
    *
    * @return 0 -- success, otherwise fail.
    */
-  int set_count(int area, const data_entry& key, int count, int expire = 0, int version = 0);
+  int set_count(int area, const data_entry& key, int64_t count, int64_t expire = 0, int version = 0);
 
   /**
    * @brief Once a key is locked, it can NOT be updated(put/incr/decr), can only
@@ -497,7 +497,7 @@ public:
    */
   int expire(int area,
              const data_entry& key,
-             int expire);
+             int64_t expire);
 
   /**
    * @brief set log level
@@ -707,7 +707,7 @@ public:
              int area,
              const data_entry *key,
              const data_entry *value,
-             int expire,
+             int64_t expire,
              int version,
              callback_mc_ops_pt callback, void *arg);
 

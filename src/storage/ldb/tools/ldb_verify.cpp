@@ -1214,7 +1214,7 @@ do_task(Task *t, Configure *c, int target_area) {
         }
 
         if (!(c->range_start == 0 && c->range_end == 0)) {
-            uint32_t mdate = ldb_item.mdate();
+            int64_t mdate = ldb_item.mdate();
             if (!(mdate >= c->range_start && mdate <= c->range_end)) {
                 continue;
             }
@@ -1539,8 +1539,8 @@ void
 do_statistics(int area, LdbKey &key, LdbItem &item) {
     //static const uint32_t SEC_PER_YEAR = 12 * 30 * 24 * 60 * 60;
     static const uint32_t SEC_PER_5_DAYS = 5 * 24 * 60 * 60;
-    uint32_t mtime = item.mdate();
-    uint32_t past = time(NULL) - mtime;
+    int64_t mtime = item.mdate();
+    int64_t past = time(NULL) - mtime;
     uint64_t size = key.size() + item.size();
     if (past > SEC_PER_5_DAYS) {
         tair::common::atomic_add(&statistics.metrics[area].area_size_cold, size);

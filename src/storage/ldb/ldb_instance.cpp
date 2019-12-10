@@ -250,17 +250,17 @@ void LdbInstance::destroy() {
 
 int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
                      tair::common::data_entry &value,
-                     bool version_care, int expire_time, bool mc_ops) {
+                     bool version_care, int64_t expire_time, bool mc_ops) {
     if (db_ == NULL) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
 
-    uint32_t cdate = 0, mdate = 0, edate = 0;
+    int64_t cdate = 0, mdate = 0, edate = 0;
     int32_t stat_data_size = 0, stat_use_size = 0, item_count = 1;
     if (key.data_meta.cdate == 0 || version_care) {
         cdate = time(NULL);
         mdate = cdate;
-        edate = get_real_edate(expire_time, mdate, mc_ops);
+        edate = time_util::get_real_expiration(expire_time, mdate);
     } else {
         cdate = key.data_meta.cdate;
         mdate = key.data_meta.mdate;
@@ -295,7 +295,7 @@ int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
             }
             // db mtime is later than request, then need not do operation any more
             need_op = !(mtime_care && ldb_item.mdate() > key.data_meta.mdate);
-            log_debug("@@ mtime care: %d,np:%d, %d <> %d, ldb_item.version:%d,key.data_meta.version:%d",
+            log_debug("@@ mtime care: %d,np:%d, %ld <> %ld, ldb_item.version:%d,key.data_meta.version:%d",
                       mtime_care, need_op, ldb_item.mdate(), key.data_meta.mdate, ldb_item.version(),
                       key.data_meta.version);
             if (!need_op) {
@@ -346,7 +346,7 @@ int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
         }
 
         ldb_item.set(value.get_data(), value.get_size());
-        log_debug("meta_version:%u ,prefix_size %u, total_size:%u, valuesize:%u edate:%u",
+        log_debug("meta_version:%u, prefix_size %u, total_size:%u, valuesize:%u edate:%ld",
                   ldb_item.meta().base_.meta_version_, key.get_prefix_size(), ldb_item.size(), value.get_size(),
                   ldb_item.edate());
 
@@ -399,17 +399,17 @@ int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
 
 //update data if this key existed: for mc_ops replace, append, prepend
 int LdbInstance::update(int bucket_number, tair::common::data_entry &key, tair::common::data_entry &value,
-                        uint8_t ldb_update_type, bool version_care, int expire_time, bool mc_ops,
+                        uint8_t ldb_update_type, bool version_care, int64_t expire_time, bool mc_ops,
                         data_entry *p_new_value) {
     if (db_ == NULL) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
 
     int rc = TAIR_RETURN_SUCCESS;
-    uint32_t cdate = 0, mdate = 0, edate = 0;
+    uint64_t cdate = 0, mdate = 0, edate = 0;
     int stat_data_size = 0, stat_use_size = 0, item_count = 0;
     mdate = time(NULL);
-    edate = get_real_edate(expire_time, mdate, mc_ops);
+    edate = time_util::get_real_expiration(expire_time, mdate);
     LdbKey ldb_key(key.get_data(), key.get_size(), bucket_number, edate);
     LdbItem ldb_item;
     std::string db_value;
@@ -498,7 +498,7 @@ int LdbInstance::update(int bucket_number, tair::common::data_entry &key, tair::
         }
 
         log_debug(
-                "ldb::update %d, key len: %d, key prefix len:%d , value len: %u, update_type:%d version:%d expire:%d\n",
+                "ldb::update %d, key len: %d, key prefix len:%d , value len: %u, update_type:%d version:%d expire:%ld\n",
                 rc, key.get_size(), key.get_prefix_size(), ldb_item.size(), ldb_update_type,
                 ldb_item.meta().base_.version_, ldb_item.meta().base_.edate_);
         PROFILER_BEGIN("db put:update");
@@ -546,13 +546,13 @@ int LdbInstance::update(int bucket_number, tair::common::data_entry &key, tair::
     return rc;
 }
 
-int LdbInstance::add(int bucket_number, data_entry &key, data_entry &value, bool version_care, int expire_time) {
+int LdbInstance::add(int bucket_number, data_entry &key, data_entry &value, bool version_care, int64_t expire_time) {
     if (db_ == NULL) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
 
     int rc = TAIR_RETURN_SUCCESS;
-    LdbKey ldb_key(key.get_data(), key.get_size(), bucket_number, get_real_edate(expire_time, time(NULL), true));
+    LdbKey ldb_key(key.get_data(), key.get_size(), bucket_number, time_util::get_real_expiration(expire_time, time(NULL)));
     LdbItem ldb_item;
     std::string db_value;
 
@@ -575,16 +575,16 @@ int LdbInstance::add(int bucket_number, data_entry &key, data_entry &value, bool
 }
 
 // memcached-style incr-decr
-int LdbInstance::incr_decr(int bucket_number, data_entry &key, uint64_t delta, uint64_t init,
-                           bool is_incr, int expire, uint64_t &result, data_entry *p_new_value) {
+int LdbInstance::incr_decr(int bucket_number, data_entry &key, int64_t delta, int64_t init,
+                           bool is_incr, int64_t expire, int64_t &result, data_entry *p_new_value) {
     if (db_ == NULL) {
         return TAIR_RETURN_SERVER_CAN_NOT_WORK;
     }
 
     int rc = TAIR_RETURN_SUCCESS;
     int stat_data_size = 0, stat_use_size = 0, item_count = 0;
-    uint64_t curr_val = 0;
-    LdbKey ldb_key(key.get_data(), key.get_size(), bucket_number, get_real_edate(expire, time(NULL), true));
+    int64_t curr_val = 0;
+    LdbKey ldb_key(key.get_data(), key.get_size(), bucket_number, time_util::get_real_expiration(expire, time(NULL)));
     LdbItem ldb_item;
     std::string db_value;
     static const int mc_header_size = sizeof(int32_t);
@@ -601,9 +601,7 @@ int LdbInstance::incr_decr(int bucket_number, data_entry &key, uint64_t delta, u
         if (IS_ADDCOUNT_TYPE(ldb_item.flag())) {
             curr_val = tair::util::string_util::strntoul(ldb_item.value() + mc_header_size,
                                                          ldb_item.value_size() - mc_header_size);
-        } else
-            // revert string to int
-        {
+        } else {// revert string to number
             for (int i = mc_header_size; i < ldb_item.value_size(); ++i) {
                 char c = *(ldb_item.value() + i);
                 if (c < '0' || c > '9') {
@@ -624,9 +622,8 @@ int LdbInstance::incr_decr(int bucket_number, data_entry &key, uint64_t delta, u
         } else {
             curr_val = delta > curr_val ? 0 : curr_val - delta;
         }
-    } else if (TAIR_RETURN_DATA_NOT_EXIST == rc)
+    } else if (TAIR_RETURN_DATA_NOT_EXIST == rc) {
         // data not exist. add this counter
-    {
         if (expire == -1) {
             return TAIR_RETURN_DATA_NOT_EXIST;
         }
@@ -669,16 +666,16 @@ int LdbInstance::incr_decr(int bucket_number, data_entry &key, uint64_t delta, u
 // ldb_item : get from ldb, update and put it into ldb.
 int
 LdbInstance::do_put_and_set_meta(data_entry &key, LdbKey &ldb_key, LdbItem &ldb_item, int bucket_number, int data_size,
-                                 int use_size, int item_count, int expire, bool version_care, uint8_t ldb_update_type,
+                                 int use_size, int item_count, int64_t expire, bool version_care, uint8_t ldb_update_type,
                                  data_entry *value) {
     int rc = TAIR_RETURN_FAILED;
 
-    uint32_t cdate = 0, mdate = 0, edate = 0;
+    uint64_t cdate = 0, mdate = 0, edate = 0;
     mdate = time(NULL);
     if (expire == -1)
         edate = ldb_item.edate();
     else
-        edate = get_real_edate(expire, mdate, true);
+        edate = time_util::get_real_expiration(expire, mdate);
 
     LdbKey::build_key_meta(ldb_key.data(), bucket_number, edate);
 
@@ -700,7 +697,7 @@ LdbInstance::do_put_and_set_meta(data_entry &key, LdbKey &ldb_key, LdbItem &ldb_
     }
 
     PROFILER_BEGIN("db put");
-    log_debug("ldb::put, key len: %d, key prefix len:%d , value len: %u, version:%d expire:%d, mdate:%d, cdate:%d\n",
+    log_debug("ldb::put, key len: %d, key prefix len:%d, value len: %u, version:%d expire:%ld, mdate:%ld, cdate:%ld\n",
               key.get_size(), key.get_prefix_size(), ldb_item.size(),
               ldb_item.meta().base_.version_, ldb_item.meta().base_.edate_, ldb_item.meta().base_.mdate_,
               ldb_item.meta().base_.cdate_);
@@ -859,12 +856,13 @@ int LdbInstance::batch_put(int bucket_number, int area, tair::common::mput_recor
     for (tair::common::mput_record_vec::iterator it = record_vec->begin(); it != record_vec->end(); ++it) {
         data_entry &key = *((*it)->key);
         data_entry &value = (*it)->value->get_d_entry();
-        uint32_t cdate = 0, mdate = 0, edate = 0;
+        int64_t cdate = 0, mdate = 0, edate = 0;
         if (key.data_meta.cdate == 0 || version_care) {
             cdate = time(NULL);
             mdate = cdate;
             edate = (*it)->value->get_expire();
-            if (edate > 0 && edate < static_cast<uint32_t>(mdate)) {
+            if (edate > 0 && edate < mdate) {
+                // XXX maybe here's a fix for those ttl in offset form?
                 edate += mdate;
             }
         } else {
@@ -984,9 +982,35 @@ LdbInstance::get_range(int bucket_number, data_entry &key_start, data_entry &key
     LdbItem ldb_item;
     static int range_max_size = TBSYS_CONFIG.getInt(TAIRLDB_SECTION, LDB_RANGE_MAX_SIZE, 1 << 20); // 1M
     data_entry *nkey = NULL, *nvalue = NULL;
+    bool reverse = false;
+    bool need_key = false;
+    bool need_val = false;
 
-    if (CMD_RANGE_ALL != type && CMD_RANGE_VALUE_ONLY != type && CMD_RANGE_KEY_ONLY != type) {
+    if (CMD_RANGE_ALL != type
+            && CMD_RANGE_ALL_REVERSE != type
+            && CMD_RANGE_VALUE_ONLY != type
+            && CMD_RANGE_VALUE_ONLY_REVERSE != type
+            && CMD_RANGE_KEY_ONLY != type
+            && CMD_RANGE_KEY_ONLY_REVERSE != type) {
         return TAIR_RETURN_INVALID_ARGUMENT;
+    }
+    if (CMD_RANGE_VALUE_ONLY_REVERSE == type
+            || CMD_RANGE_ALL_REVERSE == type
+            || CMD_RANGE_KEY_ONLY_REVERSE == type) {
+        reverse = true;
+    }
+
+    if (CMD_RANGE_ALL == type
+                    || CMD_RANGE_KEY_ONLY == type
+                    || CMD_RANGE_ALL_REVERSE == type
+                    || CMD_RANGE_KEY_ONLY_REVERSE == type) {
+        need_key = true;
+    }
+    if (CMD_RANGE_ALL == type
+            || CMD_RANGE_VALUE_ONLY == type
+            || CMD_RANGE_ALL_REVERSE == type
+            || CMD_RANGE_VALUE_ONLY_REVERSE == type) {
+        need_val = true;
     }
 
     if (RANGE_FROM_CUR != offset && RANGE_FROM_NEXT != offset) {
@@ -1010,13 +1034,31 @@ LdbInstance::get_range(int bucket_number, data_entry &key_start, data_entry &key
     }
     leveldb::Slice slice_key_start(ldbkey.data(), ldbkey.size());
     leveldb::Slice slice_key_end(ldbendkey.data(), ldbendkey.size());
-    iter->SetBrake(&slice_key_end, leveldb::config::kLimitGetRange);
     iter->EnableStat();
 
+    if (reverse) {
+        // backward
+        iter->SetBrake(&slice_key_start, leveldb::config::kLimitGetRange);
+        iter->Seek(slice_key_start);
+        if (!iter->Valid()) {
+            iter->Prev();
+        } else {
+            leveldb::Slice slice_iter_key(iter->key().data(), iter->key().size());
+            if (options_.comparator->Compare(slice_iter_key, slice_key_start) > 0) {
+                iter->Prev();
+            }
+        }
+    } else {
+        // forward
+        iter->SetBrake(&slice_key_end, leveldb::config::kLimitGetRange);
+        iter->Seek(slice_key_start);
+    }
+
     //iterate all keys
-    for (iter->Seek(slice_key_start); iter->Valid() && count < max_retcnt; iter->Next()) {
+    for (; iter->Valid() && count < max_retcnt; reverse ? iter->Prev() : iter->Next()) {
         leveldb::Slice slice_iter_key(iter->key().data(), iter->key().size());
-        if (options_.comparator->Compare(slice_iter_key, slice_key_end) >= 0) {
+        if ((reverse && options_.comparator->Compare(slice_iter_key, slice_key_end) <= 0)
+                || (!reverse && options_.comparator->Compare(slice_iter_key, slice_key_end) >= 0)) {
             end_break = true;
             break;
         }
@@ -1040,14 +1082,14 @@ LdbInstance::get_range(int bucket_number, data_entry &key_start, data_entry &key
             continue;
         }
 
-        if (CMD_RANGE_ALL == type || CMD_RANGE_KEY_ONLY == type) {
+        if (need_key) {
             nkey = new data_entry(ldb_key.key() + key_start.get_prefix_size() + LDB_KEY_AREA_SIZE,
                                   ldb_key.key_size() - key_start.get_prefix_size() - LDB_KEY_AREA_SIZE, true);
             fill_meta(nkey, ldb_key, ldb_item);
             result.push_back(nkey);
             total_size += ldb_key.size();
         }
-        if (CMD_RANGE_ALL == type || CMD_RANGE_VALUE_ONLY == type) {
+        if (need_val) {
             nvalue = new data_entry(ldb_item.value(), ldb_item.value_size(), true);
             fill_meta(nvalue, ldb_key, ldb_item);
             result.push_back(nvalue);
@@ -1121,7 +1163,7 @@ int LdbInstance::get(int bucket_number, tair::common::data_entry &key, tair::com
         ldb_item.assign(const_cast<char *>(db_value.data()), db_value.size());
         // already check expired. no need here.
         value.set_data(ldb_item.value(), ldb_item.value_size());
-        log_debug("@@value: size %zd, ldb_item: size %d prefix %d, cdate %d edate %d mdate %d", db_value.size(),
+        log_debug("@@value: size %zd, ldb_item: size %d prefix %d, cdate %ld edate %ld mdate %ld", db_value.size(),
                   ldb_item.value_size(), ldb_item.prefix_size(), ldb_item.cdate(), ldb_item.edate(), ldb_item.mdate());
         // update meta info
         key.data_meta.flag = value.data_meta.flag = ldb_item.flag();
@@ -1875,20 +1917,6 @@ tbsys::CThreadMutex *LdbInstance::get_mutex(const tair::common::data_entry &key)
     return ret;
 }
 
-int LdbInstance::get_real_edate(int expire_time, int now, bool mc_ops) {
-    int edate;
-    if (expire_time > 0) {
-        if (mc_ops) {
-            edate = static_cast<uint32_t> (expire_time) > 30 * 24 * 60 * 60 ? expire_time : now + expire_time;
-        } else {
-            edate = static_cast<uint32_t>(expire_time) >= (uint32_t) now - 30 * 24 * 60 * 60 ? expire_time : now +
-                                                                                                             expire_time;
-        }
-    } else {
-        edate = 0;
-    }
-    return edate;
-}
 }
 }
 }

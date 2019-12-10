@@ -66,7 +66,7 @@ item_data_info *data_reader::get_next_item() {
 
             if (!(is_free & TAIR_ITEM_FLAG_DELETED)
                 && !(header->edate != 0
-                     && header->edate < (uint32_t) time_now)) {
+                     && header->edate < time_now)) {
                 item_data_info *item = (item_data_info *) malloc(total_size);
                 memcpy(item, buffer + buffer_offset, total_size);
                 buffer_offset += total_size;

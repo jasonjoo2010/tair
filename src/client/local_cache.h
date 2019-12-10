@@ -261,7 +261,7 @@ private:
     entry_cache cache;
 
     size_t capacity;
-    uint64_t expire;
+    int64_t expire;
 
     tbsys::CThreadMutex mutex;
 };

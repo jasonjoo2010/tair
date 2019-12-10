@@ -378,19 +378,19 @@ public:
         return hashcode;
     }
 
-    uint32_t get_cdate() const {
+    int64_t get_cdate() const {
         return data_meta.cdate;
     }
 
-    void set_cdate(uint32_t cdate) {
+    void set_cdate(int64_t cdate) {
         data_meta.cdate = cdate;
     }
 
-    uint32_t get_mdate() const {
+    int64_t get_mdate() const {
         return data_meta.mdate;
     }
 
-    void set_mdate(uint32_t mdate) {
+    void set_mdate(int64_t mdate) {
         data_meta.mdate = mdate;
     }
 
@@ -399,7 +399,7 @@ public:
     }
 
     size_t encoded_size() const {
-        return 40 + get_size();
+        return 4 + ITEM_HEADER_LEN + get_size();
     }
 
     void encode(DataBuffer *output, bool need_compress = false) const;
@@ -544,7 +544,7 @@ private:
         tailer() : prefix_size_(0), mdate_(0) {}
 
         uint32_t prefix_size_;
-        uint32_t mdate_;
+        uint64_t mdate_;
     } tailer;
     tailer tailer_;
 };
@@ -558,6 +558,7 @@ typedef std::set<data_entry *, data_entry_comparator> tair_dataentry_set;
 typedef __gnu_cxx::hash_map<data_entry *, data_entry *,
         data_entry_hash, data_entry_equal_to> tair_keyvalue_map;
 typedef __gnu_cxx::hash_map<data_entry *, int, data_entry_hash, data_entry_equal_to> key_code_map_t;
+typedef __gnu_cxx::hash_map<data_entry *, long, data_entry_hash, data_entry_equal_to> key_value_map_t;
 
 class value_entry {
 public:
@@ -587,11 +588,11 @@ public:
         return d_entry;
     }
 
-    void set_expire(int32_t expire_time) {
+    void set_expire(int64_t expire_time) {
         expire = expire_time;
     }
 
-    int32_t get_expire() const {
+    int64_t get_expire() const {
         return expire;
     }
 
@@ -618,7 +619,7 @@ public:
 private:
     data_entry d_entry;
     uint16_t version;
-    int32_t expire;
+    int64_t expire;
 };
 
 class mput_record {
@@ -680,6 +681,15 @@ inline void defree(tair_keyvalue_map &map) {
 
 inline void defree(key_code_map_t &map) {
     key_code_map_t::iterator itr = map.begin();
+    while (itr != map.end()) {
+        data_entry *key = itr->first;
+        ++itr;
+        delete key;
+    }
+}
+
+inline void defree(key_value_map_t &map) {
+    key_value_map_t::iterator itr = map.begin();
     while (itr != map.end()) {
         data_entry *key = itr->first;
         ++itr;

@@ -33,27 +33,27 @@ struct counter_wrapper {
     }
 
     bool encode(DataBuffer *output) const {
-        output->writeInt32(count);
-        output->writeInt32(init_value);
-        output->writeInt32(expire);
+        output->writeInt64(count);
+        output->writeInt64(init_value);
+        output->writeInt64(expire);
         return true;
     }
 
     bool decode(DataBuffer *input) {
-        if (!input->readInt32((uint32_t *) &count)) return false;
-        if (!input->readInt32((uint32_t *) &init_value)) return false;
-        if (!input->readInt32((uint32_t *) &expire)) return false;
+        if (!input->readInt64((int64_t *) &count)) return false;
+        if (!input->readInt64((int64_t *) &init_value)) return false;
+        if (!input->readInt64((int64_t *) &expire)) return false;
 
         return true;
     }
 
     size_t encoded_size() {
-        return 4 + 4 + 4;
+        return 8 + 8 + 8;
     }
 
-    int32_t count;
-    int32_t init_value;
-    int32_t expire;
+    int64_t count;
+    int64_t init_value;
+    int64_t expire;
 };
 }
 }

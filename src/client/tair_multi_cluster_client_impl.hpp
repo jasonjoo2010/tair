@@ -35,17 +35,17 @@ public:
 
     int get(int area, const data_entry &key, callback_get_pt cb = NULL, void *args = NULL);
 
-    int put(int area, const data_entry &key, const data_entry &data, int expire, int version, bool fill_cache = true,
+    int put(int area, const data_entry &key, const data_entry &data, int64_t expire, int version, bool fill_cache = true,
             TAIRCALLBACKFUNC pfunc = NULL, void *arg = NULL);
 
     int remove(int area, const data_entry &key, TAIRCALLBACKFUNC pfunc = NULL, void *arg = NULL);
 
-    int incr(int area, const data_entry &key, int count, int *ret_count, int init_value = 0, int expire = 0);
+    int incr(int area, const data_entry &key, int64_t count, int64_t *ret_count, int64_t init_value = 0, int64_t expire = 0);
 
-    int decr(int area, const data_entry &key, int count, int *ret_count, int init_value = 0, int expire = 0);
+    int decr(int area, const data_entry &key, int64_t count, int64_t *ret_count, int64_t init_value = 0, int64_t expire = 0);
 
-    int add_count(int area, const data_entry &key, int count, int *ret_count,
-                  int init_value = 0, int expire_time = 0);
+    int add_count(int area, const data_entry &key, int64_t count, int64_t *ret_count,
+            int64_t init_value = 0, int64_t expire_time = 0);
 
     int mget(int area, const vector<data_entry *> &keys, tair_keyvalue_map &data);
 
@@ -63,7 +63,7 @@ public:
                     tair_keyvalue_map &result_map, key_code_map_t &failed_map);
 
     int prefix_put(int area, const data_entry &pkey, const data_entry &skey,
-                   const data_entry &value, int expire, int version);
+                   const data_entry &value, int64_t expire, int version);
 
     int prefix_puts(int area, const data_entry &pkey,
                     const vector<tair::common::key_value_pack_t *> &skey_value_packs, key_code_map_t &failed_map);

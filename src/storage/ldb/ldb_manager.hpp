@@ -220,7 +220,7 @@ public:
     int initialize();
 
     int put(int bucket_number, data_entry &key, data_entry &value,
-            bool version_care, int expire_time);
+            bool version_care, int64_t expire_time);
 
     int direct_mupdate(int bucket_number, const std::vector<operation_record *> &kvs);
 
@@ -266,21 +266,21 @@ public:
     void set_bucket_count(uint32_t bucket_count);
 
     //mc_ops
-    int mc_set(int bucket_num, data_entry &key, data_entry &value, bool version_care, int expire);
+    int mc_set(int bucket_num, data_entry &key, data_entry &value, bool version_care, int64_t expire);
 
-    int add(int bucket_num, data_entry &key, data_entry &value, bool version_care, int expire);
+    int add(int bucket_num, data_entry &key, data_entry &value, bool version_care, int64_t expire);
 
-    int replace(int bucket_num, data_entry &key, data_entry &value, bool version_care, int expire);
+    int replace(int bucket_num, data_entry &key, data_entry &value, bool version_care, int64_t expire);
 
     int append(int bucket_num, data_entry &key, data_entry &value, bool version_care, data_entry *new_value = NULL);
 
     int prepend(int bucket_num, data_entry &key, data_entry &value, bool version_care, data_entry *new_value = NULL);
 
     int
-    incr_decr(int bucket, data_entry &key, uint64_t delta, uint64_t init, bool is_incr, int expire, uint64_t &result,
+    incr_decr(int bucket, data_entry &key, int64_t delta, int64_t init, bool is_incr, int64_t expire, int64_t &result,
               data_entry *new_value = NULL);
 
-    int touch(int bucket_num, data_entry &key, int expire);
+    int touch(int bucket_num, data_entry &key, int64_t expire);
 
     // get bucket index map
     void get_index_map(BucketIndexer::INDEX_BUCKET_MAP &result);

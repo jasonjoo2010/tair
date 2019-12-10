@@ -1053,9 +1053,9 @@ void tair_client::do_cmd_put(VSTRING &param) {
         return;
     }
     int area = default_area;
-    int expired = 0;
+    int64_t expired = 0;
     if (param.size() > 2U) area = atoi(param[2]);
-    if (param.size() > 3U) expired = atoi(param[3]);
+    if (param.size() > 3U) expired = atol(param[3]);
 
     char *akey = NULL;
     int pkeysize = 0;
@@ -1074,11 +1074,11 @@ void tair_client::do_cmd_addcount(VSTRING &param) {
         print_help("incr");
         return;
     }
-    int count = 1;
-    int initValue = 0;
+    int64_t count = 1;
+    int64_t initValue = 0;
     int area = default_area;
-    if (param.size() > 1U) count = atoi(param[1]);
-    if (param.size() > 2U) initValue = atoi(param[2]);
+    if (param.size() > 1U) count = atol(param[1]);
+    if (param.size() > 2U) initValue = atol(param[2]);
     if (param.size() > 3U) area = atoi(param[3]);
 
     char *akey = NULL;
@@ -1087,13 +1087,13 @@ void tair_client::do_cmd_addcount(VSTRING &param) {
     data_entry key(pkey, pkeysize, false);
 
     // put
-    int retCount = 0;
+    int64_t retCount = 0;
     int ret = client_helper.add_count(area, key, count, &retCount, initValue);
 
     if (ret != TAIR_RETURN_SUCCESS) {
         fprintf(stderr, "add failed:%d,%s.\n", ret, client_helper.get_error_msg(ret));
     } else {
-        fprintf(stderr, "retCount: %d\n", retCount);
+        fprintf(stderr, "retCount: %ld\n", retCount);
     }
     if (akey) free(akey);
 

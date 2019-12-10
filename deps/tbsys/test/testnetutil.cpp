@@ -65,7 +65,7 @@ void test1()
 int main(int argc, char *argv[])
 {
     //test1();
-    char *ip = "192.168.207.158:2089";
+    const char *ip = "192.168.207.158:2089";
     int port = 2071;
     uint32_t ipx = CNetUtil::getLocalAddr(NULL);
     unsigned char *bytes = (unsigned char *) &ipx;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     uint64_t uuid;
     for(int i=0; i<10; i++) {
      uuid = newUUID();
-    fprintf(stderr, "uuid: %llu, %llX\n", uuid, uuid);
+    fprintf(stderr, "uuid: %lu, %lX\n", uuid, uuid);
     } 
 
     uint64_t x = CNetUtil::strToAddr(ip, port);

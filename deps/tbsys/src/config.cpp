@@ -90,13 +90,13 @@ namespace tbsys {
         {
           if (max_key_len <= (snprintf_ret = snprintf(key, max_key_len, "%s", name)))
           {
-            TBSYS_LOG(ERROR, "key's length (%d) is too large. max key length supported is %d. key=%s",
+            TBSYS_LOG(ERROR, "key's length (%ld) is too large. max key length supported is %d. key=%s",
                 strlen(name), max_key_len - 1, name);
             ret = -2;
           }
           else if (max_value_len <= (snprintf_ret = snprintf(val, max_value_len, "%s", value)))
           {
-            TBSYS_LOG(ERROR, "value's length (%d) of key ('%s') is too large. max value length supported is %d. value=%s",
+            TBSYS_LOG(ERROR, "value's length (%ld) of key ('%s') is too large. max value length supported is %d. value=%s",
                 strlen(value), name, max_value_len - 1, value);
             ret = -2;
           }
