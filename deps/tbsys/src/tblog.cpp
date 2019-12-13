@@ -79,8 +79,12 @@ void CLogger::setFileName(const char *filename, bool flag, bool open_wf)
         free(_name);
         _name = NULL;
     }
+    int flags = O_RDWR | O_CREAT | O_APPEND;
+#ifdef __LINUX__
+    flags |= O_LARGEFILE;
+#endif
     _name = strdup(filename);
-    int fd = open(_name, O_RDWR | O_CREAT | O_APPEND | O_LARGEFILE, LOG_FILE_MODE);
+    int fd = open(_name, flags, LOG_FILE_MODE);
     _flag = flag;
     if (!_flag)
     {
@@ -108,7 +112,8 @@ void CLogger::setFileName(const char *filename, bool flag, bool open_wf)
       char tmp_file_name[256];
       memset(tmp_file_name, 0, sizeof(tmp_file_name));
       snprintf(tmp_file_name, sizeof(tmp_file_name), "%s.wf", _name);
-      fd = open(tmp_file_name, O_RDWR | O_CREAT | O_APPEND | O_LARGEFILE, LOG_FILE_MODE);
+
+      fd = open(tmp_file_name, flags, LOG_FILE_MODE);
       _wf_fd = fd;
     }
 }
@@ -144,12 +149,12 @@ void CLogger::setFileName(const char *filename, bool flag, bool open_wf)
 
     int head_size;
     if (level < TBSYS_LOG_LEVEL_INFO) {
-        head_size = snprintf(head,256,"[%04d-%02d-%02d %02d:%02d:%02d.%06ld] %-5s %s (%s:%d) [%ld] ",
+        head_size = snprintf(head,256,"[%04d-%02d-%02d %02d:%02d:%02d.%06d] %-5s %s (%s:%d) [%p] ",
                         tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday,
                         tm.tm_hour, tm.tm_min, tm.tm_sec, tv.tv_usec,
                         _errstr[level], function, file, line, tid);
     } else {
-        head_size = snprintf(head,256,"[%04d-%02d-%02d %02d:%02d:%02d.%06ld] %-5s %s:%d [%ld] ",
+        head_size = snprintf(head,256,"[%04d-%02d-%02d %02d:%02d:%02d.%06d] %-5s %s:%d [%p] ",
                         tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday,
                         tm.tm_hour, tm.tm_min, tm.tm_sec, tv.tv_usec,
                         _errstr[level], file, line, tid);
@@ -286,7 +291,11 @@ void CLogger::rotateLog(const char *filename, const char *fmt)
         }
         rename(wf_filename, old_wf_log_file);
     }
-    int fd = open(filename, O_RDWR | O_CREAT | O_APPEND | O_LARGEFILE, LOG_FILE_MODE);
+    int flags = O_RDWR | O_CREAT | O_APPEND;
+#ifdef __LINUX__
+    flags |= O_LARGEFILE;
+#endif
+    int fd = open(filename,  flags, LOG_FILE_MODE);
     if (!_flag)
     {
       dup2(fd, _fd);
@@ -304,7 +313,7 @@ void CLogger::rotateLog(const char *filename, const char *fmt)
     }
     if (_wf_flag)
     {
-      fd = open(wf_filename, O_RDWR | O_CREAT | O_APPEND | O_LARGEFILE, LOG_FILE_MODE);
+      fd = open(wf_filename, flags, LOG_FILE_MODE);
       if (_wf_fd != 2)
       {
         close(_wf_fd);
@@ -322,7 +331,11 @@ void CLogger::checkFile()
     int err = stat(_name, &stFile);
     if ((err == -1 && errno == ENOENT)
         || (err == 0 && (stFile.st_dev != stFd.st_dev || stFile.st_ino != stFd.st_ino))) {
-        int fd = open(_name, O_RDWR | O_CREAT | O_APPEND | O_LARGEFILE, LOG_FILE_MODE);
+        int flags = O_RDWR | O_CREAT | O_APPEND;
+#ifdef __LINUX__
+        flags |= O_LARGEFILE;
+#endif
+        int fd = open(_name, flags, LOG_FILE_MODE);
         if (!_flag)
         {
           dup2(fd, _fd);

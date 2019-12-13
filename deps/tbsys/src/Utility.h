@@ -61,6 +61,7 @@ static inline uint32_t guint32p2(uint32_t uiValue)
     return uiValue + 1;
 }
 
+#ifndef __APPLE__
 /**
  * 把64位主机字节序整数转换成64位网络字节序整数
  * @param ull(uint64_t): 64位主机字节序整数
@@ -112,6 +113,7 @@ static inline uint64_t ntohll(uint64_t ull)
     }
     return ull;
 }
+#endif
 
 /**
  * 把相对现在的一个时间片断转换成将来的绝对时间

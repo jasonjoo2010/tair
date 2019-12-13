@@ -46,7 +46,7 @@ void Timer::destroy()
     }
 }
 
-int Timer::schedule(const TimerTaskPtr& task, const Time& delay)
+int Timer::schedule(const TimerTaskPtr& task, const TimeObject& delay)
 {
     Monitor<Mutex>::Lock sync(_monitor);
     if(_destroyed)
@@ -59,7 +59,7 @@ int Timer::schedule(const TimerTaskPtr& task, const Time& delay)
 #endif
     }
 
-    Time time = Time::now(Time::Monotonic) + delay;
+    TimeObject time = TimeObject::now(TimeObject::Monotonic) + delay;
     bool inserted = _tasks.insert(make_pair(task, time)).second;
     if(!inserted)
     {
@@ -70,16 +70,16 @@ int Timer::schedule(const TimerTaskPtr& task, const Time& delay)
         throw IllegalArgumentException(__FILE__, __LINE__, "task is already schedulded");
 #endif
     }
-    _tokens.insert(Token(time, Time(), task));
+    _tokens.insert(Token(time, TimeObject(), task));
 
-    if(_wakeUpTime == Time() || time < _wakeUpTime)
+    if(_wakeUpTime == TimeObject() || time < _wakeUpTime)
     {
         _monitor.notify();
     }
     return 0;
 }
 
-int Timer::scheduleRepeated(const TimerTaskPtr& task, const Time& delay)
+int Timer::scheduleRepeated(const TimerTaskPtr& task, const TimeObject& delay)
 {
     Monitor<Mutex>::Lock sync(_monitor);
     if(_destroyed)
@@ -92,7 +92,7 @@ int Timer::scheduleRepeated(const TimerTaskPtr& task, const Time& delay)
 #endif
     }
 
-    const Token token(Time::now(Time::Monotonic) + delay, delay, task);
+    const Token token(TimeObject::now(TimeObject::Monotonic) + delay, delay, task);
     bool inserted = _tasks.insert(make_pair(task, token.scheduledTime)).second;
     if(!inserted)
     {
@@ -105,7 +105,7 @@ int Timer::scheduleRepeated(const TimerTaskPtr& task, const Time& delay)
     }
     _tokens.insert(token); 
    
-    if(_wakeUpTime == Time() || token.scheduledTime < _wakeUpTime)
+    if(_wakeUpTime == TimeObject() || token.scheduledTime < _wakeUpTime)
     {
         _monitor.notify();
     }
@@ -120,13 +120,13 @@ bool Timer::cancel(const TimerTaskPtr& task)
         return false;
     }
 
-    map<TimerTaskPtr, Time, TimerTaskCompare>::iterator p = _tasks.find(task);
+    map<TimerTaskPtr, TimeObject, TimerTaskCompare>::iterator p = _tasks.find(task);
     if(p == _tasks.end())
     {
         return false;
     }
 
-    _tokens.erase(Token(p->second, Time(), p->first));
+    _tokens.erase(Token(p->second, TimeObject(), p->first));
     _tasks.erase(p);
 
     return true;
@@ -135,7 +135,7 @@ bool Timer::cancel(const TimerTaskPtr& task)
 void
 Timer::run()
 {
-    Token token(Time(), Time(), 0);
+    Token token(TimeObject(), TimeObject(), 0);
     while(true)
     {
         {
@@ -143,21 +143,21 @@ Timer::run()
 
             if(!_destroyed)
             {
-                if(token.delay != Time())
+                if(token.delay != TimeObject())
                 {
-                    map<TimerTaskPtr, Time, TimerTaskCompare>::iterator p = _tasks.find(token.task);
+                    map<TimerTaskPtr, TimeObject, TimerTaskCompare>::iterator p = _tasks.find(token.task);
                     if(p != _tasks.end())
                     {
-                        token.scheduledTime = Time::now(Time::Monotonic) + token.delay;
+                        token.scheduledTime = TimeObject::now(TimeObject::Monotonic) + token.delay;
                         p->second = token.scheduledTime;
                         _tokens.insert(token);
                     }
                 }
-                token = Token(Time(), Time(), 0);
+                token = Token(TimeObject(), TimeObject(), 0);
 
                 if(_tokens.empty())
                 {
-                    _wakeUpTime = Time();
+                    _wakeUpTime = TimeObject();
                     _monitor.wait();
                 }
             }
@@ -169,13 +169,13 @@ Timer::run()
            
             while(!_tokens.empty() && !_destroyed)
             {
-                const Time now = Time::now(Time::Monotonic);
+                const TimeObject now = TimeObject::now(TimeObject::Monotonic);
                 const Token& first = *(_tokens.begin());
                 if(first.scheduledTime <= now)
                 {
                     token = first;
                     _tokens.erase(_tokens.begin());
-                    if(token.delay == Time())
+                    if(token.delay == TimeObject())
                     {
                         _tasks.erase(token.task);
                     }

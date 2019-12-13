@@ -8,6 +8,11 @@ if [ "$1" == "clean" ]; then
    exit;
 fi
 
+OS=$(uname -s)
+if [ $OS = "Darwin" ]; then
+    # mac
+    alias libtoolize='glibtoolize'
+fi
 libtoolize --force
 aclocal
 autoconf

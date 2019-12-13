@@ -1,3 +1,7 @@
+# Visual Studio Code
+.history/
+.vscode/
+
 # Compiled Object files
 *.slo
 *.lo

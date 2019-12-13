@@ -14,13 +14,12 @@
  */
 
 #include <Exception.h>
-#include <Time.h>
 #include <stdio.h>
 #include <string.h>
 #include <ThreadPool.h>
 #include <EventHandler.h>
 #include <Handle.h>
-#include <Time.h>
+#include <TimeObject.h>
 #include "testBase.h"
 #include "testCommon.h"
 #include <list>
@@ -215,14 +214,14 @@ void MonitorMutxTest::run()
     t3 = new MonitorMutexTestThread2(monitor);
     t3->start();
     
-    Thread::ssleep(Time::seconds(1));
+    Thread::ssleep(TimeObject::seconds(1));
 
     {
         Monitor<Mutex>::Lock lock(monitor);
         monitor.notify();
     }
 
-    Thread::ssleep(Time::seconds(1));
+    Thread::ssleep(TimeObject::seconds(1));
     
     test((t2->_finished && !t3->_finished )
           || (t3->_finished && !t2->_finished));
@@ -235,7 +234,7 @@ void MonitorMutxTest::run()
     t2->join();
     t3->join();
 
-    Thread::ssleep(Time::seconds(1));
+    Thread::ssleep(TimeObject::seconds(1));
 
 
     //test notifyAll()
@@ -244,14 +243,14 @@ void MonitorMutxTest::run()
     t3 = new MonitorMutexTestThread2(monitor);
     t3->start();
     
-    Thread::ssleep(Time::seconds(1));
+    Thread::ssleep(TimeObject::seconds(1));
 
     {
         Monitor<Mutex>::Lock lock(monitor);
         monitor.notifyAll();
     }
 
-    Thread::ssleep(Time::seconds(1));
+    Thread::ssleep(TimeObject::seconds(1));
      
     t2->join();
     t3->join();
@@ -261,14 +260,14 @@ void MonitorMutxTest::run()
          Monitor<Mutex>::Lock lock(monitor);
          try
          {
-             monitor.timedWait(Time::milliSeconds(-1));
+             monitor.timedWait(TimeObject::milliSeconds(-1));
              test(false);
          }
          catch( const std::exception& ex )
          {
               
          }
-         const bool bRet = monitor.timedWait(Time::milliSeconds(500));
+         const bool bRet = monitor.timedWait(TimeObject::milliSeconds(500));
          cout<<"bRet: "<<bRet<<endl;
          test(bRet);
     }
@@ -352,7 +351,7 @@ std::list<testBasePtr> allTests;
  
 int main()
 {
-   cout<<((2<<31)-1)<<endl;
+   cout<<(((unsigned int)2<<31)-1)<<endl;
    allTests.push_back( new AliveTest() );
    allTests.push_back( new MonitorMutxTest() );
    allTests.push_back( new RecMutexTest() );

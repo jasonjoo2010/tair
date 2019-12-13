@@ -28,7 +28,6 @@
 #include <net/if.h>
 #include <inttypes.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
 #include <string>
 
 //using namespace std;

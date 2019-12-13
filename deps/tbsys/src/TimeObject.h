@@ -19,15 +19,15 @@
 #include "tbsys.h"
 namespace tbutil
 {
-/** 
+/** x
 * @brief Time类提供对时间的简单操作,获取当前时间,构造时间间隔
 * 时间加减，时间转换
 */
-class Time
+class TimeObject
 {
 public:
 
-    Time();
+    TimeObject();
 
     enum Clock { Realtime, Monotonic };
     /** 
@@ -37,7 +37,7 @@ public:
      * 
      * @return 
      */
-    static Time now(Clock clock= Realtime);
+    static TimeObject now(Clock clock= Realtime);
     /** 
      * @brief 构造一个时间对象
      * 
@@ -45,7 +45,7 @@ public:
      * 
      * @return 
      */
-    static Time seconds(Int64 usec);
+    static TimeObject seconds(Int64 usec);
     /** 
      * @brief 构造一个时间对象 
      * 
@@ -53,7 +53,7 @@ public:
      * 
      * @return 
      */
-    static Time milliSeconds(Int64 milli);
+    static TimeObject milliSeconds(Int64 milli);
     /** 
      * @brief 构造一个时间对象 
      * 
@@ -61,7 +61,7 @@ public:
      * 
      * @return 
      */
-    static Time microSeconds(Int64 micro);
+    static TimeObject microSeconds(Int64 micro);
     
     /** 
      * @brief 将Time转换成timeval结构
@@ -106,147 +106,147 @@ public:
      */
     std::string toDuration() const;
 
-    Time operator-() const
+    TimeObject operator-() const
     {
-        return Time(-_usec);
+        return TimeObject(-_usec);
     }
 
-    Time operator-(const Time& rhs) const
+    TimeObject operator-(const TimeObject& rhs) const
     {
-        return Time(_usec - rhs._usec);
+        return TimeObject(_usec - rhs._usec);
     }
 
-    Time operator+(const Time& rhs) const
+    TimeObject operator+(const TimeObject& rhs) const
     {
-        return Time(_usec + rhs._usec);
+        return TimeObject(_usec + rhs._usec);
     }
 
-    Time& operator+=(const Time& rhs)
+    TimeObject& operator+=(const TimeObject& rhs)
     {
         _usec += rhs._usec;
         return *this;
     }
 
-    Time& operator-=(const Time& rhs)
+    TimeObject& operator-=(const TimeObject& rhs)
     {
         _usec -= rhs._usec;
         return *this;
     }
 
-    bool operator<(const Time& rhs) const
+    bool operator<(const TimeObject& rhs) const
     {
         return _usec < rhs._usec;
     }
 
-    bool operator<=(const Time& rhs) const
+    bool operator<=(const TimeObject& rhs) const
     {
         return _usec <= rhs._usec;
     }
 
-    bool operator>(const Time& rhs) const
+    bool operator>(const TimeObject& rhs) const
     {
         return _usec > rhs._usec;
     }
 
-    bool operator>=(const Time& rhs) const
+    bool operator>=(const TimeObject& rhs) const
     {
         return _usec >= rhs._usec;
     }
 
-    bool operator==(const Time& rhs) const
+    bool operator==(const TimeObject& rhs) const
     {
         return _usec == rhs._usec;
     }
 
-    bool operator!=(const Time& rhs) const
+    bool operator!=(const TimeObject& rhs) const
     {
         return _usec != rhs._usec;
     }
 
-    double operator/(const Time& rhs) const
+    double operator/(const TimeObject& rhs) const
     {
         return (double)_usec / (double)rhs._usec;
     }
 
-    Time& operator*=(int rhs)
+    TimeObject& operator*=(int rhs)
     {
         _usec *= rhs;
         return *this;
     }
 
-    Time operator*(int rhs) const
+    TimeObject operator*(int rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = _usec * rhs;
         return t;
     }
 
-    Time& operator/=(int rhs)
+    TimeObject& operator/=(int rhs)
     {
         _usec /= rhs;
         return *this;
     }
 
-    Time operator/(int rhs) const
+    TimeObject operator/(int rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = _usec / rhs;
         return t;
     }
 
-    Time& operator*=(Int64 rhs)
+    TimeObject& operator*=(Int64 rhs)
     {
         _usec *= rhs;
         return *this;
     }
 
-    Time operator*(Int64 rhs) const
+    TimeObject operator*(Int64 rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = _usec * rhs;
         return t;
     }
 
-    Time& operator/=(Int64 rhs)
+    TimeObject& operator/=(Int64 rhs)
     {
         _usec /= rhs;
         return *this;
     }
 
-    Time operator/(Int64 rhs) const
+    TimeObject operator/(Int64 rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = _usec / rhs;
         return t;
     }
 
-    Time& operator*=(double rhs)
+    TimeObject& operator*=(double rhs)
     {
         _usec = static_cast<Int64>(static_cast<double>(_usec) * rhs);
         return *this;
     }
 
-    Time operator*(double rhs) const
+    TimeObject operator*(double rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = static_cast<Int64>(static_cast<double>(_usec) * rhs);
         return t;
     }
 
-    Time& operator/=(double rhs)
+    TimeObject& operator/=(double rhs)
     {
         _usec = static_cast<Int64>(static_cast<double>(_usec) / rhs);
         return *this;
     }
 
-    Time operator/(double rhs) const
+    TimeObject operator/(double rhs) const
     {
-        Time t;
+        TimeObject t;
         t._usec = static_cast<Int64>(static_cast<double>(_usec) / rhs);
         return t;
     }
 
-    Time(Int64);
+    TimeObject(Int64);
 
 private:
 

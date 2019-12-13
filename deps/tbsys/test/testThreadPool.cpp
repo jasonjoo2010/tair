@@ -27,8 +27,8 @@ static int64_t gCount;
 Monitor<Mutex> _monitor;
 
 static ThreadPool * pool = NULL;
-tbutil::Time gNow;
-tbutil::Time gStart;
+tbutil::TimeObject gNow;
+tbutil::TimeObject gStart;
 
 class TestWorkItems : public ThreadPoolWorkItem 
 {
@@ -41,8 +41,8 @@ public:
     {
         Monitor<Mutex>::Lock lock(_monitor);
         ++gCount;
-        tbutil::Time now2 = tbutil::Time::now();
-        if ( (now2 - gNow ) >= tbutil::Time::seconds(10) )
+        tbutil::TimeObject now2 = tbutil::TimeObject::now();
+        if ( (now2 - gNow ) >= tbutil::TimeObject::seconds(10) )
         {
             gNow = now2;
             cout<<"gCount: "<<gCount<<" , "<<"Time: " <<(now2 -gStart).toSeconds()<<endl;
@@ -79,7 +79,7 @@ typedef Handle<ScheduleTask> ScheduleTaskPtr;
 
 int main(int argc, char* argv[])
 {
-    gStart =tbutil::Time::now();
+    gStart =tbutil::TimeObject::now();
     pool = new ThreadPool(2,4,3);
     TimerPtr timer = new tbutil::Timer();
 
@@ -87,19 +87,19 @@ int main(int argc, char* argv[])
     {
         {
             ScheduleTaskPtr task = new ScheduleTask();
-            timer->scheduleRepeated(task, tbutil::Time::seconds(10));
+            timer->scheduleRepeated(task, tbutil::TimeObject::seconds(10));
             ScheduleTaskPtr task1 = new ScheduleTask();
-            /*timer->scheduleRepeated(task1, tbutil::Time::seconds(1));
+            /*timer->scheduleRepeated(task1, tbutil::TimeObject::seconds(1));
             ScheduleTaskPtr task2 = new ScheduleTask();
-            timer->scheduleRepeated(task2, tbutil::Time::seconds(100));
+            timer->scheduleRepeated(task2, tbutil::TimeObject::seconds(100));
             ScheduleTaskPtr task3 = new ScheduleTask();
-            timer->scheduleRepeated(task3, tbutil::Time::seconds(130));
+            timer->scheduleRepeated(task3, tbutil::TimeObject::seconds(130));
             ScheduleTaskPtr task4 = new ScheduleTask();
-            timer->scheduleRepeated(task4, tbutil::Time::seconds(180));
+            timer->scheduleRepeated(task4, tbutil::TimeObject::seconds(180));
             ScheduleTaskPtr task5 = new ScheduleTask();
-            timer->scheduleRepeated(task5, tbutil::Time::seconds(220));
+            timer->scheduleRepeated(task5, tbutil::TimeObject::seconds(220));
             ScheduleTaskPtr task6 = new ScheduleTask();
-            timer->scheduleRepeated(task6, tbutil::Time::seconds(270));*/
+            timer->scheduleRepeated(task6, tbutil::TimeObject::seconds(270));*/
         }
     }
 

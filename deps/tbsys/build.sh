@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$1" = 'clean' ]; then
-	make clean distclean
+	make clean
 	sh autogen.sh clean
   rm -f compile
   exit

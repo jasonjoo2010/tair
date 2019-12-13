@@ -19,12 +19,15 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <bits/time.h>
 #include "TbThread.h"
-#include "Time.h"
+#include "TimeObject.h"
 #include "ThreadException.h"
 #include "Cond.h"
 #include "PublicDefine.h"
+
+#ifndef __APPLE__
+#include <bits/time.h>
+#endif
 
 using namespace std;
 namespace tbutil
@@ -235,7 +238,7 @@ pthread_t Thread::id() const
     return _thread;;
 }
 
-void Thread::ssleep(const tbutil::Time& timeout)
+void Thread::ssleep(const tbutil::TimeObject& timeout)
 {
     struct timeval tv = timeout;
     struct timespec ts;

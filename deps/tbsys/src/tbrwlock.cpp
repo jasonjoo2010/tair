@@ -52,6 +52,7 @@ CRWLock::CRWLock(ELockMode lockMode)
 {
     pthread_rwlockattr_t attr;
     pthread_rwlockattr_init(&attr);
+#ifdef PTHREAD_RWLOCK_PREFER_READER_NP
     if (lockMode == READ_PRIORITY)
     {
         pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_READER_NP);
@@ -60,6 +61,7 @@ CRWLock::CRWLock(ELockMode lockMode)
     {
         pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP);
     }
+#endif
     pthread_rwlock_init(&_rwlock, &attr);
     
     _rlock = new CRLock(&_rwlock);
@@ -78,6 +80,7 @@ CRWSimpleLock::CRWSimpleLock(ELockMode lockMode)
 {
     pthread_rwlockattr_t attr;
     pthread_rwlockattr_init(&attr);
+#ifdef PTHREAD_RWLOCK_PREFER_READER_NP
     if (lockMode == READ_PRIORITY)
     {
         pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_READER_NP);
@@ -86,6 +89,7 @@ CRWSimpleLock::CRWSimpleLock(ELockMode lockMode)
     {
         pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP);
     }
+#endif
     pthread_rwlock_init(&_rwlock, &attr);
 }
 

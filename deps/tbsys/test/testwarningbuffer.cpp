@@ -62,10 +62,10 @@ void* thread( void* para )
   para = NULL;
   pthread_t t = pthread_self();
   WarningBuffer *b1 = get_tsi_warning_buffer();
-  fprintf(stderr, "thread %lu buf: %p\n", (uint64_t)t, b1);
+  fprintf(stderr, "thread %llu buf: %p\n", (uint64_t)t, b1);
   sleep(1);
   WarningBuffer *b2 = get_tsi_warning_buffer();
-  fprintf(stderr, "thread %lu buf: %p\n", (uint64_t)t, b2);
+  fprintf(stderr, "thread %llu buf: %p\n", (uint64_t)t, b2);
   assert(b1 == b2);
   sleep(1);
   bug_buffer = b2;

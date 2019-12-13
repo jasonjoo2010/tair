@@ -16,7 +16,7 @@
 #ifndef TBSYS_COND_H
 #define TBSYS_COND_H
 #include "tbsys.h"
-#include "Time.h"
+#include "TimeObject.h"
 #include "ThreadException.h"
 
 namespace tbutil
@@ -75,7 +75,7 @@ public:
      * @return 
      */
     template <typename Lock> inline bool
-    timedWait(const Lock& lock, const Time& timeout) const
+    timedWait(const Lock& lock, const TimeObject& timeout) const
     {
         if(!lock.acquired())
         {
@@ -95,7 +95,7 @@ private:
     friend class Monitor<RecMutex>;
 
     template <typename M> bool waitImpl(const M&) const;
-    template <typename M> bool timedWaitImpl(const M&, const Time&) const;
+    template <typename M> bool timedWaitImpl(const M&, const TimeObject&) const;
 
     mutable pthread_cond_t _cond;
 };
@@ -126,9 +126,9 @@ Cond::waitImpl(const M& mutex) const
 }
 
 template <typename M> inline bool
-Cond::timedWaitImpl(const M& mutex, const Time& timeout) const
+Cond::timedWaitImpl(const M& mutex, const TimeObject& timeout) const
 {
-    if(timeout < Time::microSeconds(0))
+    if(timeout < TimeObject::microSeconds(0))
     {
 #ifdef _NO_EXCEPTION
         TBSYS_LOG(ERROR,"%s","InvalidTimeoutException");
@@ -143,11 +143,11 @@ Cond::timedWaitImpl(const M& mutex, const Time& timeout) const
     LockState state;
     mutex.unlock(state);
    
-    timeval tv = Time::now(Time::Realtime) + timeout;
+    timeval tv = TimeObject::now(TimeObject::Realtime) + timeout;
     timespec ts;
     ts.tv_sec = tv.tv_sec;
     ts.tv_nsec = tv.tv_usec * 1000;
-    /*timeval tv = Time::now(Time::Realtime);
+    /*timeval tv = TimeObject::now(TimeObject::Realtime);
     timespec ts;
     ts.tv_sec  = tv.tv_sec + timeout/1000;
     ts.tv_nsec = tv.tv_usec * 1000 + ( timeout % 1000 ) * 1000000;*/

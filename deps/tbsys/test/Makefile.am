@@ -1,6 +1,9 @@
 AM_CPPFLAGS=-I$(top_srcdir)/src
 LDADD=$(top_srcdir)/src/.libs/libtbsys.a 
-AM_LDFLAGS="-lrt -lm -lpthread"
+AM_LDFLAGS=-lm -lpthread
+if !OSX
+    AM_LDFLAGS+= -lrt
+endif
 
 noinst_PROGRAMS=testfilequeue testqueuethread testconfig \
                 teststringutil testnetutil testlog \

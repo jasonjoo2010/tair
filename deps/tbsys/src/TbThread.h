@@ -19,7 +19,7 @@
 #include "Handle.h"
 #include "Mutex.h"
 #include "Cond.h"
-#include "Time.h"
+#include "TimeObject.h"
 
 namespace tbutil
 {
@@ -89,7 +89,7 @@ public:
      * 
      * @param timeout : 挂起的超时时间
      */
-    static void ssleep(const tbutil::Time& timeout);
+    static void ssleep(const tbutil::TimeObject& timeout);
 
 protected:
     bool  _running;   //线程运行标志

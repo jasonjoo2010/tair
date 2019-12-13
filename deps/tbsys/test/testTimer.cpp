@@ -29,7 +29,7 @@ public:
     {
     }
 
-    TestTask(const tbutil::Time& scheduledTime) : 
+    TestTask(const tbutil::TimeObject& scheduledTime) : 
          _scheduledTime(scheduledTime),
         _count(0)
     {
@@ -40,7 +40,7 @@ public:
     {
         Lock sync(*this);
         ++_count;
-        _run = tbutil::Time::now(tbutil::Time::Monotonic);
+        _run = tbutil::TimeObject::now(tbutil::TimeObject::Monotonic);
         //cerr << "run: " << _scheduledTime.toMilliSeconds() << " " << _run.toMilliSeconds() << endl;
         notifyAll();
     }
@@ -55,7 +55,7 @@ public:
     hasRun() const
     {
         Lock sync(*this);
-        return _run != tbutil::Time();
+        return _run != tbutil::TimeObject();
     }
 
     int 
@@ -65,14 +65,14 @@ public:
         return _count;
     }
     
-    virtual tbutil::Time
+    virtual tbutil::TimeObject
     getRunTime() const
     {
         Lock sync(*this);
         return _run;
     }
 
-    tbutil::Time
+    tbutil::TimeObject
     getScheduledTime() const
     {
         return _scheduledTime;
@@ -82,9 +82,9 @@ public:
     waitForRun()
     {
         Lock sync(*this);
-        while(_run == tbutil::Time())
+        while(_run == tbutil::TimeObject())
         {
-            if(!timedWait(tbutil::Time::seconds(10)))
+            if(!timedWait(tbutil::TimeObject::seconds(10)))
             {
                 test(false); // Timeout.
             }
@@ -94,14 +94,14 @@ public:
     void 
     clear()
     {
-        _run = tbutil::Time();
+        _run = tbutil::TimeObject();
         _count = 0;
     }
 
 private:
 
-    tbutil::Time _run;
-    tbutil::Time _scheduledTime;
+    tbutil::TimeObject _run;
+    tbutil::TimeObject _scheduledTime;
     int _count;
 };
 typedef tbutil::Handle<TestTask> TestTaskPtr;
@@ -132,7 +132,7 @@ public:
         Lock sync(*this);
         while(!_run)
         {
-            if(!timedWait(tbutil::Time::seconds(10)))
+            if(!timedWait(tbutil::TimeObject::seconds(10)))
             {
                 test(false); // Timeout.
             }
@@ -148,22 +148,22 @@ typedef Handle<DestroyTask> DestroyTaskPtr;
 
 int main(int argc, char* argv[])
 {
-    tbutil::Time t = tbutil::Time::now();
+    tbutil::TimeObject t = tbutil::TimeObject::now();
     cout<<" time string : "<<t.toDateTime()<<endl<<" time : "<<t.toDuration()<<endl;
     cout << "testing timer... " << flush;
     {
         TimerPtr timer = new tbutil::Timer();
         {
             TestTaskPtr task = new TestTask();
-            timer->schedule(task, tbutil::Time());
+            timer->schedule(task, tbutil::TimeObject());
             task->waitForRun();
             task->clear();
 	    while(true)
 	    {
 		try
 		{
-                    timer->schedule(task, tbutil::Time::milliSeconds(-10));
-		    timer->schedule(task, tbutil::Time());
+                    timer->schedule(task, tbutil::TimeObject::milliSeconds(-10));
+		    timer->schedule(task, tbutil::TimeObject());
 		}
 		catch(const tbutil::IllegalArgumentException&)
 		{
@@ -177,19 +177,19 @@ int main(int argc, char* argv[])
         {
             TestTaskPtr task = new TestTask();
             test(!timer->cancel(task));
-            timer->schedule(task, tbutil::Time::seconds(1));
+            timer->schedule(task, tbutil::TimeObject::seconds(1));
             test(!task->hasRun() && timer->cancel(task) && !task->hasRun());
             test(!timer->cancel(task));
-            Thread::ssleep(tbutil::Time::milliSeconds(1100));
+            Thread::ssleep(tbutil::TimeObject::milliSeconds(1100));
             test(!task->hasRun());
         }
 
         {
             vector<TestTaskPtr> tasks;
-            tbutil::Time start = Time::now(Time::Monotonic) + Time::milliSeconds(500);
+            tbutil::TimeObject start = TimeObject::now(TimeObject::Monotonic) + TimeObject::milliSeconds(500);
             for(int i = 0; i < 20; ++i)
             {
-                tasks.push_back(new TestTask(Time::milliSeconds(500 + i * 5)));
+                tasks.push_back(new TestTask(TimeObject::milliSeconds(500 + i * 5)));
             }
 
             random_shuffle(tasks.begin(), tasks.end());
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
                 (*p)->waitForRun();
             }            
 
-            test(Time::now(Time::Monotonic) > start);
+            test(TimeObject::now(TimeObject::Monotonic) > start);
 
             sort(tasks.begin(), tasks.end());
             for(p = tasks.begin(); p + 1 != tasks.end(); ++p)
@@ -218,14 +218,14 @@ int main(int argc, char* argv[])
 
         {
             TestTaskPtr task = new TestTask();
-            timer->scheduleRepeated(task, tbutil::Time::milliSeconds(20));
-            Thread::ssleep(Time::milliSeconds(500));
+            timer->scheduleRepeated(task, tbutil::TimeObject::milliSeconds(20));
+            Thread::ssleep(TimeObject::milliSeconds(500));
             test(task->hasRun());
 	    test(task->getCount() > 1);
 	    test(task->getCount() < 26);
             test(timer->cancel(task));
             int count = task->getCount();
-            Thread::ssleep(Time::milliSeconds(100));
+            Thread::ssleep(TimeObject::milliSeconds(100));
             test(count == task->getCount() || count + 1 == task->getCount());
         }
 
@@ -239,11 +239,11 @@ int main(int argc, char* argv[])
         {
             TimerPtr timer = new Timer();
             TestTaskPtr testTask = new TestTask();
-            //timer->schedule(testTask, Time());
+            //timer->schedule(testTask, TimeObject());
             //timer->destroy();
             try
             {
-                timer->schedule(testTask, Time());
+                timer->schedule(testTask, TimeObject());
             }
             catch(const IllegalArgumentException& e )
             {

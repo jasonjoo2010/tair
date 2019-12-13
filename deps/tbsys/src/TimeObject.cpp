@@ -15,17 +15,17 @@
 
 #include <iomanip>
 #include <sys/time.h>
-#include "Time.h"
+#include "TimeObject.h"
 #include "Exception.h"
 
 namespace tbutil
 {
-Time::Time() :
+TimeObject::TimeObject() :
     _usec(0)
 {
 }
 
-Time Time::now(Clock clock)
+TimeObject TimeObject::now(Clock clock)
 {
     if(clock == Realtime)
     {
@@ -39,7 +39,7 @@ Time Time::now(Clock clock)
             throw SyscallException(__FILE__, __LINE__, errno);
 #endif
         }
-        return Time(tv.tv_sec * T_INT64(1000000) + tv.tv_usec);
+        return TimeObject(tv.tv_sec * T_INT64(1000000) + tv.tv_usec);
     }
     else // Monotonic
     {
@@ -53,26 +53,26 @@ Time Time::now(Clock clock)
             throw SyscallException(__FILE__, __LINE__, errno);
 #endif
         }
-        return Time(ts.tv_sec * T_INT64(1000000) + ts.tv_nsec / T_INT64(1000));
+        return TimeObject(ts.tv_sec * T_INT64(1000000) + ts.tv_nsec / T_INT64(1000));
     }
 }
 
-Time Time::seconds(Int64 t)
+TimeObject TimeObject::seconds(Int64 t)
 {
-    return Time(t * T_INT64(1000000));
+    return TimeObject(t * T_INT64(1000000));
 }
 
-Time Time::milliSeconds(Int64 t)
+TimeObject TimeObject::milliSeconds(Int64 t)
 {
-    return Time(t * T_INT64(1000));
+    return TimeObject(t * T_INT64(1000));
 }
 
-Time Time::microSeconds(Int64 t)
+TimeObject TimeObject::microSeconds(Int64 t)
 {
-    return Time(t);
+    return TimeObject(t);
 }
 
-Time::operator timeval() const
+TimeObject::operator timeval() const
 {
     timeval tv;
     tv.tv_sec = static_cast<long>(_usec / 1000000);
@@ -80,37 +80,37 @@ Time::operator timeval() const
     return tv;
 }
 
-Int64 Time::toSeconds() const
+Int64 TimeObject::toSeconds() const
 {
     return _usec / 1000000;
 }
 
-Int64 Time::toMilliSeconds() const
+Int64 TimeObject::toMilliSeconds() const
 {
     return _usec / 1000;
 }
 
-Int64 Time::toMicroSeconds() const
+Int64 TimeObject::toMicroSeconds() const
 {
     return _usec;
 }
 
-double Time::toSecondsDouble() const
+double TimeObject::toSecondsDouble() const
 {
     return _usec / 1000000.0;
 }
 
-double Time::toMilliSecondsDouble() const
+double TimeObject::toMilliSecondsDouble() const
 {
     return _usec / 1000.0;
 }
 
-double Time::toMicroSecondsDouble() const
+double TimeObject::toMicroSecondsDouble() const
 {
     return static_cast<double>(_usec);
 }
 
-std::string Time::toDateTime() const
+std::string TimeObject::toDateTime() const
 {
     time_t time = static_cast<long>(_usec / 1000000);
 
@@ -131,7 +131,7 @@ std::string Time::toDateTime() const
     return os.str();
 }
 
-std::string Time::toDuration() const
+std::string TimeObject::toDuration() const
 {
     Int64 usecs = _usec % 1000000;
     Int64 secs = _usec / 1000000 % 60;
@@ -155,7 +155,7 @@ std::string Time::toDuration() const
     return os.str();
 }
 
-Time::Time(Int64 usec) :
+TimeObject::TimeObject(Int64 usec) :
     _usec(usec)
 {
 }

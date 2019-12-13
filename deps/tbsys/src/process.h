@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <tblog.h>
+#include "tblog.h"
 
 namespace tbsys {
     

@@ -16,7 +16,7 @@
 #ifndef TBSYS_THREADEXCEPTION_H
 #define TBSYS_THREADEXCEPTION_H
 #include "Exception.h"
-#include "Time.h"
+#include "TimeObject.h"
 
 namespace tbutil
 {
@@ -112,7 +112,7 @@ class InvalidTimeoutException : public Exception
 {
 public:
 
-    InvalidTimeoutException(const char*, int, const Time&);
+    InvalidTimeoutException(const char*, int, const TimeObject&);
     virtual std::string name() const;
     virtual void print(std::ostream&) const;
     virtual Exception* clone() const;
@@ -120,7 +120,7 @@ public:
 
 private:
     
-    Time _timeout;
+    TimeObject _timeout;
     static const char* _name;
 };
 

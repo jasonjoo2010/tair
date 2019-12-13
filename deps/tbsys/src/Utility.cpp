@@ -17,6 +17,10 @@
 #include "PublicDefine.h"
 #include "Utility.h"
 
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 256
+#endif
+
 namespace tbsys
 {
 /**

@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     uint64_t uuid;
     for(int i=0; i<10; i++) {
      uuid = newUUID();
-    fprintf(stderr, "uuid: %lu, %lX\n", uuid, uuid);
+    fprintf(stderr, "uuid: %llu, %llX\n", uuid, uuid);
     } 
 
     uint64_t x = CNetUtil::strToAddr(ip, port);

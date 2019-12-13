@@ -14,7 +14,7 @@
  */
 
 #include "ThreadException.h"
-#include "Time.h"
+#include "TimeObject.h"
 
 using namespace std;
 namespace tbutil
@@ -131,7 +131,7 @@ void BadThreadControlException::_throw() const
 }
 
 InvalidTimeoutException::InvalidTimeoutException(const char* file, int line, 
-                                                 const tbutil::Time& timeout): 
+                                                 const tbutil::TimeObject& timeout): 
     Exception(file, line),
     _timeout(timeout)
 {

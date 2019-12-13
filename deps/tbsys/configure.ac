@@ -15,6 +15,17 @@ AC_PROG_LIBTOOL
 AC_LANG_CPLUSPLUS
 CXXFLAGS="-g -Wall -fPIC -Wno-deprecated"
 
+build_mac=no
+# Detect the target system
+case "${host_os}" in
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        ;;
+esac
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h string.h strings.h sys/socket.h sys/time.h unistd.h])

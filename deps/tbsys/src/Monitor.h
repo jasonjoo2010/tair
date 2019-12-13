@@ -75,7 +75,7 @@ public:
      * 
      * @return 
      */
-    bool timedWait(const Time&) const;
+    bool timedWait(const TimeObject&) const;
     /** 
      * @brief 这个函数唤醒目前在wait 调用中挂起的一个线程。如果在调用
      * notify 时没有这样的线程，通知就会丢失(也就是说，如果没有线程
@@ -167,7 +167,7 @@ Monitor<T>::wait() const
 }
 
 template <class T> inline bool
-Monitor<T>::timedWait(const Time& timeout) const
+Monitor<T>::timedWait(const TimeObject& timeout) const
 {
     notifyImpl(_nnotify);
 #ifdef _NO_EXCEPTION

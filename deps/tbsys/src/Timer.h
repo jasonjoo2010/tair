@@ -20,7 +20,7 @@
 #include "Shared.h"
 #include "TbThread.h"
 #include "Monitor.h"
-#include "Time.h"
+#include "TimeObject.h"
 namespace tbutil 
 {
 class Timer;
@@ -70,7 +70,7 @@ public:
      * 说明: 真正执行任务的时间=新增任务当前时间 + 间隔时间
      * @return 
      */
-    int schedule(const TimerTaskPtr& task, const Time& delay);
+    int schedule(const TimerTaskPtr& task, const TimeObject& delay);
 
     /** 
      * @brief 新增加一个定时任务,此任务在间隔时间到时,都会调用一次
@@ -80,7 +80,7 @@ public:
      * 说明: 真正执行任务的时间=新增任务当前时间 + 间隔时间
      * @return 
      */
-    int scheduleRepeated(const TimerTaskPtr& task, const Time& delay);
+    int scheduleRepeated(const TimerTaskPtr& task, const TimeObject& delay);
 
     /** 
      * @brief 取消一个定时任务
@@ -95,11 +95,11 @@ private:
 
     struct Token
     {
-        Time scheduledTime;
-        Time delay;
+        TimeObject scheduledTime;
+        TimeObject delay;
         TimerTaskPtr task;
 
-        inline Token(const Time&, const Time&, const TimerTaskPtr&);
+        inline Token(const TimeObject&, const TimeObject&, const TimerTaskPtr&);
         inline bool operator<(const Token& r) const;
     };
 
@@ -118,13 +118,13 @@ private:
             return lhs.get() < rhs.get();
         }
     };
-    std::map<TimerTaskPtr, Time, TimerTaskCompare> _tasks;
-    Time _wakeUpTime;
+    std::map<TimerTaskPtr, TimeObject, TimerTaskCompare> _tasks;
+    TimeObject _wakeUpTime;
 };
 typedef Handle<Timer> TimerPtr;
 
 inline 
-Timer::Token::Token(const Time& st, const Time& d, const TimerTaskPtr& t) :
+Timer::Token::Token(const TimeObject& st, const TimeObject& d, const TimerTaskPtr& t) :
     scheduledTime(st), delay(d), task(t)
 {
 }

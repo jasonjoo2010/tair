@@ -30,7 +30,12 @@ namespace tbsys {
 */
     struct str_hash {
         size_t operator()(const std::string& str) const {
+#ifdef _LIBCPP_VERSION
+            std::hash<std::string> hash_fn; 
+            return hash_fn(str);
+#else
             return __gnu_cxx::__stl_hash_string(str.c_str());
+#endif
         }
     };
     /** 
