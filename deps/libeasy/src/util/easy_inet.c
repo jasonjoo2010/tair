@@ -6,7 +6,12 @@
 #include <netdb.h>
 #include <arpa/inet.h>      // inet_addr
 #include <sys/ioctl.h>
+
+#ifdef __APPLE__
+#include <net/if.h>
+#else
 #include <linux/if.h>
+#endif
 
 /**
  * 把sockaddr_in转成string
@@ -129,12 +134,15 @@ int easy_inet_parse_host(easy_addr_t *addr, const char *host, int port)
             family = AF_INET6;
         } else {
             // FIXME: gethostbyname会阻塞
+#ifdef __APPLE__
+            struct hostent *hp = gethostbyname(host);
+#else
             char                    buffer[1024];
             struct  hostent         h, *hp;
 
             if (gethostbyname_r(host, &h, buffer, 1024, &hp, &rc) || hp == NULL)
                 return EASY_ERROR;
-
+#endif
             if (hp->h_addrtype == AF_INET6) {
                 family = AF_INET6;
                 memcpy(addr->u.addr6, hp->h_addr, sizeof(addr->u.addr6));

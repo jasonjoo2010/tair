@@ -340,7 +340,7 @@ bool BgTask::init_compact_task(LdbInstance *db) {
         compact_task_ = new LdbCompactTask();
         if ((ret = compact_task_->init(db))) {
             ret =
-                    timer_->scheduleRepeated(compact_task_, tbutil::Time::seconds(
+                    timer_->scheduleRepeated(compact_task_, tbutil::TimeObject::seconds(
                             TBSYS_CONFIG.getInt(TAIRLDB_SECTION, LDB_CHECK_COMPACT_INTERVAL, 60))) == 0;
             log_info("schedule compact task %d", ret);
         } else {

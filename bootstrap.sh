@@ -30,6 +30,12 @@ if [ "$1" == "clean" ]; then
     exit;
 fi
 
+OS=$(uname -s)
+if [ $OS = "Darwin" ]; then
+    # mac
+    alias libtoolize='glibtoolize'
+fi
+
 # install deps
 if [ "$1" != "skip-deps" ]; then
     clean_deps_tmp

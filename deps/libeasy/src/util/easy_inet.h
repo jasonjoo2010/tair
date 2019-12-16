@@ -10,7 +10,17 @@ EASY_CPP_START
 
 extern char *easy_inet_addr_to_str(easy_addr_t *addr, char *buffer, int len);
 extern easy_addr_t easy_inet_str_to_addr(const char *host, int port);
+
+/**
+ * Resolve host to addr
+ * 
+ * @param address The address resolved
+ * @param host null for any_host
+ * @param port 
+ * @return EASY_OK when succeed, EASY_ERROR when any error
+ */
 extern int easy_inet_parse_host(easy_addr_t *address, const char *host, int port);
+
 extern int easy_inet_is_ipaddr(const char *host);
 extern int easy_inet_hostaddr(uint64_t *address, int size, int local);
 extern easy_addr_t easy_inet_add_port(easy_addr_t *addr, int diff);

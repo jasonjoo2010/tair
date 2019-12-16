@@ -15,7 +15,7 @@
 #include <list>
 #include <tr1/unordered_map>
 
-#include "Time.h"
+#include "TimeObject.h"
 #include "threadmutex.h"
 #include "data_entry.hpp"
 
@@ -238,11 +238,11 @@ private:
 
     void set_entry_utime_now(const entry_list_iterator &iter) {
         set_entry_utime(iter,
-                        tbutil::Time::now().toMilliSeconds());
+                        tbutil::TimeObject::now().toMilliSeconds());
     }
 
     internal_entry *make_entry(const KeyT &key, const ValueT &val) {
-        int64_t now = tbutil::Time::now().toMilliSeconds();
+        int64_t now = tbutil::TimeObject::now().toMilliSeconds();
         internal_entry *entry = new(std::nothrow) internal_entry(
                 key, val, now);
         if (entry == NULL) {

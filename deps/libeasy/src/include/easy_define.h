@@ -30,6 +30,11 @@
 #include <unistd.h>
 #include <execinfo.h>
 
+#ifndef __UINT64_C
+#define __INT64_C INT64_C
+#define __UINT64_C UINT64_C
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // define
 #define easy_free(ptr)              if(ptr) free(ptr)

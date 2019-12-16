@@ -20,6 +20,7 @@
 Makefile
 Makefile.in
 .deps/
+test-driver
 
 aclocal.m4
 autom4te.cache/
