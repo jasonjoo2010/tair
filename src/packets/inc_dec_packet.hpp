@@ -77,7 +77,7 @@ public:
 #if TAIR_MAX_AREA_COUNT < 65536
         if (area >= TAIR_MAX_AREA_COUNT) {
             log_warn("area overflow: "
-                             "server_flag %x, area %d, add_count %ld, init_value %ld, expired %ld",
+                             "server_flag %x, area %d, add_count %"PRI64_PREFIX"d, init_value %"PRI64_PREFIX"d, expired %"PRI64_PREFIX"d",
                      server_flag, area, add_count, init_value, expired);
             return false;
         }
@@ -85,7 +85,7 @@ public:
 
         if (!key.decode(input)) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, add_count %ld, init_value %ld, expired %ld",
+                             "server_flag %x, area %d, add_count %"PRI64_PREFIX"d, init_value %"PRI64_PREFIX"d, expired %"PRI64_PREFIX"d",
                      server_flag, area, add_count, init_value, expired);
             return false;
         }

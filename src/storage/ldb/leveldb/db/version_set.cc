@@ -916,7 +916,7 @@ Status VersionSet::LogAndApply(VersionEdit* edit, port::Mutex* mu) {
     // No reason to unlock *mu here since we only hit this path in the
     // first call to LogAndApply (when opening the database).
     new_manifest_file_number = (descriptor_log_ == NULL) ? manifest_file_number_ : NewFileNumber();
-    Log(options_->info_log, "start new manifest, %lu => %lu", manifest_file_number_, new_manifest_file_number);
+    Log(options_->info_log, "start new manifest, %llu => %llu", manifest_file_number_, new_manifest_file_number);
     new_manifest_file = DescriptorFileName(dbname_, new_manifest_file_number);
     edit->SetNextFile(NextFileNumber());
     s = env_->NewWritableFile(new_manifest_file, &new_descriptor_file);
@@ -1075,7 +1075,7 @@ Status VersionSet::Recover(const char* manifest) {
       }
     }
     Log(options_->info_log,
-        "recover versionset end. count: %lu, cost: %lu",
+        "recover versionset end. count: %llu, cost: %llu",
         record_count, env_->NowMicros() - recover_start);
   }
   delete file;
@@ -1170,7 +1170,7 @@ Status VersionSet::LoadBackupVersion() {
 
         ++count;
         loaded_versions_[number] = v;
-        Log(options_->info_log, "load backup version id: %lu", number);
+        Log(options_->info_log, "load backup version id: %llu", number);
       }
 
       base_version->Unref();
@@ -1212,7 +1212,7 @@ Status VersionSet::BackupCurrentVersion() {
           current_->Ref();
           loaded_versions_[id] = current_;
           AllocLongHold();
-          Log(options_->info_log, "backup version, id: %lu", id);
+          Log(options_->info_log, "backup version, id: %llu", id);
         }
       }
     }
@@ -1240,11 +1240,11 @@ Status VersionSet::UnloadBackupedVersion(uint64_t id) {
     std::map<uint64_t, Version*>::iterator it = loaded_versions_.find(id);
     if (it == loaded_versions_.end()) {
       char buf[64];
-      snprintf(buf, sizeof(buf), "%lu", id);
+      snprintf(buf, sizeof(buf), "%llu", id);
       return Status::InvalidArgument(std::string("invalid version id to unload: ") + buf);
     }
 
-    Log(options_->info_log, "unload backuped version, id: %lu", id);
+    Log(options_->info_log, "unload backuped version, id: %llu", id);
     // CleanupVersion() will destroy it.
     it->second->Unref();
     RelealseLongHold();
@@ -1299,7 +1299,7 @@ void VersionSet::Finalize(Version* v) {
     if (score > best_score) {
       if (need_limit_compact && score >= 1) {
         if (ShouldLimitCompact(level)) {
-          Log(options_->info_log, "limit com %ld@%d", has_limited_compact_count_, level);
+          Log(options_->info_log, "limit com %lld@%d", has_limited_compact_count_, level);
           break;                // following level need no check because we will limit it.
         } else if (level > current_max_level_ - config::kLimitCompactLevelCount) { // higher level need no check
           need_limit_compact = false;

@@ -13,6 +13,7 @@
 #define TAIR_DATA_ENTRY_HPP
 
 #include <set>
+#include <unordered_map>
 #include "util.hpp"
 #include "item_data_info.hpp"
 #include "define.hpp"
@@ -549,16 +550,16 @@ private:
     tailer tailer_;
 };
 
-//! Be Cautious about the return value of set::insert & hash_map::insert,
+//! Be Cautious about the return value of set::insert & unordered_map::insert,
 //! which return pair<iterator, bool> type.
-//! When inserting one existing data_entry to a set or hash_map below,
+//! When inserting one existing data_entry to a set or unordered_map below,
 //! there is a risk of memory leaks
 typedef std::vector<data_entry *> tair_dataentry_vector;
 typedef std::set<data_entry *, data_entry_comparator> tair_dataentry_set;
-typedef __gnu_cxx::hash_map<data_entry *, data_entry *,
+typedef std::unordered_map<data_entry *, data_entry *,
         data_entry_hash, data_entry_equal_to> tair_keyvalue_map;
-typedef __gnu_cxx::hash_map<data_entry *, int, data_entry_hash, data_entry_equal_to> key_code_map_t;
-typedef __gnu_cxx::hash_map<data_entry *, long, data_entry_hash, data_entry_equal_to> key_value_map_t;
+typedef std::unordered_map<data_entry *, int, data_entry_hash, data_entry_equal_to> key_code_map_t;
+typedef std::unordered_map<data_entry *, long, data_entry_hash, data_entry_equal_to> key_value_map_t;
 
 class value_entry {
 public:
@@ -652,7 +653,7 @@ public:
 
 typedef std::vector<mput_record *> mput_record_vec;
 
-typedef __gnu_cxx::hash_map<data_entry *, value_entry *, data_entry_hash> tair_client_kv_map;
+typedef std::unordered_map<data_entry *, value_entry *, data_entry_hash> tair_client_kv_map;
 
 
 inline void defree(tair_dataentry_vector &vector) {

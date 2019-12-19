@@ -24,7 +24,6 @@
 #include "easy_helper.hpp"
 #include "packet_factory.hpp"
 #include "tair_server.hpp"
-#include <ext/hash_map>
 #include <queue>
 #include <map>
 

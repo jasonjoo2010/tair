@@ -12,6 +12,8 @@
 #ifndef TAIR_PREFIX_GETS_PACKET_HPP
 #define TAIR_PREFIX_GETS_PACKET_HPP
 
+#include <unordered_map>
+
 #include "get_packet.hpp"
 
 namespace tair {
@@ -239,7 +241,7 @@ public:
     }
 
 public:
-    typedef __gnu_cxx::hash_map<data_entry *, int,
+    typedef std::unordered_map<data_entry *, int,
             tair::common::data_entry_hash, tair::common::data_entry_equal_to> key_code_map_t;
     uint32_t config_version;
     int code;

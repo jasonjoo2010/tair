@@ -20,10 +20,26 @@
 #define _LARGEFILE64_SOURCE
 #endif
 #define _FILE_OFFSET_BITS 64
-#if __WORDSIZE == 64
+#if __WORDSIZE == 64 && !defined(__APPLE__)
 #define PRI64_PREFIX "l"
 #else
 #define PRI64_PREFIX "ll"
+#endif
+
+#ifndef O_LARGEFILE
+#define O_LARGEFILE 0
+#endif
+
+#ifdef __APPLE__
+// Use fsync() on platforms without fdatasync()
+#define fdatasync fsync
+#endif
+
+#ifndef pread64
+#define pread64 pread
+#endif
+#ifndef pwrite64
+#define pwrite64 pwrite
 #endif
 
 #ifndef UNUSED

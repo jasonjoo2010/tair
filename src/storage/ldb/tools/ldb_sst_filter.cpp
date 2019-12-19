@@ -76,7 +76,7 @@ int filter_sst(const leveldb::Options &options, const leveldb::VersionSet &versi
             if (should_add) {
                 // add new manifest
                 edit.AddFile(l, filenumber, f->file_size, f->smallest, f->largest);
-                fprintf(num_map_file, "%lu %lu\n", f->number, filenumber);
+                fprintf(num_map_file, "%"PRI64_PREFIX"u %"PRI64_PREFIX"u\n", f->number, filenumber);
                 filenumber++;
             }
         }

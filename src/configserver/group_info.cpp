@@ -20,7 +20,6 @@
 namespace tair {
 namespace config_server {
 using namespace std;
-using namespace __gnu_cxx;
 
 easy_io_handler_pt group_info::handler;
 
@@ -230,7 +229,7 @@ void group_info::parse_server_list(node_info_set &list,
                 server_info_maps->insert(server_info_map::value_type(id, sinfo));
             } else {
                 sinfo = it->second;
-                log_debug("add server: %s, %lu", ip_list[j], id);
+                log_debug("add server: %s, %"PRI64_PREFIX"u", ip_list[j], id);
                 break;
             }
         }
@@ -1836,7 +1835,7 @@ int group_info::force_table_ops_check(const ops_check_option &option) {
         if (option.check_min_ds_num) {
             //make sure migrate is closed
             if (option.upnode_list_size >= static_cast<size_t>(min_data_server_count)) {
-                log_error("%s failed as min_server_count(%d) is not larger than alive_server_num(%"PRI64_PREFIX"u)",
+                log_error("%s failed as min_server_count(%d) is not larger than alive_server_num(%lu)",
                           option.ops_name, min_data_server_count, option.upnode_list_size);
                 ret = TAIR_RETURN_FAILED;
                 break;
@@ -2324,12 +2323,12 @@ void group_info::set_force_rebuild() {
 }
 
 void group_info::print_server_count() {
-    hash_map<uint64_t, int, hash<int> > m;
+    unordered_map<uint64_t, int, hash<int> > m;
     for (uint32_t i = 0; i < server_table_manager.get_server_bucket_count();
          i++) {
         m[server_table_manager.hash_table[i]]++;
     }
-    for (hash_map<uint64_t, int, hash<int> >::iterator it = m.begin();
+    for (unordered_map<uint64_t, int, hash<int> >::iterator it = m.begin();
          it != m.end(); ++it) {
         log_info("[%s] %s => %d", group_name,
                  tbsys::CNetUtil::addrToString(it->first).c_str(),

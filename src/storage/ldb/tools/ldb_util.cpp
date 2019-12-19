@@ -45,7 +45,7 @@ leveldb::Comparator *new_comparator(const char *cmp_desc) {
 
 void print_range(const leveldb::VersionSet &versions) {
     char buf[128];
-    snprintf(buf, sizeof(buf), "sequence: %lu, filenumber: %lu, lognumber: %lu, filecount: %ld, filesize: %ld\n",
+    snprintf(buf, sizeof(buf), "sequence: %"PRI64_PREFIX"u, filenumber: %"PRI64_PREFIX"u, lognumber: %"PRI64_PREFIX"u, filecount: %"PRI64_PREFIX"d, filesize: %"PRI64_PREFIX"d\n",
              versions.LastSequence(), versions.NextFileNumber(), versions.LogNumber(),
              versions.NumFiles(), versions.NumBytes());
     std::string result;
@@ -132,7 +132,7 @@ void DataStat::do_dump(std::map<int32_t, Stat *> &stats, int32_t key, const char
             fprintf(stderr, "NONE STATS\n");
         } else {
             stat = it->second;
-            fprintf(stderr, "%5d%12ld%12ld%12ld%12ld%12ld\n", it->first, stat->count_, stat->suc_count_,
+            fprintf(stderr, "%5d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d\n", it->first, stat->count_, stat->suc_count_,
                     stat->suc_size_,
                     stat->fail_count_, stat->skip_count_);
         }
@@ -142,11 +142,11 @@ void DataStat::do_dump(std::map<int32_t, Stat *> &stats, int32_t key, const char
         for (std::map<int32_t, Stat *>::iterator it = stats.begin(); it != stats.end(); ++it) {
             stat = it->second;
             total_stat.add(*stat);
-            fprintf(stderr, "%5d%12ld%12ld%12ld%12ld%12ld\n", it->first, stat->count_, stat->suc_count_,
+            fprintf(stderr, "%5d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d\n", it->first, stat->count_, stat->suc_count_,
                     stat->suc_size_,
                     stat->fail_count_, stat->skip_count_);
         }
-        fprintf(stderr, "%5s%12ld%12ld%12ld%12ld%12ld\n", "total", total_stat.count_, total_stat.suc_count_,
+        fprintf(stderr, "%5s%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d\n", "total", total_stat.count_, total_stat.suc_count_,
                 total_stat.suc_size_,
                 total_stat.fail_count_, total_stat.skip_count_);
     }

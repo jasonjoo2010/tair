@@ -12,7 +12,16 @@
 #ifndef TAIR_CLIENT_FLOW_ADMIN_H
 #define TAIR_CLIENT_FLOW_ADMIN_H
 
+#if defined(__APPLE__) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+#include <unordered_map>
+#else
 #include <tr1/unordered_map>
+namespace std
+{
+  using tr1::unordered_map;
+}
+#endif
+
 #include <tbsys.h>
 
 #include "flowrate.h"
@@ -36,8 +45,8 @@ public:
     const static int32_t MAX_THRESHOLD = 1000;
     const static time_t UP_INTERVAL = 10; // 10s
     const static time_t DOWN_INTERVAL = 5; // 10s
-    const static double UP_FACTOR = 0.3;
-    const static double DOWN_FACTOR = 0.5;
+    const static double UP_FACTOR;
+    const static double DOWN_FACTOR;
 
 private:
     time_t last_time_;
@@ -64,8 +73,8 @@ public:
     bool should_check_flow_down(int64_t server_id, int32_t ns);
 
 private:
-    typedef std::tr1::unordered_map<int32_t, flow_limit_handler *> flow_limit_handler_map;
-    typedef std::tr1::unordered_map<int64_t, flow_limit_handler_map> flow_limit_set;
+    typedef std::unordered_map<int32_t, flow_limit_handler *> flow_limit_handler_map;
+    typedef std::unordered_map<int64_t, flow_limit_handler_map> flow_limit_set;
 
     flow_limit_set flow_limit_set_;
 

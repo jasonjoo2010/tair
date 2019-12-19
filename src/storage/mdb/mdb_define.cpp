@@ -12,6 +12,7 @@
 #include "mdb_define.hpp"
 #include <algorithm>
 #include <time.h>
+#include <unistd.h>
 
 bool mdb_param::use_check_thread = true;
 bool mdb_param::lock_pshared = false;

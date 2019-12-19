@@ -65,7 +65,7 @@ int rebuild_sst(const leveldb::Options &options, const leveldb::VersionSet &vers
                 // add new manifest
                 edit.AddFile(l, f->number, f->file_size, f->smallest, f->largest);
             } else {
-                printf("skip filenumber: %ld\n", f->number);
+                printf("skip filenumber: %"PRI64_PREFIX"d\n", f->number);
             }
         }
     }
@@ -79,7 +79,7 @@ int rebuild_sst(const leveldb::Options &options, const leveldb::VersionSet &vers
 
         edit.SetComparatorName(options.comparator->Name());
         edit.SetLogNumber(versions.LogNumber());         // ignore lognumber
-        fprintf(stderr, "next file: %lu\n", versions.NextFileNumber());
+        fprintf(stderr, "next file: %"PRI64_PREFIX"u\n", versions.NextFileNumber());
         edit.SetNextFile(versions.NextFileNumber()); // real filenumber
         edit.SetLastSequence(versions.LastSequence());
 

@@ -15,7 +15,6 @@
 #include <tbsys.h>
 #include <queue>
 #include <map>
-#include <ext/hash_map>
 #include <easy_helper.hpp>
 #include "databuffer.hpp"
 #include "duplicate_base.hpp"

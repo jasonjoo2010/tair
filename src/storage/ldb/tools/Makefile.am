@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS=subdir-objects
 AM_CPPFLAGS=-DWITH_TBUTIL \
 	    -I${top_srcdir}/deps/tbsys-install/include \
 	    -I${top_srcdir}/deps/libeasy-install/include/easy \
@@ -8,6 +9,9 @@ AM_CPPFLAGS=-DWITH_TBUTIL \
 	    -I${top_srcdir}/src/storage/ldb \
 	    -I${top_srcdir}/src/common  \
 	    -I.
+if OSX
+AM_CPPFLAGS+=-Wno-deprecated-declarations
+endif
 
 AM_LDFLAGS=-lpthread ${GCOV_LIB}
 AM_CXXFLAGS= -Werror -fPIC -Wno-error=format-security
@@ -19,7 +23,10 @@ ldb_libs=${ldb_path}/libldb.a \
 	 ${top_builddir}/src/common/libtair_common.a \
 	 ${top_builddir}/src/storage/mdb/.libs/libmdb.a \
 	 ${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
-	 ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la -lrt -lz -lssl -lcrypto
+	 ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la -lz -lssl -lcrypto
+if !OSX
+ldb_libs+=-lrt
+endif
 
 util_srcs=ldb_util.cpp ldb_util.hpp
 
@@ -39,11 +46,21 @@ sbin_PROGRAMS=view_cache_stat \
 	      statistics_verify
 
 view_cache_stat_SOURCES=view_cache_stat.cpp
-view_cache_stat_LDADD=${ldb_path}/libldb.a ${top_builddir}/src/common/libtair_common.a ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la -lrt
+view_cache_stat_LDADD=${ldb_path}/libldb.a \
+					  ${top_builddir}/src/common/libtair_common.a \
+					  ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la
+if !OSX
+view_cache_stat_LDADD+=-lrt
+endif
 
-ldb_rsync_SOURCES=ldb_rsync.cpp ${top_builddir}/src/dataserver/cluster_handler.cpp ${util_srcs}
-ldb_rsync_CPPFLAGS=${AM_CPPFLAGS} -I${top_srcdir}/src/packets -I${top_srcdir}/src/dataserver \
-			-I${top_srcdir}/src/plugin -I${top_srcdir}/src/common
+ldb_rsync_SOURCES=ldb_rsync.cpp \
+				  ../../../dataserver/cluster_handler.cpp \
+				  ${util_srcs}
+ldb_rsync_CPPFLAGS=${AM_CPPFLAGS} \
+			-I${top_srcdir}/src/packets \
+			-I${top_srcdir}/src/dataserver \
+			-I${top_srcdir}/src/plugin \
+			-I${top_srcdir}/src/common
 ldb_rsync_LDADD=${top_builddir}/src/client/.libs/libtairclientapi.a ${ldb_libs}
 
 ldb_sst_picker_SOURCES=ldb_sst_picker.cpp ${util_srcs}
@@ -67,12 +84,16 @@ ldb_sst_check_LDADD=${ldb_libs}
 leveldbutil_SOURCES=leveldb_main.cc  ${util_srcs}
 leveldbutil_LDADD=${ldb_libs}
 
-ldb_verify_SOURCES=ldb_verify.cpp ${top_builddir}/src/dataserver/cluster_handler.cpp ${util_srcs}
+ldb_verify_SOURCES=ldb_verify.cpp \
+				   ../../../dataserver/cluster_handler.cpp \
+				   ${util_srcs}
 ldb_verify_CPPFLAGS=${AM_CPPFLAGS} -I${top_srcdir}/src/packets -I${top_srcdir}/src/dataserver \
 			-I${top_srcdir}/src/plugin -I${top_srcdir}/src/common/
 ldb_verify_LDADD=${top_builddir}/src/client/.libs/libtairclientapi.a ${ldb_libs}
 
-statistics_verify_SOURCES=statistics_verify.cpp ${top_builddir}/src/dataserver/cluster_handler.cpp ${util_srcs}
+statistics_verify_SOURCES=statistics_verify.cpp \
+						../../../dataserver/cluster_handler.cpp \
+						${util_srcs}
 statistics_verify_CPPFLAGS=${AM_CPPFLAGS} -I${top_srcdir}/src/packets -I${top_srcdir}/src/dataserver \
 			-I${top_srcdir}/src/plugin -I${top_srcdir}/src/common
 statistics_verify_LDADD=${top_builddir}/src/client/.libs/libtairclientapi.a ${ldb_libs}

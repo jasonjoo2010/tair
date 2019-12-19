@@ -96,7 +96,6 @@ public:
         return true;
     }
 
-    //΢�벿�֣�������Ҫʹ�ó���500000΢���ֵ����Ȼ�ᵼ��CPU����LOAD��������������Ĳ�����û������ģ�����2000000��2�롣
     bool TryGetTime(__T &value, int micSec) {
         if (!m_semaphore.TryTime(micSec))
             return false;

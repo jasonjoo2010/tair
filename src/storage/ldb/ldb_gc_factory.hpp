@@ -13,7 +13,7 @@
 #define TAIR_STORAGE_LDB_GC_FACTORY_H
 
 #include <stdint.h>
-#include <ext/hash_map>
+#include <unordered_map>
 
 #include <tbsys.h>
 #include "common/file_op.hpp"
@@ -110,7 +110,7 @@ static const int32_t GC_LOG_RECORD_SIZE = sizeof(GcLogRecord);
       (log_##level(fmt GCNODE_SELF_FMT, ##args, GCNODE_SELF_ARGS(node)))
 
 // area/bucket ==> GcNode (maybe set)
-typedef __gnu_cxx::hash_map<int32_t, GcNode> GC_MAP;
+typedef std::unordered_map<int32_t, GcNode> GC_MAP;
 typedef GC_MAP::iterator GC_MAP_ITER;
 typedef GC_MAP::const_iterator GC_MAP_CONST_ITER;
 

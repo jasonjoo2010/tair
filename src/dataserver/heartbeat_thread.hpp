@@ -89,6 +89,7 @@ public:
         this->tair_mgr = tair_mgr;
         this->calc_migrate = calc_migrate;
         this->server_list = NULL;
+        UNUSED(this->eio);
 
         this->valid = (NULL != server_list);
         if (valid) {

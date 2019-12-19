@@ -53,7 +53,7 @@ public:
 
         fprintf(stderr,
                 "put:\n\t"
-                        "area: %d, expire: %ld, version: %d, packet size: %lu, server_flag:%d\n\t"
+                        "area: %d, expire: %"PRI64_PREFIX"d, version: %d, packet size: %lu, server_flag:%d\n\t"
                         "key: %s\n",
                 area, expired, version, size(), server_flag, ascii_key);
     }
@@ -103,7 +103,7 @@ public:
 #if TAIR_MAX_AREA_COUNT < 65536
         if (area >= TAIR_MAX_AREA_COUNT) {
             log_warn("area overflow: "
-                             "server_flag %x, area %d, version %d, expired %d",
+                             "server_flag %x, area %d, version %d, expired %"PRI64_PREFIX"d",
                      server_flag, area, version, expired);
             return false;
         }
@@ -111,14 +111,14 @@ public:
 
         if (!key.decode(input)) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, version %d, expired %ld",
+                             "server_flag %x, area %d, version %d, expired %"PRI64_PREFIX"d",
                      server_flag, area, version, expired);
             return false;
         }
 
         if (!data.decode(input)) {
             log_warn("data decode failed: "
-                             "server_flag %x, area %d, version %d, expired %ld",
+                             "server_flag %x, area %d, version %d, expired %"PRI64_PREFIX"d",
                      server_flag, area, version, expired);
             return false;
         }

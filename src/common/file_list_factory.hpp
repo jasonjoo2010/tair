@@ -13,9 +13,8 @@
 #define TAIR_FILE_LIST_FACTORY_H
 
 #include <stdint.h>
-#include <ext/hash_map>
-
 #include <tbsys.h>
+
 #include "file_op.hpp"
 #include "define.hpp"
 #include "log.hpp"

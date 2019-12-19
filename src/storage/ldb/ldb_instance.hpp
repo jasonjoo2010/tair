@@ -12,6 +12,8 @@
 #ifndef TAIR_STORAGE_LDB_INSTANCE_H
 #define TAIR_STORAGE_LDB_INSTANCE_H
 
+#include <unordered_map>
+
 #include "leveldb/db.h"
 
 #include "common/data_entry.hpp"
@@ -43,7 +45,7 @@ public:
 
     int initialize();
 
-    typedef __gnu_cxx::hash_map<int32_t, int32_t> STAT_MANAGER_MAP;
+    typedef std::unordered_map<int32_t, int32_t> STAT_MANAGER_MAP;
     typedef STAT_MANAGER_MAP::iterator STAT_MANAGER_MAP_ITER;
 
     bool init_buckets(const std::vector<int32_t> &buckets);

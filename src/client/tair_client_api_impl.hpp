@@ -15,13 +15,12 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <ext/hash_map>
 #include <signal.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <dirent.h>
 
-#if __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+#if defined(__APPLE__) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
 
 #include <unordered_map>
 
@@ -61,7 +60,6 @@ class ITimedCollections;
 
 namespace tair {
 using namespace std;
-using namespace __gnu_cxx;
 using namespace tair::common;
 namespace common { struct key_value_pack_t; }
 namespace common { class DeStatSchema; }
@@ -575,7 +573,7 @@ private:
     pthread_rwlock_t m_init_mutex;
     //__gun_cxx::hash<template> does not support the type `uint64_t.
     //using __gun_cxx::hash<int>, it also work well.
-    hash_map<uint64_t, int, __gnu_cxx::hash<int> > fail_count_map;
+    unordered_map<uint64_t, int, std::hash<int> > fail_count_map;
 
     flow_admin flow_admin_;
 

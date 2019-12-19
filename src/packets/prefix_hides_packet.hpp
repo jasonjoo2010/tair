@@ -16,6 +16,7 @@
 
 namespace tair {
 class request_prefix_hides : public request_hide {
+    using request_get::swap;
 public:
     request_prefix_hides() {
         setPCode(TAIR_REQ_PREFIX_HIDES_PACKET);

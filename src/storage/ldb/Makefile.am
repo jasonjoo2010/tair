@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS=subdir-objects
 SUBDIRS=. tools
 
 AM_CPPFLAGS= -DWITH_TBUTIL \
@@ -11,6 +12,12 @@ AM_CPPFLAGS= -DWITH_TBUTIL \
 			 -I.
 
 AM_CXXFLAGS= -Werror -fPIC
+
+if OSX
+AM_CPPFLAGS+=-DOS_MACOSX
+else
+AM_CPPFLAGS+=-DOS_LINUX
+endif
 
 if WITH_TCMALLOC
 AM_CPPFLAGS += -DWITH_TCMALLOC
@@ -56,107 +63,105 @@ libldb_a_SOURCES=ldb_manager.cpp \
 # leveldb
 ##############################
 PORTCFLAGS= -fno-builtin-memcmp \
-			-pthread -DOS_LINUX \
+			-pthread \
 			-DSNAPPY -I${top_srcdir}/src/common/snappy \
 			${LEVELDB_PORT_CFLAGS}
 
 noinst_LIBRARIES += libleveldb.a
 
-leveldb_srcdir=./leveldb
-
 libleveldb_a_CPPFLAGS=${AM_CPPFLAGS} ${PORTCFLAGS}
-libleveldb_a_SOURCES=${leveldb_srcdir}/db/builder.cc \
-					 ${leveldb_srcdir}/db/c.cc \
-					 ${leveldb_srcdir}/db/db_impl.cc \
-					 ${leveldb_srcdir}/db/db_iter.cc \
-					 ${leveldb_srcdir}/db/filename.cc \
-					 ${leveldb_srcdir}/db/dbformat.cc \
-					 ${leveldb_srcdir}/db/log_reader.cc \
-					 ${leveldb_srcdir}/db/log_writer.cc \
-					 ${leveldb_srcdir}/db/memtable.cc \
-					 ${leveldb_srcdir}/db/repair.cc \
-					 ${leveldb_srcdir}/db/table_cache.cc \
-					 ${leveldb_srcdir}/db/version_edit.cc \
-					 ${leveldb_srcdir}/db/version_set.cc \
-					 ${leveldb_srcdir}/db/write_batch.cc \
-					 ${leveldb_srcdir}/port/port_posix.cc \
-					 ${leveldb_srcdir}/table/block.cc \
-					 ${leveldb_srcdir}/table/block_builder.cc \
-					 ${leveldb_srcdir}/table/format.cc \
-					 ${leveldb_srcdir}/table/iterator.cc \
-					 ${leveldb_srcdir}/table/merger.cc \
-					 ${leveldb_srcdir}/table/table.cc \
-					 ${leveldb_srcdir}/table/table_builder.cc \
-					 ${leveldb_srcdir}/table/two_level_iterator.cc \
-					 ${leveldb_srcdir}/table/filter_block.cc \
-					 ${leveldb_srcdir}/table/filter_block.h \
-					 ${leveldb_srcdir}/util/arena.cc \
-					 ${leveldb_srcdir}/util/cache.cc \
-					 ${leveldb_srcdir}/util/coding.cc \
-					 ${leveldb_srcdir}/util/comparator.cc \
-					 ${leveldb_srcdir}/util/crc32c.cc \
-					 ${leveldb_srcdir}/util/env.cc \
-					 ${leveldb_srcdir}/util/env_posix.cc \
-					 ${leveldb_srcdir}/util/hash.cc \
-					 ${leveldb_srcdir}/util/histogram.cc \
-					 ${leveldb_srcdir}/util/logging.cc \
-					 ${leveldb_srcdir}/util/options.cc \
-					 ${leveldb_srcdir}/util/status.cc \
-					 ${leveldb_srcdir}/util/config.h \
-					 ${leveldb_srcdir}/util/config.cc \
-					 ${leveldb_srcdir}/util/filter_policy.cc \
-					 ${leveldb_srcdir}/util/bloom.cc \
-					 ${leveldb_srcdir}/db/builder.h \
-					 ${leveldb_srcdir}/db/db_iter.h \
-					 ${leveldb_srcdir}/db/filename.h \
-					 ${leveldb_srcdir}/db/log_reader.h \
-					 ${leveldb_srcdir}/db/memtable.h \
-					 ${leveldb_srcdir}/db/snapshot.h \
-					 ${leveldb_srcdir}/db/version_edit.h \
-					 ${leveldb_srcdir}/db/version_set.h \
-					 ${leveldb_srcdir}/db/write_batch_internal.h \
-					 ${leveldb_srcdir}/db/db_impl.h \
-					 ${leveldb_srcdir}/db/dbformat.h \
-					 ${leveldb_srcdir}/db/log_format.h \
-					 ${leveldb_srcdir}/db/log_writer.h \
-					 ${leveldb_srcdir}/db/skiplist.h \
-					 ${leveldb_srcdir}/db/table_cache.h \
-					 ${leveldb_srcdir}/port/atomic_pointer.h \
-					 ${leveldb_srcdir}/port/atomic_count.h \
-					 ${leveldb_srcdir}/port/port.h \
-					 ${leveldb_srcdir}/port/port_android.h \
-					 ${leveldb_srcdir}/port/port_example.h \
-					 ${leveldb_srcdir}/port/port_posix.h \
-					 ${leveldb_srcdir}/port/sha1_portable.h \
-					 ${leveldb_srcdir}/table/block.h \
-					 ${leveldb_srcdir}/table/block_builder.h \
-					 ${leveldb_srcdir}/table/format.h \
-					 ${leveldb_srcdir}/table/iterator_wrapper.h \
-					 ${leveldb_srcdir}/table/merger.h \
-					 ${leveldb_srcdir}/table/two_level_iterator.h \
-					 ${leveldb_srcdir}/util/arena.h \
-					 ${leveldb_srcdir}/util/coding.h \
-					 ${leveldb_srcdir}/util/config.h \
-					 ${leveldb_srcdir}/util/crc32c.h \
-					 ${leveldb_srcdir}/util/hash.h \
-					 ${leveldb_srcdir}/util/histogram.h \
-					 ${leveldb_srcdir}/util/logging.h \
-					 ${leveldb_srcdir}/util/mutexlock.h \
-					 ${leveldb_srcdir}/util/posix_logger.h \
-					 ${leveldb_srcdir}/util/random.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/c.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/cache.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/db.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/env.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/iterator.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/options.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/slice.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/table.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/table_builder.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/write_batch.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/status.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/comparator.h \
-					 ${leveldb_srcdir}/include/${leveldb_srcdir}/filter_policy.h
+libleveldb_a_SOURCES=./leveldb/db/builder.cc \
+					 ./leveldb/db/c.cc \
+					 ./leveldb/db/db_impl.cc \
+					 ./leveldb/db/db_iter.cc \
+					 ./leveldb/db/filename.cc \
+					 ./leveldb/db/dbformat.cc \
+					 ./leveldb/db/log_reader.cc \
+					 ./leveldb/db/log_writer.cc \
+					 ./leveldb/db/memtable.cc \
+					 ./leveldb/db/repair.cc \
+					 ./leveldb/db/table_cache.cc \
+					 ./leveldb/db/version_edit.cc \
+					 ./leveldb/db/version_set.cc \
+					 ./leveldb/db/write_batch.cc \
+					 ./leveldb/port/port_posix.cc \
+					 ./leveldb/table/block.cc \
+					 ./leveldb/table/block_builder.cc \
+					 ./leveldb/table/format.cc \
+					 ./leveldb/table/iterator.cc \
+					 ./leveldb/table/merger.cc \
+					 ./leveldb/table/table.cc \
+					 ./leveldb/table/table_builder.cc \
+					 ./leveldb/table/two_level_iterator.cc \
+					 ./leveldb/table/filter_block.cc \
+					 ./leveldb/table/filter_block.h \
+					 ./leveldb/util/arena.cc \
+					 ./leveldb/util/cache.cc \
+					 ./leveldb/util/coding.cc \
+					 ./leveldb/util/comparator.cc \
+					 ./leveldb/util/crc32c.cc \
+					 ./leveldb/util/env.cc \
+					 ./leveldb/util/env_posix.cc \
+					 ./leveldb/util/hash.cc \
+					 ./leveldb/util/histogram.cc \
+					 ./leveldb/util/logging.cc \
+					 ./leveldb/util/options.cc \
+					 ./leveldb/util/status.cc \
+					 ./leveldb/util/config.h \
+					 ./leveldb/util/config.cc \
+					 ./leveldb/util/filter_policy.cc \
+					 ./leveldb/util/bloom.cc \
+					 ./leveldb/db/builder.h \
+					 ./leveldb/db/db_iter.h \
+					 ./leveldb/db/filename.h \
+					 ./leveldb/db/log_reader.h \
+					 ./leveldb/db/memtable.h \
+					 ./leveldb/db/snapshot.h \
+					 ./leveldb/db/version_edit.h \
+					 ./leveldb/db/version_set.h \
+					 ./leveldb/db/write_batch_internal.h \
+					 ./leveldb/db/db_impl.h \
+					 ./leveldb/db/dbformat.h \
+					 ./leveldb/db/log_format.h \
+					 ./leveldb/db/log_writer.h \
+					 ./leveldb/db/skiplist.h \
+					 ./leveldb/db/table_cache.h \
+					 ./leveldb/port/atomic_pointer.h \
+					 ./leveldb/port/atomic_count.h \
+					 ./leveldb/port/port.h \
+					 ./leveldb/port/port_android.h \
+					 ./leveldb/port/port_example.h \
+					 ./leveldb/port/port_posix.h \
+					 ./leveldb/port/sha1_portable.h \
+					 ./leveldb/table/block.h \
+					 ./leveldb/table/block_builder.h \
+					 ./leveldb/table/format.h \
+					 ./leveldb/table/iterator_wrapper.h \
+					 ./leveldb/table/merger.h \
+					 ./leveldb/table/two_level_iterator.h \
+					 ./leveldb/util/arena.h \
+					 ./leveldb/util/coding.h \
+					 ./leveldb/util/config.h \
+					 ./leveldb/util/crc32c.h \
+					 ./leveldb/util/hash.h \
+					 ./leveldb/util/histogram.h \
+					 ./leveldb/util/logging.h \
+					 ./leveldb/util/mutexlock.h \
+					 ./leveldb/util/posix_logger.h \
+					 ./leveldb/util/random.h \
+					 ./leveldb/include/leveldb/c.h \
+					 ./leveldb/include/leveldb/cache.h \
+					 ./leveldb/include/leveldb/db.h \
+					 ./leveldb/include/leveldb/env.h \
+					 ./leveldb/include/leveldb/iterator.h \
+					 ./leveldb/include/leveldb/options.h \
+					 ./leveldb/include/leveldb/slice.h \
+					 ./leveldb/include/leveldb/table.h \
+					 ./leveldb/include/leveldb/table_builder.h \
+					 ./leveldb/include/leveldb/write_batch.h \
+					 ./leveldb/include/leveldb/status.h \
+					 ./leveldb/include/leveldb/comparator.h \
+					 ./leveldb/include/leveldb/filter_policy.h
 
 ##############################
 if WITH_INTERNALTEST

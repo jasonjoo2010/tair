@@ -30,7 +30,9 @@
 
 #include "tair_atomic.hpp"
 
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 
 #ifdef WITH_TCMALLOC
 #  include <gperftools/malloc_extension.h>
@@ -42,7 +44,7 @@ class directory {
 public:
     static std::string current() {
         char buffer[256];
-        if (getcwd(buffer, 255) < 0) {
+        if ((int64_t)getcwd(buffer, 255) < 0) {
             return "";
         }
         return std::string(buffer);
@@ -414,7 +416,9 @@ private:
 class MM {
 public:
     static void malloc_stats() {
+#ifndef __APPLE__
         ::malloc_stats();
+#endif
     }
 
     static void release_free_memory() {

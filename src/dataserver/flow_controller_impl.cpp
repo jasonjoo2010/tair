@@ -240,7 +240,7 @@ void FlowControllerImpl::BackgroundCalFlows() {
                 (flow.in.last_per_second != 0 ||
                  flow.out.last_per_second != 0 ||
                  flow.ops.last_per_second != 0)) {
-                log_debug("Flow rate: ns %lu; in %ld %s; out %ld %s; ops %ld %s",
+                log_debug("Flow rate: ns %lu; in %"PRI64_PREFIX"d %s; out %"PRI64_PREFIX"d %s; ops %"PRI64_PREFIX"d %s",
                           ns,
                           flow.in.last_per_second, FlowStatusStr(status_in),
                           flow.out.last_per_second, FlowStatusStr(status_out),
@@ -287,21 +287,21 @@ bool FlowControllerImpl::AddUp(int ns, int in, int out, int weight) {
     limit = !AddUp(flow.in, in) || limit;
     if (is_relaxed == false && limit) {
         flow.overflow_type = IN;
-        log_info("Overflow happend ns:%d in lower:%ld upper:%ld current:%ld",
+        log_info("Overflow happend ns:%d in lower:%"PRI64_PREFIX"d upper:%"PRI64_PREFIX"d current:%"PRI64_PREFIX"d",
                  ns, flow.in.lower_bound, flow.in.upper_bound, flow.in.curt_quantity);
     }
 
     limit = !AddUp(flow.out, out) || limit;
     if (is_relaxed == false && limit) {
         flow.overflow_type = OUT;
-        log_info("Overflow happend ns:%d out lower:%ld upper:%ld current:%ld",
+        log_info("Overflow happend ns:%d out lower:%"PRI64_PREFIX"d upper:%"PRI64_PREFIX"d current:%"PRI64_PREFIX"d",
                  ns, flow.out.lower_bound, flow.out.upper_bound, flow.out.curt_quantity);
     }
 
     limit = !AddUp(flow.ops, weight) || limit;
     if (is_relaxed == false && limit) {
         flow.overflow_type = OPS;
-        log_info("Overflow happend ns:%d ops lower:%ld upper:%ld current:%ld",
+        log_info("Overflow happend ns:%d ops lower:%"PRI64_PREFIX"d upper:%"PRI64_PREFIX"d current:%"PRI64_PREFIX"d",
                  ns, flow.ops.lower_bound, flow.ops.upper_bound, flow.ops.curt_quantity);
     }
 
@@ -368,10 +368,10 @@ bool FlowControllerImpl::SyncFlowLimit(const std::map<int, AllFlowLimit> &flow_l
 }
 
 bool FlowControllerImpl::SetFlowLimit(int ns, FlowType type, int64_t lower, int64_t upper) {
-    log_debug("set(or get) flow limit bound, ns %d; type %s; lower %ld; upper %ld",
+    log_debug("set(or get) flow limit bound, ns %d; type %s; lower %"PRI64_PREFIX"d; upper %"PRI64_PREFIX"d",
               ns, FlowTypeStr(type), lower, upper);
     if (lower < -1 || upper < -1) {
-        log_error("invliad flow limit parameter, lower %ld; upper %ld", lower, upper);
+        log_error("invliad flow limit parameter, lower %"PRI64_PREFIX"d; upper %"PRI64_PREFIX"d", lower, upper);
         return false;
     }
     if (ns == -1) {
@@ -388,7 +388,7 @@ bool FlowControllerImpl::SetFlowLimit(int ns, FlowType type, int64_t lower, int6
             limit.lower = lower;
 
         if (limit.lower > limit.upper) {
-            log_error("%ld > %ld is invalid", limit.lower, limit.upper);
+            log_error("%"PRI64_PREFIX"d > %"PRI64_PREFIX"d is invalid", limit.lower, limit.upper);
             return false;
         }
 

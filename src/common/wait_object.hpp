@@ -12,14 +12,13 @@
 #ifndef TAIR_WAIT_OBJECT
 #define TAIR_WAIT_OBJECT
 
-#include <ext/hash_map>
+#include <unordered_map>
 #include <tbsys.h>
 
 #include "async_callback_def.hpp"
 #include "base_packet.hpp"
 
 using namespace std;
-using namespace __gnu_cxx;
 
 namespace tair {
 class response_mc_ops;
@@ -258,7 +257,7 @@ public:
 
     ~wait_object_manager() {
         tbsys::CThreadGuard guard(&mutex);
-        hash_map<int, wait_object *>::iterator it;
+        unordered_map<int, wait_object *>::iterator it;
         for (it = wait_object_map.begin(); it != wait_object_map.end(); ++it) {
             delete it->second;
         }
@@ -297,7 +296,7 @@ public:
 
     void wakeup_wait_object(int id, base_packet *packet) {
         tbsys::CThreadGuard guard(&mutex);
-        hash_map<int, wait_object *>::iterator it;
+        unordered_map<int, wait_object *>::iterator it;
         it = wait_object_map.find(id);
         if (it != wait_object_map.end()) {
             //now check the object need a async callback.so we just call the obejct's handler.
@@ -332,7 +331,7 @@ private:
     }
 
 private:
-    hash_map<int, wait_object *> wait_object_map;
+    unordered_map<int, wait_object *> wait_object_map;
     int wait_object_seq_id;
     tbsys::CThreadMutex mutex;
 private:

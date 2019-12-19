@@ -802,7 +802,7 @@ int tair_manager::add_count(int area, data_entry &key, int64_t count, int64_t in
     if (rc == TAIR_RETURN_SUCCESS && storage_mgr->test_flag(key.data_meta.flag, TAIR_ITEM_FLAG_ADDCOUNT)) {
         // old value exist
         int64_t *v = (int64_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
-        log_debug("old count: %ld, new count: %ld, init value: %ld, low bound: %ld, upper bound; %ld",
+        log_debug("old count: %"PRI64_PREFIX"d, new count: %"PRI64_PREFIX"d, init value: %"PRI64_PREFIX"d, low bound: %"PRI64_PREFIX"d, upper bound; %"PRI64_PREFIX"d",
                   (*v), count, init_value, low_bound, upper_bound);
 
         if (util::boundary_available(*v + count, low_bound, upper_bound)) {
@@ -1804,7 +1804,7 @@ void tair_manager::set_area_total_quota(int area, int64_t quota) {
 
 void tair_manager::set_area_total_quota_internal(int32_t area, int64_t quota) {
     quota = quota * this->current_bucket_count / this->total_bucket_count;
-    log_info("set area(%d) quota(%ld) for this dataserver", area, quota);
+    log_info("set area(%d) quota(%"PRI64_PREFIX"d) for this dataserver", area, quota);
     storage_mgr->set_area_quota(area, quota);
 }
 

@@ -23,7 +23,7 @@ class TableCache;
 class Version;
 class VersionEdit;
 class VersionSet;
-class FileMetaData;
+struct FileMetaData;
 
 struct LoggerId;
 

@@ -24,7 +24,6 @@
 
 #include <queue>
 #include <map>
-#include <ext/hash_map>
 #include "base_plugin.hpp"
 
 namespace tair {

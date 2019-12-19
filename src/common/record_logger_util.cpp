@@ -107,7 +107,7 @@ int RingBufferRecordLogger::init() {
 int RingBufferRecordLogger::add_record(int32_t index, int32_t type,
                                        data_entry *key, data_entry *value) {
     UNUSED(index);
-    log_debug("@@ ab %ld %ld", *w_offset_, *r_offset_);
+    log_debug("@@ ab %"PRI64_PREFIX"d %"PRI64_PREFIX"d", *w_offset_, *r_offset_);
     int ret = TAIR_RETURN_SUCCESS;
     char *buf = NULL;
     int total_size = RecordLogger::common_encode_record(buf, type, key, value);
@@ -118,7 +118,7 @@ int RingBufferRecordLogger::add_record(int32_t index, int32_t type,
         log_debug("@@ not space left");
         ret = TAIR_RETURN_FAILED;
     } else {
-        log_debug("@@ %p pos: %p %d %ld %ld", base_, mem_pos, total_size, *w_offset_, *r_offset_);
+        log_debug("@@ %p pos: %p %d %"PRI64_PREFIX"d %"PRI64_PREFIX"d", base_, mem_pos, total_size, *w_offset_, *r_offset_);
         memcpy(mem_pos, buf, total_size);
         *w_offset_ = mem_pos - base_ + total_size;
     }
@@ -126,7 +126,7 @@ int RingBufferRecordLogger::add_record(int32_t index, int32_t type,
     if (buf != NULL) {
         delete[] buf;
     }
-    log_debug("@@ ae %ld %ld", *w_offset_, *r_offset_);
+    log_debug("@@ ae %"PRI64_PREFIX"d %"PRI64_PREFIX"d", *w_offset_, *r_offset_);
     return ret;
 }
 
@@ -139,7 +139,7 @@ int RingBufferRecordLogger::get_record(int32_t index, int32_t &type, int32_t &bu
     key = value = NULL;
 
     tbsys::CThreadGuard guard(&mutex_);
-    log_debug("@@ gb %ld %ld", *w_offset_, *r_offset_);
+    log_debug("@@ gb %"PRI64_PREFIX"d %"PRI64_PREFIX"d", *w_offset_, *r_offset_);
     int ret = TAIR_RETURN_SUCCESS;
     int64_t w_off = *w_offset_, r_off = *r_offset_;
     char *pos = base_ + r_off;
@@ -160,7 +160,7 @@ int RingBufferRecordLogger::get_record(int32_t index, int32_t &type, int32_t &bu
         break;
     }
 
-    log_debug("@@ ge %ld %ld %d %lx", *w_offset_, *r_offset_, type, (long unsigned int) key);
+    log_debug("@@ ge %"PRI64_PREFIX"d %"PRI64_PREFIX"d %d %lx", *w_offset_, *r_offset_, type, (long unsigned int) key);
     return ret;
 }
 

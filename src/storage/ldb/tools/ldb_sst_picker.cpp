@@ -85,7 +85,7 @@ int pick_sst(const leveldb::Options &options, const leveldb::VersionSet &version
                     edit.AddFile(l, filenumber, f->file_size, f->smallest, f->largest);
                     // add filenumber map, format:
                     // oldfilenumber newfilenumber bucket
-                    fprintf(num_map_file, "%lu %lu %d\n", f->number, filenumber, b);
+                    fprintf(num_map_file, "%"PRI64_PREFIX"u %"PRI64_PREFIX"u %d\n", f->number, filenumber, b);
                     filenumber++;
                     break;
                 }

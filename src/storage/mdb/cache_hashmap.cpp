@@ -27,7 +27,7 @@ void cache_hash_map::insert(mdb_item *item, unsigned int hv) {
     item->low_hash = (hv >> low_hash_shift) & LOW_HASH_MASK;
     hashtable[idx] = item->item_id;
     ++(hashmng->item_count);
-    log_debug("insert %lu [%p] next[%lu]into hash table[%d]", item->item_id, item, item->h_next, idx);
+    log_debug("insert %"PRI64_PREFIX"u [%p] next[%"PRI64_PREFIX"u]into hash table[%d]", item->item_id, item, item->h_next, idx);
 }
 
 bool cache_hash_map::remove(mdb_item *item) {
@@ -58,7 +58,7 @@ bool cache_hash_map::remove(mdb_item *item, unsigned int hv) {
     } else {
         hashtable[idx] = prev->h_next;
     }
-    log_debug("remove %lu [%p,%p] from hash table[%d],item->h_next:%lu", item->item_id, prev, item, idx,
+    log_debug("remove %"PRI64_PREFIX"u [%p,%p] from hash table[%d],item->h_next:%"PRI64_PREFIX"u", item->item_id, prev, item, idx,
               item->h_next);
     prev->h_next = 0;
     return true;
@@ -87,7 +87,7 @@ bool cache_hash_map::change_item_pointer(mdb_item *to_item, mdb_item *from_item)
         hashtable[idx] = to_item->item_id;
     }
 
-    log_debug("swap item %lu to %lu in hash table[%d]", from_item->item_id, to_item->item_id, idx);
+    log_debug("swap item %"PRI64_PREFIX"u to %"PRI64_PREFIX"u in hash table[%d]", from_item->item_id, to_item->item_id, idx);
 
     return true;
 }

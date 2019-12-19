@@ -12,7 +12,7 @@
 #ifndef TAIR_STORAGE_LDB_MANAGER_H
 #define TAIR_STORAGE_LDB_MANAGER_H
 
-#if __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+#if __APPLE__ || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
 
 #include <unordered_map>
 

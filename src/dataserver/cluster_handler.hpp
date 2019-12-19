@@ -19,6 +19,7 @@
 #include <inttypes.h>
 
 #include "common/blockqueue.hpp"
+#include "common/result.hpp"
 
 class ClusterHandlerTest;
 
@@ -29,9 +30,6 @@ namespace common {
 class Record;
 
 class RecordPosition;
-
-template<class T>
-class Result;
 
 class RecordLogger;
 }

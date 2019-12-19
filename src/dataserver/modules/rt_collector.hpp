@@ -12,7 +12,7 @@
 #ifndef TAIR_RT_COLLECTOR_HPP
 #define TAIR_RT_COLLECTOR_HPP
 
-#include <ext/hash_map>
+#include <unordered_map>
 #include "rwlock.hpp"
 
 struct easy_request_t;
@@ -132,7 +132,7 @@ private:
     /*
      * Map `opcode' to its RTObject
      */
-    typedef __gnu_cxx::hash_map<int, RTObject *> RTOMap;
+    typedef std::unordered_map<int, RTObject *> RTOMap;
     RTOMap cont_;
     /*
      * We need a lock to protect RTCollector's members:

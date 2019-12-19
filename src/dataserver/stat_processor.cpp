@@ -24,6 +24,7 @@ stat_processor::stat_processor(tair_manager *tair_mgr,
         : tair_mgr(tair_mgr),
           stat_mgr(stat_mgr),
           flow_ctrl(flow_ctrl) {
+    UNUSED(this->tair_mgr);
 }
 
 uint32_t stat_processor::send_response(base_packet *request,

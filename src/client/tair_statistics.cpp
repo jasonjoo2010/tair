@@ -33,7 +33,7 @@ void tair_statistics::load_data(const vector<string> &desc, const map<uint64_t, 
             continue;
         for (size_t row = 0; row < one_ds_stat.size(); row += stat_num + 1) {
             char area[16];
-            snprintf(area, 16, "%ld", one_ds_stat[row]);
+            snprintf(area, 16, "%"PRI64_PREFIX"d", one_ds_stat[row]);
             string ds_area = ds + ":" + area;
             vector<int64_t> &one_ds_area_stat = tmp_stat[ds_area];
             one_ds_area_stat.assign(one_ds_stat.begin() + row + 1, one_ds_stat.begin() + row + 1 + stat_num);

@@ -22,7 +22,6 @@ namespace tair {
 
 using namespace std;
 using namespace tair::storage;
-using namespace __gnu_cxx;
 
 static const size_t LOG_PAGE_HDR_SIZE = align_round(offsetof(log_file_control_page, pad));
 static const uint64_t MIN_LSN = sizeof(log_file_control_page);
@@ -296,6 +295,7 @@ log_file *update_log::switch_log_file(lsn_type start_lsn) {
 log_file_manager::log_file_manager(const char *base_name, uint32_t size)
         : current_log_file(NULL), base_name(base_name) {
     file_size = size;
+    UNUSED(this->file_number);
 }
 
 log_file_manager::~log_file_manager() {
@@ -633,7 +633,7 @@ log_file *log_writer::get_current_file() {
 }
 
 void log_writer::set_offset(uint32_t offset) {
-    offset = offset;
+    this->offset = offset;
 }
 
 uint32_t log_writer::get_offset() {
@@ -729,7 +729,7 @@ void log_read_buffer::reset() {
 }
 
 void log_read_buffer::set_offset(uint32_t offset) {
-    offset = offset;
+    this->offset = offset;
 }
 
 void log_read_buffer::set_current_file(log_file *file) {

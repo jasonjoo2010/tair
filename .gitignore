@@ -1,6 +1,7 @@
 # Visual Studio Code
 .history/
 .vscode/
+.dirstamp
 
 # Compiled Object files
 *.slo

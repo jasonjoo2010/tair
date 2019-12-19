@@ -17,6 +17,7 @@
 #include <tbsys.h>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <set>
 
 namespace tair {
@@ -30,8 +31,8 @@ public:
     bool operator<(const migrate_unit &another) const { return score > another.score; }
 };
 
-typedef __gnu_cxx::hash_map<int, migrate_unit, __gnu_cxx::hash<int> > bucket_server_map;
-typedef __gnu_cxx::hash_map<int, migrate_unit, __gnu_cxx::hash < int> >
+typedef std::unordered_map<int, migrate_unit, std::hash<int> > bucket_server_map;
+typedef std::unordered_map<int, migrate_unit, std::hash < int> >
 ::iterator bucket_server_map_it;
 using namespace tair::util;
 

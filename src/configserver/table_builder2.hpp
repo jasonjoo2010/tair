@@ -22,6 +22,8 @@ public:
     table_builder2(float change_ratio, uint32_t bucket_c, uint32_t copy_c)
             : table_builder(bucket_c, copy_c) {
         stat_change_ratio = change_ratio;
+        UNUSED(otokens_per_node_min_count);
+        UNUSED(mtokens_per_node_min_count);
     }
 
     ~table_builder2() {

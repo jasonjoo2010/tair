@@ -93,7 +93,7 @@ storage::storage_manager *mdb_factory::create_mdb_manager(const char *path) {
 
     assert((mdb_param::factor - 1.0) > 0.0);
 
-    log_debug("size:%lu,page_size:%d,m_factor:%f,m_hash_shift:%d",
+    log_debug("size:%"PRI64_PREFIX"u,page_size:%d,m_factor:%f,m_hash_shift:%d",
               mdb_param::size, mdb_param::page_size, mdb_param::factor,
               mdb_param::hash_shift);
 

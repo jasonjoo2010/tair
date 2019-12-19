@@ -12,9 +12,7 @@
 #ifndef TAIR_DATA_BUFFER_HPP
 #define TAIR_DATA_BUFFER_HPP
 
-#include <byteswap.h>
 #include <easy_buf.h>
-#include <easy_io.h>
 #include <string>
 #include "log.hpp"
 

@@ -14,7 +14,9 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <set>
+#include <easy_io_struct.h>
 #include "server_info.hpp"
 #include "table_builder.hpp"
 #include "conf_server_table_manager.hpp"
@@ -464,8 +466,8 @@ private:
 
 };
 
-typedef __gnu_cxx::hash_map<const char *, group_info *,
-        __gnu_cxx::hash<const char *>, tbsys::char_equal> group_info_map;
+typedef std::unordered_map<const char *, group_info *,
+        std::hash<const char *>, tbsys::char_equal> group_info_map;
 }
 }
 

@@ -41,7 +41,6 @@
 #include "hotkey.hpp"
 #include "configuration_manager.h"
 
-using namespace __gnu_cxx;
 namespace tair { class RTCollector; }
 namespace tair { class OPKiller; }
 

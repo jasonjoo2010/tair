@@ -18,6 +18,10 @@
 #include "Exception.h"
 #include "Memory.hpp"
 
+#ifndef UNUSED
+#define UNUSED(v) ((void)(v))
+#endif
+
 using namespace std;
 namespace tbutil
 {
@@ -52,6 +56,9 @@ ThreadPool::ThreadPool(int size , int sizeMax, int sizeWarn,int listSizeMax,int 
     const_cast<int&>(_sizeMax) = sizeMax;
     const_cast<int&>(_sizeWarn) = sizeWarn;
     const_cast<size_t&>(_stackSize) = static_cast<size_t>(stackSize);
+
+    UNUSED(this->_load);
+    UNUSED(this->_waitingNumber);
 
     try
     {

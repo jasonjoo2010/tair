@@ -10,7 +10,7 @@
 #include <string>
 
 namespace leveldb {
-class Options;
+struct Options;
 struct config {
 
 static const int kNumLevels = 7;

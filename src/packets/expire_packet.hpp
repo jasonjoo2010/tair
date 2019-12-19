@@ -73,7 +73,7 @@ public:
 #if TAIR_MAX_AREA_COUNT < 65536
         if (area >= TAIR_MAX_AREA_COUNT) {
             log_warn("area overflow: "
-                             "server_flag %x, area %d, expired %ld",
+                             "server_flag %x, area %d, expired %"PRI64_PREFIX"d",
                      server_flag, area, expired);
             return false;
         }
@@ -81,7 +81,7 @@ public:
 
         if (!key.decode(input)) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, expired %ld",
+                             "server_flag %x, area %d, expired %"PRI64_PREFIX"d",
                      server_flag, area, expired);
             return false;
         }

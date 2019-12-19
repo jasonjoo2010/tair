@@ -17,6 +17,7 @@
 
 namespace tair {
 class request_prefix_removes : public request_remove {
+    using request_get::swap;
 public:
     request_prefix_removes() {
         setPCode(TAIR_REQ_PREFIX_REMOVES_PACKET);

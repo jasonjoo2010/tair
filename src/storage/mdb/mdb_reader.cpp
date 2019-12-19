@@ -191,15 +191,15 @@ void parse_area_stat(param_t *param) {
         }
         fprintf(out,
                 "%5d"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu"
-                        "%16lu\n",
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u"
+                        "%16"PRI64_PREFIX"u\n",
                 i,
                 area_stat[i].get_count,
                 area_stat[i].hit_count,
@@ -278,7 +278,7 @@ void parse_mem_stat(param_t *param) {
             "n_part");
 
     for (int i = 0; i <= cache->max_slab_id; ++i) {
-        fprintf(out, "%4u%9d%9d%15lu%15lu%9d%9d%9d%9d%9d%9u\n",
+        fprintf(out, "%4u%9d%9d%15"PRI64_PREFIX"u%15"PRI64_PREFIX"u%9d%9d%9d%9d%9d%9u\n",
                 slab->slab_id,
                 slab->slab_size,
                 slab->per_slab,

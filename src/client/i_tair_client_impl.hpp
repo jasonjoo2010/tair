@@ -57,7 +57,7 @@ public:
             int64_t init_value = 0, int64_t expire_time = 0) = 0;
 
     virtual int
-    set_count(int area, const data_entry &key, int count, int64_t expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
+    set_count(int area, const data_entry &key, int64_t count, int64_t expire, int version) { return TAIR_RETURN_NOT_SUPPORTED; }
 
     virtual int mget(int area, const std::vector<data_entry *> &keys, tair::common::tair_keyvalue_map &data) = 0;
 

@@ -16,10 +16,14 @@
   #else
     #define BIG_ENDIAN
   #endif
-#elif defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_NETBSD) ||\
+#elif defined(__APPLE__) || defined(OS_MACOSX) || defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_NETBSD) ||\
       defined(OS_DRAGONFLYBSD)
   #include <sys/types.h>
+  #if defined(__APPLE__) || defined(OS_MACOSX)
+  #include <machine/endian.h>
+  #else
   #include <sys/endian.h>
+  #endif
 #else
   #include <endian.h>
 #endif

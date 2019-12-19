@@ -17,7 +17,7 @@
 #define TBSYS_CONFIG_H
 
 #include <string>
-#include <ext/hash_map>
+#include <unordered_map>
 #include "stringutil.h"
 #include "tblog.h"
 
@@ -46,9 +46,9 @@ namespace tbsys {
             return strcmp(s1, s2) == 0;
         }
     };
-    typedef __gnu_cxx::hash_map<std::string, std::string, str_hash> STR_STR_MAP;
+    typedef std::unordered_map<std::string, std::string, str_hash> STR_STR_MAP;
     typedef STR_STR_MAP::iterator STR_STR_MAP_ITER;
-    typedef __gnu_cxx::hash_map<std::string, STR_STR_MAP*, str_hash> STR_MAP;
+    typedef std::unordered_map<std::string, STR_STR_MAP*, str_hash> STR_MAP;
     typedef STR_MAP::iterator STR_MAP_ITER;
     
     #define TBSYS_CONFIG tbsys::CConfig::getCConfig()

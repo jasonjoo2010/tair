@@ -12,7 +12,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <ext/hash_map>
 #include <signal.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -75,7 +74,6 @@ namespace tair {
 
 
 using namespace std;
-using namespace __gnu_cxx;
 using namespace tair::common;
 
 
@@ -1352,8 +1350,6 @@ int tair_client_impl::invalidate(int area, const data_entry &key, const char *gr
         log_error("invalidate server list is empty.");
         return TAIR_RETURN_FAILED;
     }
-    //static hash_map<uint64_t, int, __gnu_cxx::hash<int> > fail_count_map;
-
 
     wait_object *cwo = this_wait_object_manager->create_wait_object();
     request_invalid *req = new request_invalid();

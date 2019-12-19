@@ -13,7 +13,9 @@
 #define TAIR_EASY_HELPER_HPP
 
 #include <easy_io.h>
+#ifndef __APPLE__
 #include <sys/prctl.h>
+#endif
 #include <string>
 
 namespace tair {
@@ -92,11 +94,19 @@ public:
         char ioth_name[16];
         snprintf(ioth_name, sizeof(ioth_name), "%s%02d", static_cast<const char *> (prefix),
                  __sync_fetch_and_add(&idx, 1));
+#ifdef PR_SET_NAME
         prctl(PR_SET_NAME, ioth_name, 0, 0, 0);
+#else
+        pthread_setname_np(ioth_name);
+#endif
     }
 
     static void set_thread_name(const char *name) {
+#ifdef PR_SET_NAME
         prctl(PR_SET_NAME, name, 0, 0, 0);
+#else
+        pthread_setname_np(name);
+#endif
     }
 
     static void easy_set_log_level(int tbsys_level);

@@ -16,6 +16,7 @@
 
 namespace tair {
 class request_admin_config : public base_packet {
+    using base_packet::size;
 public:
     request_admin_config() : size_(0), last_version_(0), next_version_(0) {
         setPCode(TAIR_REQ_ADMIN_CONFIG_PACKET);
@@ -105,6 +106,7 @@ private:
 };
 
 class response_admin_config : public base_packet {
+    using base_packet::size;
 public:
     response_admin_config() : size_(0), version_(0) {
         setPCode(TAIR_RESP_ADMIN_CONFIG_PACKET);

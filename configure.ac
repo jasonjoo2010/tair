@@ -1,4 +1,4 @@
-AC_INIT([tair], [3.3.0], [opensource@taobao.com])
+AC_INIT([tair], [3.3.1], [opensource@taobao.com])
 
 AM_INIT_AUTOMAKE([foreign])
 AC_PROG_CXX
@@ -9,6 +9,33 @@ m4_include([tcmalloc.m4])
 
 BITS=`if [[ 64 -eq $(getconf LONG_BIT) ]]; then echo -n $(getconf LONG_BIT); fi`
 AC_SUBST(BITS)
+
+# OSX detection
+build_mac=no
+# Detect the target system
+case "${host_os}" in
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        ;;
+esac
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+if test "$build_mac" = "yes"; then
+    if [[ "no$OPENSSL_DIR" = "no" ]]; then
+        echo "You are building under OSX please note that you should specify your openssl path like:"
+        echo "OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2t ./bootstrap.sh"
+        exit 1
+    fi
+    if [[ "no$READLINE_DIR" = "no" ]]; then
+        echo "You are building under OSX please note that you should specify your readline path like:"
+        echo "READLINE_DIR=/usr/local/Cellar/readline/8.0.1 ./bootstrap.sh"
+        exit 1
+    fi
+    LDFLAGS="$LDFLAGS -L$OPENSSL_DIR/lib -L$READLINE_DIR/lib"
+    CFLAGS="$CFLAGS -I$OPENSSL_DIR/include -I$READLINE_DIR/include"
+    CPPFLAGS="$CPPFLAGS -I$OPENSSL_DIR/include -I$READLINE_DIR/include"
+fi
 
 dnl attain git info url, depending on `git info`'s output format.
 dnl God bless GIT doesn't change its printf.'
@@ -65,8 +92,8 @@ AC_ARG_WITH([profile],
 dnl -------------------------------------------------------------------------
 dnl Checking hashmap
 dnl -------------------------------------------------------------------------
-AC_CHECK_HEADERS([ext/hash_map], [], AC_MSG_FAILURE([hash_map not found]))
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <ext/hash_map>]],
+AC_CHECK_HEADERS([unordered_map], [], AC_MSG_FAILURE([unordered_map not found]))
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <unordered_map>]],
                  [[#ifdef _BACKWARD_BACKWARD_WARNING_H
                  return 1;
                  #endif]])

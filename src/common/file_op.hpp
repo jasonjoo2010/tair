@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <string>
 #include <fcntl.h>
+#include "define.hpp"
 
 namespace tair {
 namespace common {

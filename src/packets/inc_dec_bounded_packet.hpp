@@ -67,7 +67,7 @@ public:
         if (input->readInt64((uint64_t *) &low_bound) == false ||
             input->readInt64((uint64_t *) &upper_bound) == false) {
             log_warn("key decode failed: "
-                             "server_flag %x, area %d, add_count %ld, init_value %ld, expired %ld",
+                             "server_flag %x, area %d, add_count %"PRI64_PREFIX"d, init_value %"PRI64_PREFIX"d, expired %"PRI64_PREFIX"d",
                      server_flag, area, add_count, init_value, expired);
             return false;
         }

@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 #ifndef PRI64_PREFIX
-# if __WORDSIZE == 64
+# if __WORDSIZE == 64 && !defined(OS_MACOSX)
 #define PRI64_PREFIX "l"
 # else
 #define PRI64_PREFIX "ll"

@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS=subdir-objects
 LDB_CPPFLAGS= -DWITH_LDB -I${top_srcdir}/src/storage/ldb
 LDB_LDFLAGS= $(top_builddir)/src/storage/ldb/libldb.a \
 			 $(top_builddir)/src/storage/ldb/libleveldb.a \
@@ -37,13 +38,20 @@ LDADD=$(top_builddir)/src/client/.libs/libtairclientapi.a \
 	  $(top_builddir)/src/common/libtair_common.a \
 	  ${top_srcdir}/deps/tbsys-install/lib/libtbsys.la \
 	  ${top_srcdir}/deps/libeasy-install/lib64/libeasy.la \
-	  -lssl -lz -lrt -lpthread \
+	  -lssl -lz -lpthread \
 	  -ldl -lcurl
+if !OSX
+LDADD+=-lrt
+endif
 
 sbin_PROGRAMS=tair_server repair_rsync
 
 include_HEADERS=tair_manager.hpp table_manager.hpp duplicate_manager.hpp duplicate_base.hpp update_log.hpp
 
+tair_server_CPPFLAGS=${AM_CPPFLAGS}
+if OSX
+tair_server_CPPFLAGS+=-Wno-deprecated-declarations
+endif
 tair_server_SOURCES=duplicate_manager.cpp \
 					stat_processor.cpp \
 					request_processor.cpp \
@@ -54,11 +62,11 @@ tair_server_SOURCES=duplicate_manager.cpp \
 					recovery_manager.cpp \
 					table_manager.cpp \
 					tair_server.cpp \
-					$(top_builddir)/src/common/stat_helper.cpp \
-					$(top_builddir)/src/common/scoped_wrlock.hpp	\
-					$(top_builddir)/src/common/BlockQueueEx.hpp \
-					$(top_builddir)/src/common/blockqueue.hpp   \
-					$(top_builddir)/src/common/syncproc.hpp   \
+					../common/stat_helper.cpp \
+					../common/scoped_wrlock.hpp	\
+					../common/BlockQueueEx.hpp \
+					../common/blockqueue.hpp   \
+					../common/syncproc.hpp   \
 					base_migrate.hpp	\
 					base_tair_manager.hpp	\
 					duplicate_base.hpp	\
@@ -98,5 +106,9 @@ tair_server_SOURCES=duplicate_manager.cpp \
 					flow_controller_impl.h \
 					stat_manager_mock.cpp
 
+repair_rsync_CPPFLAGS=$(AM_CPPFLAGS)
+if OSX
+repair_rsync_CPPFLAGS+=-Wno-deprecated-declarations
+endif
 repair_rsync_SOURCES=repair_rsync.cpp cluster_handler.cpp
 

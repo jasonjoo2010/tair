@@ -13,7 +13,6 @@
 #define TAIR_CONFIG_SERVER_H
 
 #include <string>
-#include <ext/hash_map>
 #include <signal.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -23,7 +22,6 @@
 #include "packet_factory.hpp"
 
 using namespace std;
-using namespace __gnu_cxx;
 
 namespace tair {
 namespace config_server {

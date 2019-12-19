@@ -1,9 +1,14 @@
+AUTOMAKE_OPTIONS=subdir-objects
 AM_CPPFLAGS= -I${top_srcdir}/deps/libeasy-install/include/easy \
 			 -I${top_srcdir}/deps/tbsys-install/include \
 			 -I$(top_srcdir)/src/packets \
 			 -I$(top_srcdir)/src/client \
 			 -I${top_srcdir}/src \
 			 -I${top_srcdir}/src/storage
+
+if OSX
+AM_CPPFLAGS+=-Wno-deprecated-declarations
+endif
 
 if WITH_COMPRESS
 COMPRESS_CPPFLAGS= compressor.hpp snappy_compressor.hpp
@@ -102,16 +107,15 @@ libtair_common_a_SOURCES = ${base_src}
 ##############################
 noinst_LIBRARIES += libsnappy.a
 
-snappy_srcdir=./snappy
-libsnappy_a_SOURCES=${snappy_srcdir}/snappy-internal.h \
-					${snappy_srcdir}/snappy-c.h \
-					${snappy_srcdir}/snappy-c.cc \
-					${snappy_srcdir}/snappy-sinksource.cc \
-					${snappy_srcdir}/snappy-sinksource.h \
-					${snappy_srcdir}/snappy-stubs-internal.h \
-					${snappy_srcdir}/snappy-stubs-internal.cc\
-					${snappy_srcdir}/snappy-stubs-public.h.in \
-					${snappy_srcdir}/snappy.cc \
-					${snappy_srcdir}/snappy.h\
-					${snappy_srcdir}/config.h.in
+libsnappy_a_SOURCES=./snappy/snappy-internal.h \
+					./snappy/snappy-c.h \
+					./snappy/snappy-c.cc \
+					./snappy/snappy-sinksource.cc \
+					./snappy/snappy-sinksource.h \
+					./snappy/snappy-stubs-internal.h \
+					./snappy/snappy-stubs-internal.cc\
+					./snappy/snappy-stubs-public.h.in \
+					./snappy/snappy.cc \
+					./snappy/snappy.h\
+					./snappy/config.h.in
 

@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#if __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+#if __APPLE__ || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
 
 #include <unordered_map>
 

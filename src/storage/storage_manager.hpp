@@ -38,7 +38,7 @@ class data_entry;
 
 class mput_record;
 }
-class _ItemData;
+struct _ItemData;
 
 typedef _ItemData item_data_info;
 struct _item_meta;

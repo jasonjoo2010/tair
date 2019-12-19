@@ -14,7 +14,6 @@
  */
 
 #include <tbtimeutil.h>
-#include <ext/hash_map>
 #include <set>
 
 using namespace tbsys;

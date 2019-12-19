@@ -28,6 +28,7 @@ public:
                    int bucket_shift /*shift */ ) : this_mem_pool(pool), this_instance(instance) {
         assert(pool != 0);
         assert(pool->get_pool_addr() != 0);
+        UNUSED(this_mem_pool);
         hashmng = reinterpret_cast <hash_manager * >(pool->get_pool_addr() + mem_pool::MEM_HASH_METADATA_START);
         if (hashmng->is_inited != 1) {
             hashmng->bucket_size = 1 << bucket_shift;

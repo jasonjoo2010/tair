@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS=subdir-objects
 CURRENT=3
 AGE=0
 REVISION=1
@@ -14,6 +15,9 @@ AM_CPPFLAGS=-I${top_srcdir}/src \
 	    -I${top_srcdir}/src/plugin
 
 AM_CXXFLAGS=-Werror -fPIC
+if OSX
+AM_CXXFLAGS+=-Wno-deprecated-declarations
+endif
 AM_CFLAGS=-Werror -fPIC
 AM_LDFLAGS=-lcrypto -lz
 
@@ -32,7 +36,7 @@ mc_impl_source=diamond_manager.hpp \
 	       cluster_controller.cpp \
 	       tair_mc_client_api.hpp  \
 	       tair_mc_client_api.cpp  \
-	       ${top_srcdir}/src/common/cJSON.c
+	       ../common/cJSON.c
 
 mc_impl_lib=libtairmcclientapi.la
 mc_impl_header=tair_mc_client_api.hpp \
@@ -44,16 +48,16 @@ api_source_list=tair_client_api.cpp \
 		i_tair_client_impl.hpp \
 		i_tair_client_impl.cpp \
 		tair_client_api_impl.cpp \
-		${top_srcdir}/src/packets/packet_factory.cpp \
-		${top_srcdir}/src/common/easy_helper.cpp \
-		${top_srcdir}/src/common/data_entry.cpp \
-		${top_srcdir}/src/common/item_data_info.cpp \
-		${top_srcdir}/src/common/timed_collections.hpp \
-		${top_srcdir}/src/common/timed_collections.cpp \
-		${top_srcdir}/src/common/record.hpp \
-		${top_srcdir}/src/common/record.cpp \
-		${top_srcdir}/src/common/stat_define.cpp \
-		${top_srcdir}/src/common/util.cpp \
+		../packets/packet_factory.cpp \
+		../common/easy_helper.cpp \
+		../common/data_entry.cpp \
+		../common/item_data_info.cpp \
+		../common/timed_collections.hpp \
+		../common/timed_collections.cpp \
+		../common/record.hpp \
+		../common/record.cpp \
+		../common/stat_define.cpp \
+		../common/util.cpp \
 		tair_client_api.hpp \
 		tair_client_api_impl.hpp \
 		local_cache.hpp  \
@@ -70,7 +74,10 @@ api_source_list=tair_client_api.cpp \
 		${multi_cluster_impl_source}
 
 EASY_LIB= -L${top_srcdir}/deps/libeasy-install/lib64 -leasy
-COMMON_LOADFLAGS=-lpthread -lssl -lz -lrt ${GCOV_LIB} ${COMPRESS_LDFLAGS} -lcrypto
+COMMON_LOADFLAGS=-lpthread -lssl -lz ${GCOV_LIB} ${COMPRESS_LDFLAGS} -lcrypto
+if !OSX
+COMMON_LOADFLAGS+=-lrt
+endif
 
 lib_LTLIBRARIES=libtairclientapi.la libtairclientapi_impl.la ${mc_impl_lib} ${mc_impl_c_lib}
 

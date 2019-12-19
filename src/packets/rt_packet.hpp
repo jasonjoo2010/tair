@@ -74,11 +74,11 @@ public:
                 RTObject *rto = rtos_[i];
                 out->writeInt32(rto->opcode_);
                 for (uint32_t j = 0; j < (uint32_t) RTObject::RT_TYPE_NUM; ++j) {
-                    out->writeInt64(rto->rt_types_[j].opcnt_);
-                    out->writeInt64(rto->rt_types_[j].rt_us_acc_);
-                    out->writeInt64(rto->rt_types_[j].rt_us_max_);
+                    out->writeInt64((uint64_t)rto->rt_types_[j].opcnt_);
+                    out->writeInt64((uint64_t)rto->rt_types_[j].rt_us_acc_);
+                    out->writeInt64((uint64_t)rto->rt_types_[j].rt_us_max_);
                     for (uint32_t k = 0; k <= RTObject::RT_ORDER_MAX; ++k) {
-                        out->writeInt64(rto->rt_types_[j].rt_buckets_[k]);
+                        out->writeInt64((uint64_t)rto->rt_types_[j].rt_buckets_[k]);
                     }
                 }
             }
@@ -96,11 +96,11 @@ public:
             rtos_.push_back(rto);
             if (!in->readInt32((uint32_t *) &rto->opcode_)) return false;
             for (uint32_t j = 0; j < (uint32_t) RTObject::RT_TYPE_NUM; ++j) {
-                if (!in->readInt64(&rto->rt_types_[j].opcnt_)) return false;
-                if (!in->readInt64(&rto->rt_types_[j].rt_us_acc_)) return false;
-                if (!in->readInt64(&rto->rt_types_[j].rt_us_max_)) return false;
+                if (!in->readInt64((uint64_t *)&rto->rt_types_[j].opcnt_)) return false;
+                if (!in->readInt64((uint64_t *)&rto->rt_types_[j].rt_us_acc_)) return false;
+                if (!in->readInt64((uint64_t *)&rto->rt_types_[j].rt_us_max_)) return false;
                 for (uint32_t k = 0; k <= RTObject::RT_ORDER_MAX; ++k) {
-                    if (!in->readInt64(&rto->rt_types_[j].rt_buckets_[k])) return false;
+                    if (!in->readInt64((uint64_t *)&rto->rt_types_[j].rt_buckets_[k])) return false;
                 }
             }
         }

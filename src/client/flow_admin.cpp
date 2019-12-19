@@ -17,6 +17,9 @@
 
 namespace tair {
 
+const double flow_limit_handler::UP_FACTOR = 0.3;
+const double flow_limit_handler::DOWN_FACTOR = 0.5;
+
 void flow_admin::control(int64_t server_id, int32_t ns, tair::stat::FlowStatus status) {
     using namespace tair::stat;
     switch (status) {

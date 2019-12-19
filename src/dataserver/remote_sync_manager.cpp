@@ -180,7 +180,7 @@ int RemoteSyncManager::do_remote_sync(int32_t index, RecordLogger *input_logger,
 
     while (!_stop) {
         if (need_wait_us > 0) {
-            log_debug("@@ sleep %ld", need_wait_us);
+            log_debug("@@ sleep %"PRI64_PREFIX"d", need_wait_us);
             usleep(need_wait_us);
             need_wait_us = wait_us_;
         }
@@ -221,7 +221,7 @@ int RemoteSyncManager::do_remote_sync(int32_t index, RecordLogger *input_logger,
 
         // has refed 1
         DataEntryWrapper *key_wrapper = new DataEntryWrapper(key);
-        log_debug("@@ %s type: %d, %d, fg: %d, key: %s %d %d %ld",
+        log_debug("@@ %s type: %d, %d, fg: %d, key: %s %d %d %"PRI64_PREFIX"d",
                   cluster_info.size() > 16 ? cluster_info.c_str() + 16 : "", type, bucket_num, force_reget,
                   key->get_size() > 6 ? key->get_data() + 6 : "", key->get_size(), key->get_prefix_size(),
                   key->data_meta.mdate);

@@ -9,7 +9,9 @@
  *
  */
 
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 
 #ifdef WITH_TCMALLOC
 #include <gperftools/malloc_extension.h>
@@ -1627,7 +1629,7 @@ void LdbManager::ReviseStat::run(tbsys::CThread *thread, void *arg) {
     pthread_detach(pthread_self());
 
     log_warn("revise stat: start to revise stat for total %lu instances, type: %s,"
-                     " sleep_interval: %ld, every interval sleep_time: %dus",
+                     " sleep_interval: %"PRI64_PREFIX"d, every interval sleep_time: %dus",
              instance_to_revise_.size(), is_revise_user_stat_ ? "user stat" : "physical stat",
              sleep_interval_, sleep_time_);
     for (set<int32_t>::const_iterator it = instance_to_revise_.begin(); it != instance_to_revise_.end(); ++it) {

@@ -48,14 +48,14 @@ void sign_handler(int sig) {
             break;
         case 51:
             g_wait_ms += 10;
-            log_warn("g_wait_ms: %ld", g_wait_ms);
+            log_warn("g_wait_ms: %"PRI64_PREFIX"d", g_wait_ms);
             break;
         case 52:
             g_wait_ms -= 10;
             if (g_wait_ms < 0) {
                 g_wait_ms = 0;
             }
-            log_warn("g_wait_ms: %ld", g_wait_ms);
+            log_warn("g_wait_ms: %"PRI64_PREFIX"d", g_wait_ms);
             break;
     }
 }
@@ -231,7 +231,7 @@ int do_rsync(std::vector<int32_t> &buckets, DataFilter &filter,
                     }
 
                     if (ret == TAIR_RETURN_SUCCESS) {
-                        log_debug("@@ k:%d %s %d %d %ld %ld %ld.v:%s %d %d %ld %ld %ld", key->get_area(),
+                        log_debug("@@ k:%d %s %d %d %"PRI64_PREFIX"d %"PRI64_PREFIX"d %"PRI64_PREFIX"d.v:%s %d %d %"PRI64_PREFIX"d %"PRI64_PREFIX"d %"PRI64_PREFIX"d", key->get_area(),
                                   key->get_size() > 6 ? key->get_data() + 6 : "", key->get_size(),
                                   key->get_prefix_size(), key->data_meta.cdate, key->data_meta.mdate,
                                   key->data_meta.edate, value->get_size() > 4 ? value->get_data() + 4 : "",
@@ -295,7 +295,7 @@ int do_rsync(std::vector<int32_t> &buckets, DataFilter &filter,
                 do_batch_rsync(remote_handler, ds_ids, kvs, fail_logger);
             }
 
-            log_warn("sync bucket %d over, cost: %ld(s), stat:\n",
+            log_warn("sync bucket %d over, cost: %"PRI64_PREFIX"d(s), stat:\n",
                      bucket, time(NULL) - start_time);
             // only dump bucket stat
             stat.dump(bucket, -1);
@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
                        mtime_care, batch_mode,
                        stat, fail_logger);
 
-        log_warn("rsync data over, stopped: %s, cost: %ld(s), stat:", g_stop ? "yes" : "no", time(NULL) - start_time);
+        log_warn("rsync data over, stopped: %s, cost: %"PRI64_PREFIX"d(s), stat:", g_stop ? "yes" : "no", time(NULL) - start_time);
         stat.dump_all();
     }
 

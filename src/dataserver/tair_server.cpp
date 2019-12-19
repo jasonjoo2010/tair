@@ -694,7 +694,7 @@ int tair_server::packet_handler(easy_request_t *r) {
                 int64_t upper = 0;
                 int64_t current = 0;
                 flow_ctrl->GetCurrOverFlowRecord(stat.ns, lower, upper, current);
-                log_warn("flow control happened, ns: %d, overflow type: %s, lower: %ld upper: %ld current: %ld",
+                log_warn("flow control happened, ns: %d, overflow type: %s, lower: %"PRI64_PREFIX"d upper: %"PRI64_PREFIX"d current: %"PRI64_PREFIX"d",
                          stat.ns, flow_ctrl->GetCurrOverFlowTypeStr(stat.ns), lower, upper, current);
             }
         }

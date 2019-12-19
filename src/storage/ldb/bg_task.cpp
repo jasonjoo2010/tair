@@ -241,7 +241,7 @@ void LdbCompactTask::compact_gc(GcType gc_type, bool &all_done) {
 
             if (i >= gc_scan_keys.size()) // all is ok
             {
-                DUMP_GCNODE(warn, gc_node, "[%d] gc success. type: %d, cost: %ld",
+                DUMP_GCNODE(warn, gc_node, "[%d] gc success. type: %d, cost: %"PRI64_PREFIX"d",
                             db_->index(), gc_type, (time(NULL) - start_time));
                 db_->gc_factory()->remove(gc_node, gc_type);
                 // // may can evict some

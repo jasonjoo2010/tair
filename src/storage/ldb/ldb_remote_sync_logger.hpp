@@ -130,6 +130,7 @@ private:
 };
 
 class LdbRemoteSyncLogger : public tair::common::RecordLogger {
+    using tair::common::RecordLogger::set_max_bucket_count;
 public:
     explicit LdbRemoteSyncLogger(LdbManager *manager);
 

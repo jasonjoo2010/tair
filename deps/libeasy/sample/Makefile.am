@@ -32,11 +32,12 @@ http_client_SOURCES=http_client.c
 uthread_test_SOURCES=uthread_test.c
 echo_client_uthread_SOURCES=echo_client_uthread.c
 #press_easy_mem_pool_SOURCES=press_easy_mem_pool.c
-if OSX
-    http_status_SOURCES=http_status.c
-else
-    noinst_PROGRAMS+= http_status
+
+if !OSX
+http_status_SOURCES=http_status.c
+noinst_PROGRAMS+=http_status
 endif
+
 kfc_test_SOURCES=kfc_test.c
 easy_kfc_load_SOURCES=easy_kfc_load.cpp
 easy_kfc_tool_SOURCES=easy_kfc_tool.cpp

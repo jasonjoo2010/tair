@@ -239,7 +239,7 @@ void DBImpl::MaybeIgnoreError(Status* s) const {
 
 void DBImpl::DeleteObsoleteFiles() {
   if (++has_limited_delete_obsolete_file_count_ < config::kLimitDeleteObsoleteFileInterval) {
-    Log(options_.info_log, "limit delete %lu", has_limited_delete_obsolete_file_count_);
+    Log(options_.info_log, "limit delete %llu", has_limited_delete_obsolete_file_count_);
     // we limit delete obsolete file now
     return ;
   }
@@ -911,7 +911,7 @@ Status DBImpl::MakeRoomForWrite(bool force, int bucket, BucketUpdate** bucket_up
 
   // not dirty logfile_number_
 
-  Log(options_.info_log, "new log %lu", new_log_number);
+  Log(options_.info_log, "new log %llu", new_log_number);
   bu = new BucketUpdate();
   bu->bucket_number_ = bucket;
   bu->log_number_ = new_log_number;
@@ -1023,7 +1023,7 @@ Status DBImpl::CompactMemTableList() {
     }
   }
 
-  Log(options_.info_log, "com imm list: %lu now: %d cost %ld", count, imm_list_count_, env_->NowMicros() - imm_start);
+  Log(options_.info_log, "com imm list: %lu now: %d cost %lld", count, imm_list_count_, env_->NowMicros() - imm_start);
 
   if (s.ok() && shutting_down_.Acquire_Load()) {
     s = Status::IOError("Deleting DB during memtable compaction");
@@ -1401,7 +1401,7 @@ Status DBImpl::DoCompactionWorkSelfLevel(CompactionState* compact) {
   stats_[compact->compaction->level()].Add(stats);
 
   if (status.ok()) {
-    Log(options_.info_log,  "SelfLevel Compacted %d@%d (%ld) bytes => %ld bytes, [%ld + %ld]",
+    Log(options_.info_log,  "SelfLevel Compacted %d@%d (%lld) bytes => %lld bytes, [%lld + %lld]",
         compact->compaction->num_input_files(0),
         compact->compaction->level(),
         stats.bytes_read,
@@ -1488,7 +1488,7 @@ void DBImpl::BackgroundCompaction() {
     PROFILER_BEGIN("com mem+");
     CompactMemTable();
     PROFILER_END();
-    Log(options_.info_log, "only com mem cost %ld", env_->NowMicros() - imm_start);
+    Log(options_.info_log, "only com mem cost %lld", env_->NowMicros() - imm_start);
     return;
   }
 
@@ -1877,7 +1877,7 @@ Status DBImpl::DoCompactionWork(CompactionState* compact) {
   stats_[compact->compaction->level() + 1].Add(stats);
 
   if (status.ok()) {
-    Log(options_.info_log,  "Compacted %d@%d + %d@%d files => %ld bytes, [%ld + %ld]",
+    Log(options_.info_log,  "Compacted %d@%d + %d@%d files => %lld bytes, [%lld + %lld]",
         compact->compaction->num_input_files(0),
         compact->compaction->level(),
         compact->compaction->num_input_files(1),
@@ -2397,17 +2397,17 @@ bool DBImpl::GetProperty(const Slice& property, std::string* value,
     return true;
   } else if (in == "sequence") {
     char buf[50];
-    snprintf(buf, sizeof(buf), "%lu", versions_->LastSequence());
+    snprintf(buf, sizeof(buf), "%llu", versions_->LastSequence());
     value->append(buf);
     return true;
   } else if (in == "largest-filenumber") {
     char buf[50];
-    snprintf(buf, sizeof(buf), "%lu", versions_->NextFileNumber());
+    snprintf(buf, sizeof(buf), "%llu", versions_->NextFileNumber());
     value->append(buf);
     return true;
   } else if (in == "smallest-filenumber") {
     char buf [50];
-    snprintf(buf, sizeof(buf), "%lu", versions_->SmallestFileNumber());
+    snprintf(buf, sizeof(buf), "%llu", versions_->SmallestFileNumber());
     value->append(buf);
     return true;
   } else if (in == "ranges") {

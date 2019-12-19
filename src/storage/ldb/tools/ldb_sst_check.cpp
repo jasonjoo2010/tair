@@ -50,7 +50,7 @@ bool check_table(leveldb::Env *env, const std::string &fname, leveldb::Comparato
     if (s.ok()) {
         s = env->NewRandomAccessFile(fname, &file);
     }
-    printf("check sst file: %s, file_size(%ld)\n", fname.c_str(), file_size);
+    printf("check sst file: %s, file_size(%"PRI64_PREFIX"d)\n", fname.c_str(), file_size);
     leveldb::Options options = Options();
     if (s.ok()) {
         s = leveldb::Table::Open(options, file, file_size, &table);

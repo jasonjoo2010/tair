@@ -32,6 +32,7 @@ namespace tair {
 
 bool mdb_instance::initialize(mdb_area_stat *stat, int32_t bucket_count,
                               bool use_share_mem /*=true*/ ) {
+    UNUSED(last_traversal_time);
     this->use_share_mem = use_share_mem;
     this->area_stat = stat;
     static int seq = 0;
@@ -130,7 +131,7 @@ int mdb_instance::raw_put(const char *key, int32_t key_len,
                           int32_t prefix_size, bool is_mc) {
     int total_size = key_len + value_len + sizeof(mdb_item);
     int old_expire = -1;
-    log_debug("start put: key:%u,area:%d,value:%u,flag:%d,exp:%ld", key_len,
+    log_debug("start put: key:%u,area:%d,value:%u,flag:%d,exp:%"PRI64_PREFIX"d", key_len,
               KEY_AREA (key), value_len, flag, expired);
 
     uint32_t crrnt_time = static_cast < uint32_t > (time(NULL));
@@ -197,7 +198,7 @@ int mdb_instance::raw_put(const char *key, int32_t key_len,
     }
 
     it->flags = (flag | old_flag);
-    log_debug("it->flags:%lx", it->flags);
+    log_debug("it->flags:%x", it->flags);
     memcpy(ITEM_KEY (it), key, it->key_len);
     memcpy(ITEM_DATA (it), value, it->data_len);
 
@@ -618,7 +619,7 @@ int mdb_instance::do_put(int bucket_num, data_entry &key, unsigned int hv,
 
     //set_flag(old_flag, data.data_meta.flag);
     it->flags = data.data_meta.flag;
-    log_debug("it->flags:%lx", it->flags);
+    log_debug("it->flags:%x", it->flags);
     memcpy(ITEM_DATA (it), data.get_data(), it->data_len);
 
     //set back
@@ -715,7 +716,7 @@ int mdb_instance::do_add_count(int bucket_num, data_entry &key,
                 //old value exist
                 int64_t *v =
                         (int64_t *) (old_value.get_data() + ITEM_HEAD_LENGTH);
-                log_debug("old count: %ld, new count: %ld, init value: %ld", (*v), count, init_value);
+                log_debug("old count: %"PRI64_PREFIX"d, new count: %"PRI64_PREFIX"d, init value: %"PRI64_PREFIX"d", (*v), count, init_value);
                 if (util::
                 boundary_available((*v) + count, low_bound, upper_bound)) {
                     //ok, available
@@ -961,7 +962,7 @@ int mdb_instance::do_incr_decr(int bucket, data_entry &key,
         }
         new_item = alloc_counter_item(key);
         assert (new_item != NULL);
-        new_item->data_len = snprintf(ITEM_DATA (new_item) + sizeof(int32_t), new_item->data_len - sizeof(int32_t), "%lu", init);
+        new_item->data_len = snprintf(ITEM_DATA (new_item) + sizeof(int32_t), new_item->data_len - sizeof(int32_t), "%"PRI64_PREFIX"u", init);
         new_item->data_len += sizeof(int32_t);
         result = init;
         new_item->version = 1;    // initial version
@@ -1011,7 +1012,7 @@ int mdb_instance::do_incr_decr(int bucket, data_entry &key,
         int32_t data_size_diff = 0;
         area_stat[ITEM_AREA (new_item)].decr_data_size(new_item->data_len + new_item->key_len);
         data_size_diff -= (new_item->data_len + new_item->key_len);
-        new_item->data_len = sprintf(ITEM_DATA (new_item) + sizeof(int32_t), "%lu", curr_val);
+        new_item->data_len = sprintf(ITEM_DATA (new_item) + sizeof(int32_t), "%"PRI64_PREFIX"u", curr_val);
         new_item->data_len += sizeof(int32_t);
         area_stat[ITEM_AREA (new_item)].incr_data_size(new_item->data_len + new_item->key_len);
         data_size_diff += (new_item->data_len + new_item->key_len);
@@ -1188,7 +1189,7 @@ void mdb_instance::__remove(mdb_item *it, unsigned int hv) {
     it->low_hash = 0;
     it->version = 0;
     it->update_time = 0;
-    log_debug("after free item [%p],id [%lu],h_next [%lu] next [%lu],prev[%lu],key_len[%d],data_len[%u], version[%d]",
+    log_debug("after free item [%p],id [%"PRI64_PREFIX"u],h_next [%"PRI64_PREFIX"u] next [%"PRI64_PREFIX"u],prev[%"PRI64_PREFIX"u],key_len[%d],data_len[%u], version[%d]",
               it, it->item_id, it->h_next, it->next, it->prev, it->key_len, it->data_len, it->version);
 }
 
@@ -1255,7 +1256,7 @@ void mdb_instance::remove_exprd_item() {
             granularity = 0.0;
         }
     }
-    log_warn("%s: end removing expired items, %ld items %ld bytes released",
+    log_warn("%s: end removing expired items, %"PRI64_PREFIX"d items %"PRI64_PREFIX"d bytes released",
              instance_name, items_removed, space_released);
     log_warn
             ("%.9lf seconds consumed, duration per bucket:  max %.9lf, min %.9lf, avg %.9lf",
@@ -1416,7 +1417,7 @@ void mdb_instance::keep_area_quota(bool &stopped, const map<int,
             }
         }
         log_warn
-                ("keeping quota of area %d, %lu bytes released, %.9fs consumed",
+                ("keeping quota of area %d, %"PRI64_PREFIX"u bytes released, %.9fs consumed",
                  area, itr->second - exceeded_bytes, sum_duration);
         ++itr;
     }

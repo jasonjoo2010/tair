@@ -8,8 +8,11 @@ AM_CPPFLAGS= -I${top_srcdir}/deps/tbsys-install/include \
 AM_CXXFLAGS=-Werror
 
 AM_LDFLAGS= -rdynamic ${GCOV_LIB} \
-      -lssl -lz -lrt -lpthread \
+      -lssl -lz -lpthread \
       -ldl -lcrypto
+if !OSX
+AM_LDFLAGS+=-lrt
+endif
 
 LDADD=${top_srcdir}/deps/tbsys-install/lib/libtbsys.la \
       $(top_builddir)/src/plugin/libtair_plugins.a \

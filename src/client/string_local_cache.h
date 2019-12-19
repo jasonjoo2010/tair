@@ -18,7 +18,7 @@ namespace tair {
 
 typedef local_cache<std::string,
         std::string,
-        std::tr1::hash<std::string>,
+        hash<std::string>,
         std::equal_to<std::string> >
         string_local_cache;
 };

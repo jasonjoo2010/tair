@@ -31,9 +31,10 @@ if [ "$1" == "clean" ]; then
 fi
 
 OS=$(uname -s)
+LIBTOOLIZE=libtoolize
 if [ $OS = "Darwin" ]; then
     # mac
-    alias libtoolize='glibtoolize'
+    LIBTOOLIZE=glibtoolize
 fi
 
 # install deps
@@ -51,7 +52,7 @@ if [ "$1" != "skip-deps" ]; then
     cd $prefix
 fi
 
-libtoolize --force
+$LIBTOOLIZE --force
 aclocal
 autoconf
 automake --add-missing --force --warnings=no-portability

@@ -109,7 +109,7 @@ cJSON *ClusterHandler::Config::to_json() const {
         }
         cJSON *allows_json = cJSON_CreateIntArray(arr, count);
         cJSON_AddItemToObject(json, "allows", allows_json);
-        delete arr;
+        delete []arr;
     }
 
     namespaces = forbidden_namespaces_;
@@ -122,7 +122,7 @@ cJSON *ClusterHandler::Config::to_json() const {
         }
         cJSON *allows_json = cJSON_CreateIntArray(arr, count);
         cJSON_AddItemToObject(json, "forbiddens", allows_json);
-        delete arr;
+        delete []arr;
     }
 
     return json;

@@ -183,7 +183,7 @@ void mem_cache::calc_slab_balance_info(std::map<int, int> &adjust_info) {
          * also note that `evict_total_count` is increased only when `alloc_page` failed.
          */
 
-        log_warn("slab %d: items = %lu, evicts = %lu, need_count = %d, need_page = %d",
+        log_warn("slab %d: items = %"PRI64_PREFIX"u, evicts = %"PRI64_PREFIX"u, need_count = %d, need_page = %d",
                  (*it)->slab_id, (*it)->item_total_count, (*it)->evict_total_count, need_count, need_page);
 
         adjust_info.insert(make_pair<int, int>((*it)->slab_id, need_page));
@@ -506,7 +506,7 @@ void mem_cache::slab_memory_merge(volatile bool &stopped, pthread_mutex_t *mdb_l
 
         log_info("mdb instance[%d] running memory merge now ...", instance->instance_id());
 
-        log_info("slab_manager[%d] running memory merge, It's item is %lu, full pages: %d, one page has %d items",
+        log_info("slab_manager[%d] running memory merge, It's item is %"PRI64_PREFIX"u, full pages: %d, one page has %d items",
                   manager->slab_id, manager->item_total_count, manager->full_pages_no, manager->per_slab);
 
         log_info("slab_manager[%d] running memory merge, It's partial_pages_no is %d, but needs min_pages_no is %d",
@@ -688,13 +688,13 @@ mdb_item *mem_cache::slab_manager::alloc_new_item(int area) {
         info->free_head = item->h_next;
     }
 
-    log_debug("from page id:%u,now free:%d,free-head:%lu,id will be use:%lu", info->id, info->free_nr,
+    log_debug("from page id:%u,now free:%d,free-head:%"PRI64_PREFIX"u,id will be use:%"PRI64_PREFIX"u", info->id, info->free_nr,
               info->free_head, item_id);
 
     link_item(item, area);
 
     if (item->item_id != item_id) {
-        log_error("why? overwrite? item->item_id [%lu],item_id[%lu]", item->item_id, item_id);
+        log_error("why? overwrite? item->item_id [%"PRI64_PREFIX"u],item_id[%"PRI64_PREFIX"u]", item->item_id, item_id);
         assert(0);
     }
 
@@ -706,7 +706,7 @@ mdb_item *mem_cache::slab_manager::alloc_new_item(int area) {
         assert(info->free_head == 0);
     } else {
         if (PAGE_ID((info->free_head)) != info->id) {
-            log_error("the page id of free_head [%ld] != info->id [%u]", PAGE_ID(info->free_head), info->id);
+            log_error("the page id of free_head [%"PRI64_PREFIX"d] != info->id [%u]", PAGE_ID(info->free_head), info->id);
         }
     }
     return item;
@@ -879,7 +879,7 @@ void mem_cache::slab_manager::free_item(mdb_item *item) {
     item->prefix_size = 0;
     item->low_hash = 0;
 
-    log_debug("id:%lu before free:page id:%u,%p,info->free_nr:%d,info->free_head:%lu,SLAB_ID(id):%lu,",
+    log_debug("id:%"PRI64_PREFIX"u before free:page id:%u,%p,info->free_nr:%d,info->free_head:%"PRI64_PREFIX"u,SLAB_ID(id):%"PRI64_PREFIX"u,",
               item->item_id, info->id, info, info->free_nr, info->free_head, SLAB_ID(item->item_id));
 
     item->h_next = info->free_head;
@@ -902,7 +902,7 @@ void mem_cache::slab_manager::free_item(mdb_item *item) {
         link_partial_page(info);
     }
 
-    log_debug("after free:page id:%u,%p,info->free_nr:%d,info->free_head:%lu,SLAB_ID(id):%lu,info->free_head->next : %lu",
+    log_debug("after free:page id:%u,%p,info->free_nr:%d,info->free_head:%"PRI64_PREFIX"u,SLAB_ID(id):%"PRI64_PREFIX"u,info->free_head->next : %"PRI64_PREFIX"u",
               info->id, info, info->free_nr, info->free_head, SLAB_ID(item->item_id), item->h_next);
 }
 
@@ -1016,7 +1016,7 @@ mdb_item *mem_cache::slab_manager::evict_self(int &type) {
     int area = type;
     log_debug("evict_self,area:%d", type);
     uint64_t pos = head->item_tail;
-    log_debug("tail:%lu", pos);
+    log_debug("tail:%"PRI64_PREFIX"u", pos);
 
     if (pos == 0) {                // this area have no item of this slab
         log_debug("this area have no item of this size,area:%d,size:%d",
@@ -1104,7 +1104,7 @@ void mem_cache::slab_manager::init_page(char *page, int index) {
     info->free_nr = per_slab;
     info->free_head = ITEM_ID(0, index, slab_id);
 
-    log_debug("new page:%p,slab_size:%d,free_nr:%d,m_id:%d,free_head:%lu", page, slab_size,
+    log_debug("new page:%p,slab_size:%d,free_nr:%d,m_id:%d,free_head:%"PRI64_PREFIX"u", page, slab_size,
               per_slab, index, info->free_head);
 
     char *item_start = page + sizeof(page_info);
@@ -1116,7 +1116,7 @@ void mem_cache::slab_manager::init_page(char *page, int index) {
         item->page_id = index;
         item->slab_id = slab_id;
         item->h_next = ITEM_ID(i + 1, index, slab_id);
-        log_debug("in page [%d],the %dth item: %lu,h_next :%lu", info->id, i, item->item_id, item->h_next);
+        log_debug("in page [%d],the %dth item: %"PRI64_PREFIX"u,h_next :%"PRI64_PREFIX"u", info->id, i, item->item_id, item->h_next);
         item = reinterpret_cast<mdb_item *>((char *) item + slab_size);
     }
     item = reinterpret_cast<mdb_item *>((char *) item - slab_size);
@@ -1142,7 +1142,7 @@ void mem_cache::slab_manager::link_item(mdb_item *item, int area) {
     assert(item->item_id != 0);
     assert(area < TAIR_MAX_AREA_COUNT);
     item_list *head = &this_item_list[area];
-    log_debug("link_item [%p] [%lu] into [%d] [%p],list", item, item->item_id, area, head);
+    log_debug("link_item [%p] [%"PRI64_PREFIX"u] into [%d] [%p],list", item, item->item_id, area, head);
 
     item->next = head->item_head;
     item->prev = 0;
@@ -1166,7 +1166,7 @@ void mem_cache::slab_manager::unlink_item(mdb_item *item) {
 
     item_list *head = &this_item_list[ITEM_AREA(item)];
 
-    log_debug("unlink item [%p] [%lu] from [%d] [%p],list", item, item->item_id, ITEM_AREA(item), head);
+    log_debug("unlink item [%p] [%"PRI64_PREFIX"u] from [%d] [%p],list", item, item->item_id, ITEM_AREA(item), head);
 
     if (itemid_equal(item->item_id, head->item_head)) {
         head->item_head = item->next;
@@ -1247,7 +1247,7 @@ int mem_cache::slab_manager::pre_alloc(int pages) {
 void mem_cache::slab_manager::display_statics() {
     log_debug("slab_id:%u,slab_size:%d,per_slab:%d\n", slab_id,
               slab_size, per_slab);
-    log_debug("item_total_count:%lu,full_pages_no:%d,partial_pages_no:%d,free_pages_no:%d\n",
+    log_debug("item_total_count:%"PRI64_PREFIX"u,full_pages_no:%d,partial_pages_no:%d,free_pages_no:%d\n",
               item_total_count, full_pages_no, partial_pages_no, free_pages_no);
 }
 

@@ -16,7 +16,6 @@
 #include <vector>
 #include <list>
 #include <unistd.h>
-#include <ext/hash_map>
 #include <tbsys.h>
 #include <databuffer.hpp>
 #include "wait_object.hpp"

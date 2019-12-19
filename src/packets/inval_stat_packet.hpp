@@ -60,7 +60,7 @@ public:
     bool encode(DataBuffer *output) {
         output->writeInt32(config_version);
         output->writeInt32(code);
-        output->writeInt64(uncompressed_data_size);
+        output->writeInt64((uint64_t)uncompressed_data_size);
         output->writeInt32(group_count);
         if (key != NULL && stat_value != NULL) {
             key->encode(output);

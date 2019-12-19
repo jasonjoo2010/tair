@@ -567,14 +567,14 @@ int tair_client_api::reset_db(const char *ds_addr) {
 
 int tair_client_api::reset_namespace(int area, int &new_area) {
     std::vector<std::string> params;
-    params.push_back(area + "");
+    params.push_back(std::to_string(area));
     new_area = area + TAIR_MAX_AREA_COUNT / 2;
     return impl == NULL ? TAIR_RETURN_NOT_INIT : impl->op_cmd_to_ds(TAIR_SERVER_CMD_RESET_AREAUNIT, &params, NULL);
 }
 
 int tair_client_api::switch_namespace(int area) {
     std::vector<std::string> params;
-    params.push_back(area + "");
+    params.push_back(std::to_string(area));
     return impl == NULL ? TAIR_RETURN_NOT_INIT : impl->op_cmd_to_ds(TAIR_SERVER_CMD_SWITCH_AREAUNIT, &params, NULL);
 }
 

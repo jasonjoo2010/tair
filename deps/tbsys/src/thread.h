@@ -103,13 +103,17 @@ private:
     /**
      * 得到tid号
      */
-    #ifdef _syscall0
+#ifdef _syscall0
     static _syscall0(pid_t,gettid)
-    #elif defined(__APPLE__)
-    static pid_t gettid() { return static_cast<pid_t>(syscall(SYS_thread_selfid));}
-    #else
+#elif defined(__APPLE__)
+    static pid_t gettid() {
+        uint64_t tid;
+        pthread_threadid_np(NULL, &tid);
+        return static_cast<pid_t>(tid);
+    }
+#else
     static pid_t gettid() { return static_cast<pid_t>(syscall(__NR_gettid));}
-    #endif
+#endif
 
 private:
     pthread_t tid;      // pthread_self() id

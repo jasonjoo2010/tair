@@ -9,7 +9,7 @@
  *
  */
 
-#if __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+#if __APPLE__ || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
 
 #include <unordered_map>
 
@@ -295,7 +295,7 @@ int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
             }
             // db mtime is later than request, then need not do operation any more
             need_op = !(mtime_care && ldb_item.mdate() > key.data_meta.mdate);
-            log_debug("@@ mtime care: %d,np:%d, %ld <> %ld, ldb_item.version:%d,key.data_meta.version:%d",
+            log_debug("@@ mtime care: %d,np:%d, %"PRI64_PREFIX"d <> %"PRI64_PREFIX"d, ldb_item.version:%d,key.data_meta.version:%d",
                       mtime_care, need_op, ldb_item.mdate(), key.data_meta.mdate, ldb_item.version(),
                       key.data_meta.version);
             if (!need_op) {
@@ -346,7 +346,7 @@ int LdbInstance::put(int bucket_number, tair::common::data_entry &key,
         }
 
         ldb_item.set(value.get_data(), value.get_size());
-        log_debug("meta_version:%u, prefix_size %u, total_size:%u, valuesize:%u edate:%ld",
+        log_debug("meta_version:%u, prefix_size %u, total_size:%u, valuesize:%u edate:%"PRI64_PREFIX"d",
                   ldb_item.meta().base_.meta_version_, key.get_prefix_size(), ldb_item.size(), value.get_size(),
                   ldb_item.edate());
 
@@ -498,7 +498,7 @@ int LdbInstance::update(int bucket_number, tair::common::data_entry &key, tair::
         }
 
         log_debug(
-                "ldb::update %d, key len: %d, key prefix len:%d , value len: %u, update_type:%d version:%d expire:%ld\n",
+                "ldb::update %d, key len: %d, key prefix len:%d , value len: %u, update_type:%d version:%d expire:%"PRI64_PREFIX"d\n",
                 rc, key.get_size(), key.get_prefix_size(), ldb_item.size(), ldb_update_type,
                 ldb_item.meta().base_.version_, ldb_item.meta().base_.edate_);
         PROFILER_BEGIN("db put:update");
@@ -636,7 +636,7 @@ int LdbInstance::incr_decr(int bucket_number, data_entry &key, int64_t delta, in
     }
     char *new_value = (char *) malloc(mc_header_size + max_ascii_counter_len);
     memset(new_value, 0, mc_header_size + max_ascii_counter_len);
-    int counter_size = sprintf(new_value + mc_header_size, "%lu", curr_val);
+    int counter_size = sprintf(new_value + mc_header_size, "%"PRI64_PREFIX"u", curr_val);
     ldb_item.set(const_cast<char *>(new_value), mc_header_size + counter_size);
     free(new_value);
 
@@ -697,7 +697,7 @@ LdbInstance::do_put_and_set_meta(data_entry &key, LdbKey &ldb_key, LdbItem &ldb_
     }
 
     PROFILER_BEGIN("db put");
-    log_debug("ldb::put, key len: %d, key prefix len:%d, value len: %u, version:%d expire:%ld, mdate:%ld, cdate:%ld\n",
+    log_debug("ldb::put, key len: %d, key prefix len:%d, value len: %u, version:%d expire:%"PRI64_PREFIX"d, mdate:%"PRI64_PREFIX"d, cdate:%"PRI64_PREFIX"d\n",
               key.get_size(), key.get_prefix_size(), ldb_item.size(),
               ldb_item.meta().base_.version_, ldb_item.meta().base_.edate_, ldb_item.meta().base_.mdate_,
               ldb_item.meta().base_.cdate_);
@@ -1163,7 +1163,7 @@ int LdbInstance::get(int bucket_number, tair::common::data_entry &key, tair::com
         ldb_item.assign(const_cast<char *>(db_value.data()), db_value.size());
         // already check expired. no need here.
         value.set_data(ldb_item.value(), ldb_item.value_size());
-        log_debug("@@value: size %zd, ldb_item: size %d prefix %d, cdate %ld edate %ld mdate %ld", db_value.size(),
+        log_debug("@@value: size %zd, ldb_item: size %d prefix %d, cdate %"PRI64_PREFIX"d edate %"PRI64_PREFIX"d mdate %"PRI64_PREFIX"d", db_value.size(),
                   ldb_item.value_size(), ldb_item.prefix_size(), ldb_item.cdate(), ldb_item.edate(), ldb_item.mdate());
         // update meta info
         key.data_meta.flag = value.data_meta.flag = ldb_item.flag();

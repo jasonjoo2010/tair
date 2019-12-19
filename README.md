@@ -2,6 +2,25 @@
 
 Tair is fast-access memory (MDB)/persistent (LDB) storage service. Using a high-performance and high-availability distributed cluster architecture, Tair can meet businesses' high requirements for read/write performance and scalable capacity.
 
+# Tutorial
+## Compilation
+### Linux
+```shell
+./bootstrap.sh
+./configure --prefix=~/tair-bin --with-svn=201912161618 --with-release=yes --with-tcmalloc --with-compress=no
+make
+```
+
+### Mac
+You should have your own `openssl-1.0.x` and `readline` libraries. You can download them and compile manually or install them through `brew`. Then you will let it know them through environment variables `OPENSSL_DIR` and `READLINE_DIR`. You must make sure there are `lib` and `include` in them. For me:
+```shell
+export OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2t
+export READLINE_DIR=/usr/local/Cellar/readline/8.0.1
+./bootstrap.sh
+./configure --prefix=~/tair-bin --with-svn=201912161618 --with-release=yes --with-tcmalloc --with-compress=no
+make
+```
+
 # Architecture
 
 ## System architecture
@@ -78,6 +97,9 @@ Distributed locks are usually used to prevent data inconsistency and logical cha
 The source code is available user the GPL version 2. We are avtively looking for contributors so if you have any ideas, bug reports, or patchs you would like to contribute please do not hesitate to do so.
 
 # Changelog
+## 3.3.1
+* Compilation support under MacOS
+
 ## 3.3.0
 * get_range support reversed traversal.
 * enlarge expire to int64.

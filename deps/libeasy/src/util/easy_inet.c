@@ -90,7 +90,7 @@ easy_addr_t easy_inet_add_port(easy_addr_t *addr, int diff)
     easy_addr_t             ret;
 
     memcpy(&ret, addr, sizeof(easy_addr_t));
-    ret.port = ntohs(ntohs(addr->port) + diff);
+    ret.port = htons(ntohs(addr->port) + diff);
     return ret;
 }
 
@@ -136,6 +136,9 @@ int easy_inet_parse_host(easy_addr_t *addr, const char *host, int port)
             // FIXME: gethostbyname会阻塞
 #ifdef __APPLE__
             struct hostent *hp = gethostbyname(host);
+            if (hp == NULL) {
+                return EASY_ERROR;
+            }
 #else
             char                    buffer[1024];
             struct  hostent         h, *hp;

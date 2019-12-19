@@ -12,6 +12,8 @@
 #ifndef TAIR_PREFIX_INCDEC_PACKET_H
 #define TAIR_PREFIX_INCDEC_PACKET_H
 
+#include <unordered_map>
+
 #include "base_packet.hpp"
 #include "data_entry.hpp"
 #include "counter_wrapper.hpp"
@@ -259,7 +261,7 @@ public:
     }
 
 public:
-    typedef __gnu_cxx::hash_map<data_entry *, counter_wrapper *,
+    typedef std::unordered_map<data_entry *, counter_wrapper *,
             tair::common::data_entry_hash, tair::common::data_entry_equal_to> key_counter_map_t;
     uint16_t area;
     data_entry *pkey;
@@ -331,7 +333,7 @@ public:
             key_value_map_t::iterator it = success_key_value_map->begin();
             while (it != success_key_value_map->end()) {
                 it->first->encode(output);
-                output->writeInt64(it->second);
+                output->writeInt64((uint64_t)it->second);
                 ++it;
             }
         }

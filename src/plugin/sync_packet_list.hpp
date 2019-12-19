@@ -60,7 +60,7 @@ private:
     int do_batch_load(unsigned int _want_size);
 
 private:
-    //typedef __gnu_cxx::hash_map<uint32_t,T > CDuplicatPkgMap;
+    //typedef std::unordered_map<uint32_t,T > CDuplicatPkgMap;
     //CDuplicatPkgMap m_PkgWaitMap;
     BlockQueueEx<data_entry *> m_in_queue;
     BlockQueueEx<data_entry *> *m_pout_queue;

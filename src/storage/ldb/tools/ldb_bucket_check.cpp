@@ -116,7 +116,7 @@ void CheckStat::do_dump(std::map<int32_t, Stat *> &stats, int32_t key, const cha
             fprintf(stderr, "NONE STATS\n");
         } else {
             stat = it->second;
-            fprintf(stderr, "%5d%12ld%12ld%12ld%20ld%15ld%20ld\n", it->first, stat->count_, stat->size_,
+            fprintf(stderr, "%5d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%20"PRI64_PREFIX"d%15"PRI64_PREFIX"d%20"PRI64_PREFIX"d\n", it->first, stat->count_, stat->size_,
                     stat->suc_count_, stat->invalid_count_,
                     stat->del_ok_count_, stat->del_fail_count_);
         }
@@ -126,11 +126,11 @@ void CheckStat::do_dump(std::map<int32_t, Stat *> &stats, int32_t key, const cha
         for (std::map<int32_t, Stat *>::iterator it = stats.begin(); it != stats.end(); ++it) {
             stat = it->second;
             total_stat.add(*stat);
-            fprintf(stderr, "%5d%12ld%12ld%12ld%20ld%15ld%20ld\n", it->first, stat->count_, stat->size_,
+            fprintf(stderr, "%5d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%20"PRI64_PREFIX"d%15"PRI64_PREFIX"d%20"PRI64_PREFIX"d\n", it->first, stat->count_, stat->size_,
                     stat->suc_count_, stat->invalid_count_,
                     stat->del_ok_count_, stat->del_fail_count_);
         }
-        fprintf(stderr, "%5s%12ld%12ld%12ld%20ld%15ld%20ld\n", "total", total_stat.count_, total_stat.size_,
+        fprintf(stderr, "%5s%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%12"PRI64_PREFIX"d%20"PRI64_PREFIX"d%15"PRI64_PREFIX"d%20"PRI64_PREFIX"d\n", "total", total_stat.count_, total_stat.size_,
                 total_stat.suc_count_, total_stat.invalid_count_,
                 total_stat.del_ok_count_, total_stat.del_fail_count_);
     }
@@ -175,14 +175,14 @@ void sign_handler(int sig) {
             break;
         case 51:
             g_wait_ms += 10;
-            log_warn("g_wait_ms: %ld", g_wait_ms);
+            log_warn("g_wait_ms: %"PRI64_PREFIX"d", g_wait_ms);
             break;
         case 52:
             g_wait_ms -= 10;
             if (g_wait_ms < 0) {
                 g_wait_ms = 0;
             }
-            log_warn("g_wait_ms: %ld", g_wait_ms);
+            log_warn("g_wait_ms: %"PRI64_PREFIX"d", g_wait_ms);
             break;
     }
 }
@@ -292,7 +292,7 @@ int do_repair(tair_client_impl *local_handler, const char *filename) {
     fin.close();
     fout.close();
 
-    fprintf(stderr, "repair rslt : totalCount is %ld, sucCount is %ld, notExistCount is %ld, failCount is %ld\n",
+    fprintf(stderr, "repair rslt : totalCount is %"PRI64_PREFIX"d, sucCount is %"PRI64_PREFIX"d, notExistCount is %"PRI64_PREFIX"d, failCount is %"PRI64_PREFIX"d\n",
             count, suc_count, not_exist_count, fail_count);
 
     return 0;
@@ -402,7 +402,7 @@ int do_check(std::vector<int32_t> &buckets, int32_t bucket_number,
                             ret == TAIR_RETURN_SUCCESS);
             }
 
-            log_warn("check bucket %d over, cost: %ld(s), stat:\n",
+            log_warn("check bucket %d over, cost: %"PRI64_PREFIX"d(s), stat:\n",
                      bucket, time(NULL) - start_time);
 
             // only dump bucket stat
@@ -553,7 +553,7 @@ int main(int argc, char *argv[]) {
                        db_path, manifest_file, cmp_desc,
                        local_handler, stat, log_file_name);
 
-        log_warn("check data over, stopped: %s, cost: %ld(s), stat:", g_stop ? "yes" : "no", time(NULL) - start_time);
+        log_warn("check data over, stopped: %s, cost: %"PRI64_PREFIX"d(s), stat:", g_stop ? "yes" : "no", time(NULL) - start_time);
         stat.dump_all();
     }
 

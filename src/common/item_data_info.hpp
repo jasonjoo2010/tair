@@ -43,7 +43,7 @@ typedef struct _item_meta {
 
     void log_self() {
         log_debug(
-                "meta info of data: keysize[%d], valsize[%d], prefixsize[%d], version[%d], flag[%d], cdate[%ld], mdate[%ld], edate[%ld]",
+                "meta info of data: keysize[%d], valsize[%d], prefixsize[%d], version[%d], flag[%d], cdate[%l"PRI64_PREFIX"d], mdate[%l"PRI64_PREFIX"d], edate[%l"PRI64_PREFIX"d]",
                 keysize, valsize, prefixsize, version, flag, cdate, mdate, edate);
     }
 } item_meta_info;

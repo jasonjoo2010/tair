@@ -17,7 +17,7 @@
 #include "key_value_pack.hpp"
 #include "mc_ops_packet.hpp"
 
-#include <byteswap.h>
+#include <easy_io.h>
 
 namespace tair {
 
@@ -1093,7 +1093,7 @@ void tair_client::do_cmd_addcount(VSTRING &param) {
     if (ret != TAIR_RETURN_SUCCESS) {
         fprintf(stderr, "add failed:%d,%s.\n", ret, client_helper.get_error_msg(ret));
     } else {
-        fprintf(stderr, "retCount: %ld\n", retCount);
+        fprintf(stderr, "retCount: %"PRI64_PREFIX"d\n", retCount);
     }
     if (akey) free(akey);
 
@@ -1292,7 +1292,7 @@ void tair_client::do_cmd_get_flow_rate(VSTRING &param) {
         int ret = client_helper.get_flow(addr, ns, rate);
 
         if (ret == 0) {
-            fprintf(stderr, "success %s \tns:%d \tin:%ld,%s \tout:%ld,%s \tops:%ld,%s \tstatus:%s\n",
+            fprintf(stderr, "success %s \tns:%d \tin:%"PRI64_PREFIX"d,%s \tout:%"PRI64_PREFIX"d,%s \tops:%"PRI64_PREFIX"d,%s \tstatus:%s\n",
                     tbsys::CNetUtil::addrToString(addr).c_str(), ns,
                     rate.in, FlowStatusStr(rate.in_status),
                     rate.out, FlowStatusStr(rate.out_status),
@@ -1386,7 +1386,7 @@ void tair_client::do_cmd_get_flow_top(VSTRING &param) {
     sort(stats.begin(), stats.end(), flow_sort_item::sort_ops);
     cnt = 0;
     for (vector<flow_sort_item>::iterator it = stats.begin(); it != stats.end() && cnt < top_num; ++it, ++cnt) {
-        fprintf(stderr, "ns : %4d \t   ops : %ld\n", it->ns, it->rate.ops);
+        fprintf(stderr, "ns : %4d \t   ops : %"PRI64_PREFIX"d\n", it->ns, it->rate.ops);
     }
     // top in
     fprintf(stderr,
@@ -1394,7 +1394,7 @@ void tair_client::do_cmd_get_flow_top(VSTRING &param) {
     sort(stats.begin(), stats.end(), flow_sort_item::sort_in);
     cnt = 0;
     for (vector<flow_sort_item>::iterator it = stats.begin(); it != stats.end() && cnt < top_num; ++it, ++cnt) {
-        fprintf(stderr, "ns : %4d \t    in : %ld\n", it->ns, it->rate.in);
+        fprintf(stderr, "ns : %4d \t    in : %"PRI64_PREFIX"d\n", it->ns, it->rate.in);
     }
     // top out
     fprintf(stderr,
@@ -1402,7 +1402,7 @@ void tair_client::do_cmd_get_flow_top(VSTRING &param) {
     sort(stats.begin(), stats.end(), flow_sort_item::sort_out);
     cnt = 0;
     for (vector<flow_sort_item>::iterator it = stats.begin(); it != stats.end() && cnt < top_num; ++it, ++cnt) {
-        fprintf(stderr, "ns : %4d \t   out : %ld\n", it->ns, it->rate.out);
+        fprintf(stderr, "ns : %4d \t   out : %"PRI64_PREFIX"d\n", it->ns, it->rate.out);
     }
     // top max
     fprintf(stderr,
@@ -1410,7 +1410,7 @@ void tair_client::do_cmd_get_flow_top(VSTRING &param) {
     sort(stats.begin(), stats.end(), flow_sort_item::sort_total);
     cnt = 0;
     for (vector<flow_sort_item>::iterator it = stats.begin(); it != stats.end() && cnt < top_num; ++it, ++cnt) {
-        fprintf(stderr, "ns : %4d \t total : %ld\n", it->ns, it->rate.in + it->rate.out);
+        fprintf(stderr, "ns : %4d \t total : %"PRI64_PREFIX"d\n", it->ns, it->rate.in + it->rate.out);
     }
 }
 
@@ -1654,7 +1654,7 @@ void tair_client::print_stat(int32_t size_unit, const map<string, vector<int64_t
     for (map<string, vector<int64_t> >::const_iterator it = stat.begin(); it != stat.end(); ++it) {
         fprintf(stderr, "%-20s ", it->first.c_str());
         for (vector<int64_t>::const_iterator row_it = it->second.begin(); row_it != it->second.end(); ++row_it)
-            fprintf(stderr, "%-10ld ", *row_it / size_unit);
+            fprintf(stderr, "%-10"PRI64_PREFIX"d ", *row_it / size_unit);
         fprintf(stderr, "\n");
     }
 }

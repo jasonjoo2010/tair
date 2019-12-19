@@ -11,7 +11,7 @@
 
 #include <unistd.h>
 #include <sys/mman.h>
-#include <byteswap.h>
+#include <easy_io.h>
 
 #include "stat_define.hpp"
 

@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS=subdir-objects
 AM_CPPFLAGS=-I${top_srcdir}/src \
 			-I${top_srcdir}/deps/libeasy-install/include/easy \
 			-I${top_srcdir}/deps/tbsys-install/include \
@@ -15,13 +16,16 @@ shm_source_list=cache_hashmap.cpp \
 				mem_pool.cpp \
 				mdb_stat_manager.hpp \
 				mdb_stat_manager.cpp \
-				${top_srcdir}/src/common/data_dumpper.cpp \
-				${top_srcdir}/src/common/stat_define.hpp \
-				${top_srcdir}/src/common/stat_define.cpp \
-				${top_srcdir}/src/common/util.hpp \
-				${top_srcdir}/src/common/util.cpp
+				../../common/data_dumpper.cpp \
+				../../common/stat_define.hpp \
+				../../common/stat_define.cpp \
+				../../common/util.hpp \
+				../../common/util.cpp
 
-AM_LDFLAGS=-lrt -lpthread -lz -static-libgcc ${GCOV_LIB}
+AM_LDFLAGS=-lpthread -lz -static-libgcc ${GCOV_LIB}
+if !OSX
+AM_LDFLAGS+=-lrt
+endif
 AM_CXXFLAGS=-Werror -fPIC
 lib_LTLIBRARIES=libmdb.la libmdb_c.la
 
@@ -54,6 +58,9 @@ include_HEADERS=mdb_factory.hpp mdb_manager.hpp libmdb_c.hpp
 
 sbin_PROGRAMS = mdb_reader
 mdb_reader_SOURCES=mdb_reader.cpp
-mdb_reader_LDADD=libmdb.la $(LDADD) -lpthread -lrt
+mdb_reader_LDADD=libmdb.la $(LDADD) -lpthread
+if !OSX
+mdb_reader_LDADD+=-lrt
+endif
 mdb_reader_LDFLAGS=-static
 

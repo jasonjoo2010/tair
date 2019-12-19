@@ -103,7 +103,7 @@ int do_rsync_data(ClusterHandler &local_handler, ClusterHandler &remote_handler,
         key.data_meta.version = value->data_meta.version;
     }
 
-    log_debug("@@ k:%d %s %d %d %ld %ld %ld.v:%s %d %d", key.get_area(), key.get_size() > 6 ? key.get_data() + 6 : "",
+    log_debug("@@ k:%d %s %d %d %"PRI64_PREFIX"d %"PRI64_PREFIX"d %"PRI64_PREFIX"d.v:%s %d %d", key.get_area(), key.get_size() > 6 ? key.get_data() + 6 : "",
               key.get_size(), key.get_prefix_size(), key.data_meta.cdate, key.data_meta.mdate, key.data_meta.edate,
               (value != NULL && value->get_size() > 4) ? value->get_data() + 4 : "",
               value != NULL ? value->get_size() : 0, value != NULL ? value->data_meta.flag : -1);
@@ -116,7 +116,7 @@ int do_rsync_data(ClusterHandler &local_handler, ClusterHandler &remote_handler,
         switch (type) {
             case TAIR_REMOTE_SYNC_TYPE_PUT:
                 if (ret == TAIR_RETURN_SUCCESS) {
-                    log_debug("@@ edate : %ld %ld %ld", key.data_meta.mdate, key.data_meta.edate, value->data_meta.edate);
+                    log_debug("@@ edate : %"PRI64_PREFIX"d %"PRI64_PREFIX"d %"PRI64_PREFIX"d", key.data_meta.mdate, key.data_meta.edate, value->data_meta.edate);
                     ret = remote_handler.client()->put(key.get_area(), key, *value, value->data_meta.edate,
                                                        value->data_meta.version, false);
                     if (ret == TAIR_RETURN_MTIME_EARLY) {
@@ -254,7 +254,7 @@ int do_repair_rsync(ClusterHandler &local_handler, RecordLogger *logger, RecordL
     }
 
     log_warn(
-            "repair over. stopped: %s, total count: %ld, fail count: %ld, put_but_local_not_exist count: %ld, delete_but_local_exist count: %ld, cost: %ld(s)",
+            "repair over. stopped: %s, total count: %"PRI64_PREFIX"d, fail count: %"PRI64_PREFIX"d, put_but_local_not_exist count: %"PRI64_PREFIX"d, delete_but_local_exist count: %"PRI64_PREFIX"d, cost: %ld(s)",
             g_stop ? "yes" : "no",
             count, fail_count, g_put_but_local_not_exist_count, g_delete_but_local_exist_count,
             time(NULL) - start_time);

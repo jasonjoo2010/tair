@@ -11,6 +11,10 @@
 #include "util/hash.h"
 #include "util/mutexlock.h"
 
+#ifndef UNUSED
+#define UNUSED(a) /*@-noeffect*/if (0) (void)(a)/*@=noeffect*/;
+#endif
+
 namespace leveldb {
 
 Cache::~Cache() {
@@ -180,6 +184,7 @@ LRUCache::LRUCache()
   // Make empty circular linked list
   lru_.next = &lru_;
   lru_.prev = &lru_;
+  UNUSED(last_id_);
 }
 
 LRUCache::~LRUCache() {

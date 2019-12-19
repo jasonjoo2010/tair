@@ -9,7 +9,9 @@
  *
  */
 
+#ifndef __APPLE__
 #include <sys/prctl.h>
+#endif
 #include <string>
 #include <tbsys.h>
 #include <easy_io.h>
@@ -248,7 +250,11 @@ void RTCollector::add_default_ops() {
 }
 
 void *RTCollector::reset_thread(void *arg) {
+#ifdef PR_SET_NAME
     prctl(PR_SET_NAME, "rt_thread", 0, 0, 0);
+#else
+    pthread_setname_np("rt_thread");
+#endif
     reinterpret_cast<RTCollector *>(arg)->do_reset();
     return NULL;
 }

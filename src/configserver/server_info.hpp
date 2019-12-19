@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <tbsys.h>
 #include <set>
+#include <unordered_map>
 #include "mmap_file.hpp"
 
 
@@ -56,7 +57,7 @@ public:
 
 #pragma pack()
 
-typedef __gnu_cxx::hash_map<uint64_t, server_info *, __gnu_cxx::hash < int> >
+typedef std::unordered_map<uint64_t, server_info *, std::hash < int> >
 server_info_map;
 
 class node_info {
