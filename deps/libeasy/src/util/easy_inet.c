@@ -85,7 +85,7 @@ easy_addr_t easy_inet_str_to_addr(const char *host, int port)
 /**
  * 把端口改变一下
  */
-easy_addr_t easy_inet_add_port(easy_addr_t *addr, int diff)
+easy_addr_t easy_inet_add_port(const easy_addr_t *addr, int diff)
 {
     easy_addr_t             ret;
 
@@ -110,6 +110,19 @@ int easy_inet_is_ipaddr(const char *host)
     }
 
     return 1;
+}
+
+int easy_inet_is_ipaddr6(const char *host) {
+	unsigned char c, *p;
+	p = (unsigned char *) host;
+
+	while ((c = (*p++)) != '\0') {
+		if ((c != ':') && !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+			return 0;
+		}
+	}
+
+	return 1;
 }
 
 /**
@@ -222,7 +235,7 @@ easy_addr_t easy_inet_getpeername(int s)
 /**
  *
  */
-void easy_inet_atoe(void *a, easy_addr_t *e)
+void easy_inet_atoe(const void *a, easy_addr_t *e)
 {
     struct sockaddr_storage *addr = (struct sockaddr_storage *) a;
     memset(e, 0, sizeof(easy_addr_t));
@@ -240,7 +253,7 @@ void easy_inet_atoe(void *a, easy_addr_t *e)
     }
 }
 
-void easy_inet_etoa(easy_addr_t *e, void *a)
+void easy_inet_etoa(const easy_addr_t *e, void *a)
 {
     if (e->family == AF_INET6) {
         struct sockaddr_in6     *s = (struct sockaddr_in6 *)a;
