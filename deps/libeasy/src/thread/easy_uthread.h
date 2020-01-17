@@ -4,7 +4,7 @@
 #include <easy_pool.h>
 #include <easy_list.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(_XOPEN_SOURCE)
 #define _XOPEN_SOURCE
 #endif
 
