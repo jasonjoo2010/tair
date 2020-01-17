@@ -71,7 +71,7 @@ AC_ARG_WITH([gcov], AS_HELP_STRING([--with-gcov], [enable code coverage(default 
 ])
 MOSTLYCLEANFILES="*.gcno *.gcda" 
 DEFAULT_INCLUDES="-I`pwd`/src/include/ -I`pwd`/src/util/"
-DEFAULT_INCLUDES="$DEFAULT_INCLUDES -I`pwd`/src/thread/ -I`pwd`/src/io/ -I`pwd`/src/packet/ -I`pwd`/src/packet/http -I."
+DEFAULT_INCLUDES="$DEFAULT_INCLUDES -I`pwd`/src/thread/ -I`pwd`/src/io/ -I`pwd`/src/memory/ -I`pwd`/src/packet/ -I`pwd`/src/packet/http -I."
 VERSION_MAP="`pwd`/src/libeasy.map"
 AC_SUBST(DEFAULT_INCLUDES)
 AC_SUBST(VERSION_MAP)
@@ -85,12 +85,14 @@ AC_CONFIG_FILES([Makefile
                  src/thread/Makefile
                  src/io/Makefile
                  src/packet/Makefile
+                 src/memory/Makefile
                  test/Makefile
                  test/include/Makefile
                  test/util/Makefile
                  test/thread/Makefile
                  test/io/Makefile
                  test/packet/Makefile
+                 test/memory/Makefile
                  sample/Makefile
 		])
 AC_OUTPUT

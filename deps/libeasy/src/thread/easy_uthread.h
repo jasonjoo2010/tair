@@ -4,6 +4,13 @@
 #include <easy_pool.h>
 #include <easy_list.h>
 
+#ifdef __APPLE__
+#define _XOPEN_SOURCE
+#endif
+
+#include <signal.h>
+#include <ucontext.h>
+
 /**
  * 创建一用户态线程
  */
