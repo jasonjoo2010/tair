@@ -15,19 +15,20 @@
 TEST(easy_connection, listen)
 {
     easy_listen_t           *l;
+    int port = 12345; // must greater then 1024 avoiding permission issue
 
     easy_log_level = (easy_log_level_t)0;
-    l = easy_io_add_listen(NULL, 80, NULL);
+    l = easy_io_add_listen(NULL, port, NULL);
     EXPECT_TRUE(l == NULL);
 
     easy_io_create(1);
 
-    l = easy_io_add_listen(NULL, 80, NULL);
+    l = easy_io_add_listen(NULL, port, NULL);
     EXPECT_TRUE(l != NULL);
 
     easy_io_start();
 
-    l = easy_io_add_listen(NULL, 80, NULL);
+    l = easy_io_add_listen(NULL, port, NULL);
     EXPECT_TRUE(l == NULL);
     easy_io_stop();
     easy_io_wait();
