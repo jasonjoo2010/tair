@@ -23,7 +23,7 @@ TEST(easy_connection, listen)
     easy_io_create(1);
 
     l = easy_io_add_listen(NULL, 80, NULL);
-    EXPECT_TRUE(l == NULL);
+    EXPECT_TRUE(l != NULL);
 
     easy_io_start();
 
