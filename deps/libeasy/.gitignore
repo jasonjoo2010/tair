@@ -3,6 +3,7 @@
 
 # Visual Studio Code
 .history/
+.vscode/
 
 # compilation files
 .libs/
