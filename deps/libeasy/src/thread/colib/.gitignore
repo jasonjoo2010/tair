@@ -6,3 +6,4 @@ example_echosvr
 example_poll
 example_specific
 example_thread
+libcolib.a
