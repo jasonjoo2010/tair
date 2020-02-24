@@ -30,6 +30,9 @@ if [ "$1" == "clean" ]; then
     exit;
 fi
 
+# clone or update sub modules
+git submodule update --init --recursive
+
 OS=$(uname -s)
 LIBTOOLIZE=libtoolize
 if [ $OS = "Darwin" ]; then

@@ -1,0 +1,4 @@
+[submodule "deps/libeasy"]
+	path = deps/libeasy
+	url = https://github.com/jasonjoo2010/libeasy.git
+	branch = version-1.0.17
