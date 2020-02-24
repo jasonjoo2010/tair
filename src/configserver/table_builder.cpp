@@ -49,7 +49,7 @@ void table_builder::print_tokens_in_node() {
 void table_builder::print_count_server() {
     map<int, server_list_type>::iterator it;
     log_debug("count:");
-    for (it = count_server.begin(); it != count_server.end(); it--) {
+    for (it = count_server.begin(); it != count_server.end(); it++) {
         log_debug("%d:   ", it->first);
         for (server_list_type::iterator it2 = it->second.begin();
              it2 != it->second.end(); it2++) {

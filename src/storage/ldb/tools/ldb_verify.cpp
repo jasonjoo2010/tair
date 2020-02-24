@@ -172,7 +172,11 @@ struct Configure {
     CConfig c;
     set<int> areas;
     set<int> buckets;
+#ifdef __APPLE__
+    pthread_mutex_t biglock;
+#else
     pthread_spinlock_t biglock;
+#endif
     pthread_mutex_t downloadlock;
     set<std::string> last_run_finished_tasks;
 
@@ -202,7 +206,11 @@ struct Configure {
         max_area = TAIR_MAX_AREA_COUNT;
         set_rsync_info_by_cmdline = false;
         just_get_key_value_from_local = false;
+#ifdef __APPLE__
+        pthread_mutex_init(&biglock, NULL);
+#else
         pthread_spin_init(&biglock, PTHREAD_PROCESS_PRIVATE);
+#endif
         pthread_mutex_init(&downloadlock, NULL);
     }
 
@@ -218,7 +226,11 @@ struct Configure {
         if (localfile >= 0) {
             close(localfile);
         }
+#ifdef __APPLE__
+        pthread_mutex_destroy(&biglock);
+#else
         pthread_spin_destroy(&biglock);
+#endif
         pthread_mutex_destroy(&downloadlock);
     }
 
@@ -424,7 +436,11 @@ public:
     Task *pop();
 
 private:
+#ifdef __APPLE__
+    pthread_mutex_t lock;
+#else
     pthread_spinlock_t lock;
+#endif
     std::stack<Task *> tasks;
 } task_list;
 
@@ -941,7 +957,7 @@ parse_cluster_string(std::vector<std::string> &infos, const char *line,
                      const char *separator, const char *err_msg) {
     tair::common::string_util::split_str(line, separator, infos);
     if (infos.size() != 3) {
-        log_error(err_msg);
+        log_error("%s", err_msg);
         exit(1);
     }
 }
@@ -1484,13 +1500,21 @@ bool is_task_finished_last_time(Configure *c, int instance, int bucket, int area
 }
 
 void commit_finish_task(Configure *c, int instance, int bucket, int area) {
+#ifdef __APPLE__
+    pthread_mutex_lock(&(c->biglock));
+#else
     pthread_spin_lock(&(c->biglock));
+#endif
 
     std::ofstream fout(FINISH_TASK_FILE_NAME, std::fstream::out | std::fstream::app);
     fout << instance << "." << bucket << "." << area << endl;
     fout.close();
 
+#ifdef __APPLE__
+    pthread_mutex_unlock(&(c->biglock));
+#else
     pthread_spin_unlock(&(c->biglock));
+#endif
 }
 
 #undef FINISH_TASK_FILE_NAME
@@ -1662,10 +1686,10 @@ summary() {
         if (statistics.metrics[i].area_size_total != 0) {
             fprintf(stderr,
                     "%5d\t"
-                            "%18lu"
-                            "%18lu"
+                            "%18"PRI64_PREFIX"u"
+                            "%18"PRI64_PREFIX"u"
                             "%18lf"
-                            "%18lu"
+                            "%18"PRI64_PREFIX"u"
                             "%18lf\n",
                     i,
                     statistics.metrics[i].area_items,
@@ -1677,7 +1701,7 @@ summary() {
     }
 
     fprintf(stderr,
-            "size_total: %lu, items_total: %lu, cold_size_total: %lu, percent: %lf\n",
+            "size_total: %"PRI64_PREFIX"u, items_total: %"PRI64_PREFIX"u, cold_size_total: %"PRI64_PREFIX"u, percent: %lf\n",
             statistics.size_total, statistics.items_total, statistics.cold_size_total,
             (double) statistics.cold_size_total / statistics.size_total);
 
@@ -1701,11 +1725,11 @@ summary() {
         }
         fprintf(stderr,
                 "%5d"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu\n",
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u\n",
                 i,
                 conflict_stat[0][i].counter[CONFLICT_VALUE],
                 conflict_stat[0][i].counter[CONFLICT_VALUE_SIZE],
@@ -1734,11 +1758,11 @@ summary() {
         }
         fprintf(stderr,
                 "%5d"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu"
-                        "%18lu\n",
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u"
+                        "%18"PRI64_PREFIX"u\n",
                 i,
                 conflict_stat[1][i].counter[CONFLICT_VALUE],
                 conflict_stat[1][i].counter[CONFLICT_VALUE_SIZE],
@@ -1791,36 +1815,68 @@ abs_path(const std::string &path) {
 }
 
 TaskList::TaskList() {
+#ifdef __APPLE__
+    pthread_mutex_init(&lock, NULL);
+#else
     pthread_spin_init(&lock, PTHREAD_PROCESS_PRIVATE);
+#endif
 }
 
 TaskList::~TaskList() {
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     while (!tasks.empty()) {
         delete tasks.top();
         tasks.pop();
     }
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
 
+#ifdef __APPLE__
+    pthread_mutex_destroy(&lock);
+#else
     pthread_spin_destroy(&lock);
+#endif
 }
 
 void
 TaskList::push(Task *t) {
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     tasks.push(t);
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
 }
 
 Task *
 TaskList::pop() {
     Task *t = NULL;
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     if (!tasks.empty()) {
         t = tasks.top();
         tasks.pop();
     }
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
     return t;
 }
 

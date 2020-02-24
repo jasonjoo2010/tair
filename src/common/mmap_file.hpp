@@ -14,6 +14,7 @@
 
 #include <unistd.h>
 #include <sys/mman.h>
+#include "define.hpp"
 #include "log.hpp"
 
 namespace tair {
@@ -128,6 +129,7 @@ public:
         max_size = 0;
         size = 0;
         fd = -1;
+        fd_flags = PROT_READ;
     }
 
     mmap_file(int size, int fd) {
@@ -145,6 +147,7 @@ public:
             data = NULL;
             size = 0;
             fd = -1;
+            fd_flags = PROT_READ;
         }
     }
 
@@ -179,6 +182,7 @@ public:
         }
 
         data = mmap(0, size, flags, MAP_SHARED, fd, 0);
+        fd_flags = flags;
 
         if (data == MAP_FAILED) {
             log_error("map file failed: %s", strerror(errno));
@@ -215,7 +219,12 @@ public:
         }
 
         //void *newMapData = mremap(m_data, m_size, newSize, MREMAP_MAYMOVE);
+#ifdef __APPLE__
+        munmap(data, size);
+        void *new_map_data = mmap(0, new_size, fd_flags, MAP_SHARED, fd, 0);
+#else
         void *new_map_data = mremap(data, size, new_size, 0);
+#endif
         if (new_map_data == MAP_FAILED) {
             log_error("mremap file failed: %s", strerror(errno));
             return false;
@@ -261,6 +270,7 @@ private:
     size_t max_size;
     size_t size;
     int fd;
+    int fd_flags;
     void *data;
 };
 }

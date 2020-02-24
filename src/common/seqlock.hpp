@@ -21,7 +21,11 @@ namespace tair {
 class seqlock_t {
 public:
     seqlock_t(int pshared = PTHREAD_PROCESS_PRIVATE) {
+#ifdef __APPLE__
+        pthread_mutex_init(&lock_, NULL);
+#else
         pthread_spin_init(&lock_, pshared);
+#endif
         seq_ = 0;
     }
 
@@ -34,7 +38,11 @@ public:
     }
 
     void write_begin() {
+#ifdef __APPLE__
+        pthread_mutex_lock(&lock_);
+#else
         pthread_spin_lock(&lock_);
+#endif
         ++seq_;
         asm volatile("":: :"memory");
     }
@@ -42,11 +50,19 @@ public:
     void write_end() {
         asm volatile("":: :"memory");
         ++seq_;
-        pthread_spin_lock(&lock_);
+#ifdef __APPLE__
+        pthread_mutex_unlock(&lock_);
+#else
+        pthread_spin_unlock(&lock_);
+#endif
     }
 
 private:
+#ifdef __APPLE__
+    pthread_mutex_t lock_;
+#else
     pthread_spinlock_t lock_;
+#endif
     uint32_t seq_;
 };
 

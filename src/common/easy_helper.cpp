@@ -15,7 +15,11 @@
 #include "base_packet.hpp"
 #include "flow_control_packet.hpp"
 #include "tair_client_api_impl.hpp"
+#ifdef __APPLE__
+#include <sys/event.h>
+#else
 #include <sys/epoll.h>
+#endif
 
 namespace tair {
 easy_io_t *easy_helper::eio = NULL;
@@ -151,6 +155,52 @@ bool easy_helper::is_alive(easy_addr_t &addr, easy_io_t *eio) {
 #endif
 }
 
+#ifdef __APPLE__
+bool easy_helper::wait_connected(int fd, int ms/*ms*/) {
+    int queue_fd = kqueue();
+    if (queue_fd == -1) {
+        log_error("kqueue_create failed: %m");
+        return false;
+    }
+    bool ret = false;
+    struct kevent ev;
+    struct kevent ev_ret;
+    memset(&ev, 0, sizeof(ev));
+    EV_SET(&ev, fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, (void*)(intptr_t)fd);
+    if (kevent(queue_fd, &ev, 1, NULL, 0, NULL) == -1) {
+        log_error("kqueue_kevent::EVFILT_WRITE failed: %m");
+        close(queue_fd);
+        return false;
+    }
+    do {
+        struct timespec timeout;
+        timeout.tv_sec = ms / 1000;
+        timeout.tv_nsec = (ms % 1000) * 1000 * 1000;
+        int n = kevent(queue_fd, NULL, 0, &ev_ret, 1, &timeout);
+        if (n == -1) {
+            log_error("kqueue_wait failed: %d, %m", fd);
+            break;
+        }
+        if (n == 0) {
+            errno = ETIMEDOUT;
+            break;
+        }
+        assert(ev_ret.udata == fd);
+        if (ev_ret.filter == EVFILT_WRITE) {
+            int err = 0;
+            socklen_t len = sizeof(err);
+            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0 && err == 0) {
+                ret = true;
+            }
+            errno = err;
+        }
+    } while (false);
+    EV_SET(&ev, fd, EVFILT_WRITE, EV_DELETE, 0, 0, (void*)(intptr_t)fd);
+    kevent(queue_fd, &ev, 1, NULL, 0, NULL);
+    close(queue_fd);
+    return ret;
+}
+#else
 bool easy_helper::wait_connected(int fd, int timeout/*ms*/) {
     int ep = epoll_create(1);
     if (ep == -1) {
@@ -192,6 +242,7 @@ bool easy_helper::wait_connected(int fd, int timeout/*ms*/) {
     close(ep);
     return ret;
 }
+#endif
 
 int easy_helper::easy_async_send(easy_io_t *eio,
                                  uint64_t server_id,

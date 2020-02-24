@@ -226,11 +226,11 @@ public:
         printf("%-40s %15s %15s\n", area_str.c_str(), "itemcount", "datasize");
         for (int32_t i = 0; i < TAIR_MAX_AREA_COUNT; ++i)
             if (area_stat_[i].itemcount_ != 0) {
-                printf("%-40d %15lu %15lu\n", i, area_stat_[i].itemcount_, area_stat_[i].datasize_);
+                printf("%-40d %15"PRI64_PREFIX"u %15"PRI64_PREFIX"u\n", i, area_stat_[i].itemcount_, area_stat_[i].datasize_);
                 total_area_itemcount += area_stat_[i].itemcount_;
                 total_area_usesize += area_stat_[i].datasize_;
             }
-        printf("%-40s %15lu %15lu\n", "total_area", total_area_itemcount, total_area_usesize);
+        printf("%-40s %15"PRI64_PREFIX"u %15"PRI64_PREFIX"u\n", "total_area", total_area_itemcount, total_area_usesize);
 
         // print bucket stat
         string bucket_str = print_prefix_ + "bucket";
@@ -238,11 +238,11 @@ public:
         printf("%-40s %15s %15s\n", bucket_str.c_str(), "itemcount", "datasize");
         for (int32_t i = 0; i < bucket_count_; ++i)
             if (bucket_stat_[i].itemcount_ != 0) {
-                printf("%-40d %15lu %15lu\n", i, bucket_stat_[i].itemcount_, bucket_stat_[i].datasize_);
+                printf("%-40d %15"PRI64_PREFIX"u %15"PRI64_PREFIX"u\n", i, bucket_stat_[i].itemcount_, bucket_stat_[i].datasize_);
                 total_bucket_itemcount += bucket_stat_[i].itemcount_;
                 total_bucket_usesize += bucket_stat_[i].datasize_;
             }
-        printf("%-40s %15lu %15lu\n", "total_bucket", total_bucket_itemcount, total_bucket_usesize);
+        printf("%-40s %15"PRI64_PREFIX"u %15"PRI64_PREFIX"u\n", "total_bucket", total_bucket_itemcount, total_bucket_usesize);
 
         fflush(stdout);
     }
@@ -712,7 +712,11 @@ public:
     Task *pop();
 
 private:
+#ifdef __APPLE__
+    pthread_mutex_t lock;
+#else
     pthread_spinlock_t lock;
+#endif
     std::stack<Task *> tasks;
 } task_list;
 
@@ -1256,35 +1260,67 @@ abs_path(const std::string &path) {
 }
 
 TaskList::TaskList() {
+#ifdef __APPLE__
+    pthread_mutex_init(&lock, NULL);
+#else
     pthread_spin_init(&lock, PTHREAD_PROCESS_PRIVATE);
+#endif
 }
 
 TaskList::~TaskList() {
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     while (!tasks.empty()) {
         delete tasks.top();
         tasks.pop();
     }
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
 
+#ifdef __APPLE__
+    pthread_mutex_destroy(&lock);
+#else
     pthread_spin_destroy(&lock);
+#endif
 }
 
 void
 TaskList::push(Task *t) {
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     tasks.push(t);
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
 }
 
 Task *
 TaskList::pop() {
     Task *t = NULL;
+#ifdef __APPLE__
+    pthread_mutex_lock(&lock);
+#else
     pthread_spin_lock(&lock);
+#endif
     if (!tasks.empty()) {
         t = tasks.top();
         tasks.pop();
     }
+#ifdef __APPLE__
+    pthread_mutex_unlock(&lock);
+#else
     pthread_spin_unlock(&lock);
+#endif
     return t;
 }

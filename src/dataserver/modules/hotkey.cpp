@@ -18,7 +18,11 @@
 namespace tair {
 
 bool HotKey::load_config(const char *file) {
+#ifdef __APPLE__
+    pthread_mutex_lock(&owner_lock_);
+#else
     pthread_spin_lock(&owner_lock_);
+#endif
     bool saved_active = active();
     disable();
     reset();
@@ -63,7 +67,11 @@ bool HotKey::load_config(const char *file) {
     if (saved_active) {
         enable();
     }
+#ifdef __APPLE__
+    pthread_mutex_unlock(&owner_lock_);
+#else
     pthread_spin_unlock(&owner_lock_);
+#endif
     return success;
 }
 

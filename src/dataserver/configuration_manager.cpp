@@ -13,7 +13,9 @@
 #include "configuration_flowcontrol.hpp"
 #include "configuration_namespace.hpp"
 #include "snappy/snappy.h"
+#ifndef __APPLE__
 #include <sys/prctl.h>
+#endif
 
 namespace tair {
 
@@ -68,7 +70,7 @@ int configuration::get_conf_from_configfile(std::map<std::string, std::string> &
             key_value.push_back(s);
         }
         if (key_value.size() < 2) {
-            log_error("line:%ld format error", start + 1);
+            log_error("line:%"PRI64_PREFIX"d format error", start + 1);
             return TAIR_RETURN_FAILED;
         }
         std::string key = key_value[0];
@@ -261,7 +263,11 @@ void configuration_manager::RunSyncConfig() {
 }
 
 void *configuration_manager::SyncConfigThread(void *arg) {
+#ifdef PR_SET_NAME
     prctl(PR_SET_NAME, "sync-config");
+#else
+    pthread_setname_np("sync-config");
+#endif
     configuration_manager *cm = reinterpret_cast<configuration_manager *>(arg);
     cm->RunSyncConfig();
     return NULL;

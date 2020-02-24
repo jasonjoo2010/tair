@@ -121,13 +121,13 @@ bool file_operation::pread(void *buffer, size_t size, off_t offset) {
 
     if (is_mapped && (offset + size) <= map_file->get_size()) {
         // use mmap first
-        log_debug("read data from mmap[%s], offset [%lu], size [%lu]",
+        log_debug("read data from mmap[%s], offset [%"PRI64_PREFIX"u], size [%lu]",
                   file_name, offset, size);
         memcpy(buffer, (char *) map_file->get_data() + offset, size);
         return true;
     }
 
-    log_debug("read from [%s], offset: [%lu], size: [%lu]", file_name,
+    log_debug("read from [%s], offset: [%"PRI64_PREFIX"u], size: [%lu]", file_name,
               offset, size);
     return ::pread(fd, buffer, size, offset) == (ssize_t) size;
 }
@@ -151,12 +151,12 @@ ssize_t file_operation::read(void *buffer, size_t size, off_t offset) {
 
     if (is_mapped && (offset + size) <= map_file->get_size()) {
         // use mmap first
-        log_debug("read data from mmap[%s], offset [%lu], size [%lu]",
+        log_debug("read data from mmap[%s], offset [%"PRI64_PREFIX"u], size [%lu]",
                   file_name, offset, size);
         memcpy(buffer, (char *) map_file->get_data() + offset, size);
         return size;
     }
-    log_debug("read from [%s], offset: [%lu], size: [%lu]", file_name,
+    log_debug("read from [%s], offset: [%"PRI64_PREFIX"u], size: [%lu]", file_name,
               offset, size);
     return ::pread(fd, buffer, size, offset);
 }
@@ -165,7 +165,7 @@ bool file_operation::write(void *buffer, size_t size) {
     if (!is_opened())
         return false;
 
-    log_debug("write data into with size of [%lu] at offset [%lu]", size,
+    log_debug("write data into with size of [%lu] at offset [%"PRI64_PREFIX"u]", size,
               get_position());
 
     off_t offset = get_position();
@@ -174,7 +174,7 @@ bool file_operation::write(void *buffer, size_t size) {
     }
 
     if (is_mapped && (offset + size) <= map_file->get_size()) {
-        log_debug("write data use mmap at offset [%lu] with size [%lu]",
+        log_debug("write data use mmap at offset [%"PRI64_PREFIX"u] with size [%lu]",
                   offset, size);
         memcpy((char *) map_file->get_data() + offset, buffer, size);
         return true;
@@ -190,7 +190,7 @@ bool file_operation::pwrite(void *buffer, size_t size, off_t offset) {
     if (offset < 0)
         offset = get_position();
 
-    log_debug("sizeof(off_t): %lu, write[%s]: size [%lu] at offset [%lu]",
+    log_debug("sizeof(off_t): %lu, write[%s]: size [%lu] at offset [%"PRI64_PREFIX"u]",
               sizeof(off_t), file_name, size, offset);
 
     if (is_mapped && (offset + size) > map_file->get_size()) {
@@ -199,7 +199,7 @@ bool file_operation::pwrite(void *buffer, size_t size, off_t offset) {
 
     if (is_mapped && (offset + size) <= map_file->get_size()) {
         // use mmap first
-        log_debug("pwrite data use mmap at offset [%lu] with size [%lu]",
+        log_debug("pwrite data use mmap at offset [%"PRI64_PREFIX"u] with size [%lu]",
                   offset, size);
         memcpy((char *) map_file->get_data() + offset, buffer, size);
         return true;

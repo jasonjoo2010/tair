@@ -18,11 +18,9 @@
 
 #include <stdlib.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
-#include <sys/sem.h>
 
 #endif
 

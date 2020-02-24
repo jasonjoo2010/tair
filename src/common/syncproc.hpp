@@ -17,12 +17,14 @@
 #else
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+
+#include <easy_semaphore.h>
 
 #endif
 
@@ -129,61 +131,66 @@ private:
 class CSemaphore {
 public:
     CSemaphore() {
-        sem_init(&m_sem, 0, 0);
+        easy_semaphore_create(&m_sem, 0);
     }
 
     ~CSemaphore() {
-        sem_destroy(&m_sem);
+        easy_semaphore_destroy(&m_sem);
     }
 
     void Produce() {
-        sem_post(&m_sem);
+        easy_semaphore_signal(&m_sem);
     }
 
     void Consume() {
-        while (sem_wait(&m_sem) != 0) {
+        while (easy_semaphore_wait(&m_sem) != 0) {
             sched_yield();
         }
     }
 
+    /**
+     * DEPRECATED: use TryTime or TryLock instead
+     */
     bool Try() {
-        int value = 0;
-        int ret = sem_getvalue(&m_sem, &value);
-        if (ret < 0 || value <= 0)
-            return false;
-        return true;
+        if (easy_semaphore_trywait(&m_sem) == 0) {
+            // succ and return the semaphore
+            easy_semaphore_signal(&m_sem);
+            return true;
+        }
+        return false;
     }
 
-    //΢�벿�֣�������Ҫʹ�ó���500000΢���ֵ����Ȼ�ᵼ��CPU����LOAD��������������Ĳ�����û������ģ�����2000000��2��.
-    bool TryTime(int micSec) {
+    bool TryLock() {
+        return easy_semaphore_trywait(&m_sem) == 0;
+    }
+
+    bool TryTime(int usec) {
         struct timespec ts;
         clock_gettime(CLOCK_REALTIME, &ts);
-        if (micSec >= 1000000)
-            ts.tv_sec += micSec / 1000000;
-        ts.tv_nsec += micSec % 1000000 * 1000;
+        if (usec >= 1000000)
+            ts.tv_sec += usec / 1000000;
+        ts.tv_nsec += (usec % 1000000) * 1000;
         if (ts.tv_nsec >= 1000000000) {
             ++ts.tv_sec;
             ts.tv_nsec -= 1000000000;
         }
 
-        int ret = sem_timedwait(&m_sem, &ts);
+        int ret = easy_semaphore_timedwait(&m_sem, &ts);
         if (ret < 0)
             return false;
         return true;
     }
 
 
+    /**
+     * DEPRECATED: don't use for portability
+     */
     int GetCount() {
-        int value = 0;
-        int ret = sem_getvalue(&m_sem, &value);
-        if (ret < 0)
-            return -1;
-        else
-            return value;
+        return 0;
     }
 
 private:
-    sem_t m_sem;
+    easy_semaphore_t m_sem;
 };
 
 static struct sembuf sb_lock = {0, -1, SEM_UNDO};

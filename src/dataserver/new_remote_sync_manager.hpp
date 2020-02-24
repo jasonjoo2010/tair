@@ -28,7 +28,7 @@ namespace std {
 #include "i_remote_sync_manager.hpp"
 #include "cluster_handler.hpp"
 
-#include <semaphore.h>
+#include <easy_semaphore.h>
 
 namespace tbsys {
 class CThread;
@@ -212,7 +212,7 @@ private:
     RsyncConfig *get_json_format_config();
 
 private:
-    sem_t stop_sem_;
+    easy_semaphore_t stop_sem_;
     int rsync_config_update_interval_;
     tair_manager *tair_manager_;
     time_t *last_check_delete_log_file_;

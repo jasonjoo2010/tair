@@ -285,7 +285,7 @@ int LdbBalancer::Balancer::do_one_balance(const Unit &unit) {
         manager_->resume_service(bucket);
     }
 
-    log_warn("balance %s, itemcount: %"PRI64_PREFIX"d, datasize: %"PRI64_PREFIX"d, process: %d, cost: %ld(s), suc: %s",
+    log_warn("balance %s, itemcount: %"PRI64_PREFIX"d, datasize: %"PRI64_PREFIX"d, process: %d, cost: %"PRI64_PREFIX"d(s), suc: %s",
              unit.to_string().c_str(), item_count, data_size, process, time(NULL) - start_time,
              (process == COMMIT && ret == TAIR_RETURN_SUCCESS) ? "yes" : "no");
 

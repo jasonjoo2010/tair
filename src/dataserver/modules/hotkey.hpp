@@ -26,22 +26,38 @@ class HotKey {
 public:
     HotKey() {
         reset();
+#ifdef __APPLE__
+        pthread_mutex_init(&owner_lock_, NULL);
+#else
         pthread_spin_init(&owner_lock_, PTHREAD_PROCESS_PRIVATE);
+#endif
     }
 
     ~HotKey() {
         release_hot_cache();
         release_hot_keys();
+#ifdef __APPLE__
+        pthread_mutex_destroy(&owner_lock_);
+#else
         pthread_spin_destroy(&owner_lock_);
+#endif
     }
 
     void hot(const base_packet *p) {
         if (active()) {
+#ifdef __APPLE__
+            if (pthread_mutex_trylock(&owner_lock_) != 0) {
+#else
             if (pthread_spin_trylock(&owner_lock_) != 0) {
+#endif
                 return;
             }
             do_hot(p);
+#ifdef __APPLE__
+            pthread_mutex_unlock(&owner_lock_);
+#else
             pthread_spin_unlock(&owner_lock_);
+#endif
         }
     }
 
@@ -239,7 +255,11 @@ private:
     std::vector<common::data_entry *> hot_keys_;
     rwlock_t hot_keys_lock_;
 
+#ifdef __APPLE__
+    pthread_mutex_t owner_lock_;
+#else
     pthread_spinlock_t owner_lock_;
+#endif
 
     size_t sample_count_;
     size_t sample_max_;

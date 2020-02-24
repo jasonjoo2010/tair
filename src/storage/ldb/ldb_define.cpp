@@ -317,7 +317,7 @@ int LdbLogsReader::get_log_record() {
 
         // reading earlier log
         if (reading_logfile_number_ < db_logfile_number) {
-            log_debug("@@ from earlier log: %lu", reading_logfile_number_);
+            log_debug("@@ from earlier log: %"PRI64_PREFIX"u", reading_logfile_number_);
             // read over one earlier whole log
             if (!reader_->ReadRecord(last_log_record_, &last_log_scratch_, ~((uint64_t) 0))) {
                 log_debug("@@ read over");
@@ -327,7 +327,7 @@ int LdbLogsReader::get_log_record() {
             break;
         } else                  // reading current writting log
         {
-            log_debug("@@ from now log: %lu %lu", reading_logfile_number_, db_logfile_size);
+            log_debug("@@ from now log: %"PRI64_PREFIX"u %"PRI64_PREFIX"u", reading_logfile_number_, db_logfile_size);
             reader_->ReadRecord(last_log_record_, &last_log_scratch_, db_logfile_size);
             // read one record OR read over all written record, both OK.
             break;

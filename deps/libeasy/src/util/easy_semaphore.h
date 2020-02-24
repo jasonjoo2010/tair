@@ -1,11 +1,15 @@
 #ifndef __EASY_SEMAPHORE_H__
 #define __EASY_SEMAPHORE_H__
 
+#include <easy_define.h>
+
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
 #else
 #include <semaphore.h>
 #endif
+
+EASY_CPP_START
 
 typedef struct easy_semaphore_t {
 #ifdef __APPLE__
@@ -55,11 +59,20 @@ extern int easy_semaphore_wait(easy_semaphore_t *semaphore);
 extern int easy_semaphore_timedwait_rel(easy_semaphore_t *semaphore, int64_t ms);
 
 /**
+ * @param semaphore pointer of easy_semaphore_t
+ * @param tm wall time in a struct timespec
+ * @return zero for success, -1 to set errno
+ */
+extern int easy_semaphore_timedwait(easy_semaphore_t *semaphore, struct timespec *tm);
+
+/**
  * try to wait and return with -1 when failed to get a resource
  * 
  * @param semaphore pointer of easy_semaphore_t
  * @return zero for success, -1 to set errno
  */
 extern int easy_semaphore_trywait(easy_semaphore_t *semaphore);
+
+EASY_CPP_END
 
 #endif

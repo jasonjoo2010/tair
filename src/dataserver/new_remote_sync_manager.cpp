@@ -122,16 +122,16 @@ NewRemoteSyncManager::NewRemoteSyncManager(tair_manager *manager)
     local_cluster_handler_ = new ClusterHandler();
     remote_cluster_handlers_ = new CLUSTER_HANDLER_MAP();
     lazy_release_cluster_handler_ = local_cluster_handler_;
-    sem_init(&stop_sem_, 0, 0);
+    easy_semaphore_create(&stop_sem_, 0);
     System::Net::HttpGobal::Initialize();
 }
 
 NewRemoteSyncManager::~NewRemoteSyncManager() {
     stop();
     asm volatile("":: : "memory");
-    sem_post(&stop_sem_);
+    easy_semaphore_signal(&stop_sem_);
     wait();
-    sem_destroy(&stop_sem_);
+    easy_semaphore_destroy(&stop_sem_);
 
     // clean garbages before than release local,remote handler
     clean_garbages(true);
@@ -540,10 +540,7 @@ void NewRemoteSyncManager::update_thread(int id) {
 
         {
             int s;
-            struct timespec timeout;
-            timeout.tv_sec = time(NULL) + rsync_config_update_interval_;
-            timeout.tv_nsec = 0;
-            while ((s = sem_timedwait(&stop_sem_, &timeout)) == -1 && errno == EINTR) {
+            while ((s = easy_semaphore_timedwait_rel(&stop_sem_, rsync_config_update_interval_ * 1000)) == -1 && errno == EINTR) {
                 sched_yield();
             }
             asm volatile("":: : "memory");
