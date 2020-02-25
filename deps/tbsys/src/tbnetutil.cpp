@@ -23,7 +23,8 @@ namespace tbsys {
 uint32_t CNetUtil::getLocalAddr(const char *dev_name)
 {
     int             fd, intrface;
-    struct ifreq    buf[16];
+    char    buf[16384];
+    struct ifreq *ifreq = (struct ifreq *)buf;
     struct ifconf   ifc;
 
     if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) <= 0) {
@@ -37,18 +38,24 @@ uint32_t CNetUtil::getLocalAddr(const char *dev_name)
         return 0;
     }
     
-    intrface = ifc.ifc_len / sizeof(struct ifreq);
-    while (intrface-- > 0)
+    int offset = 0;
+    while (offset < ifc.ifc_len)
     {
-        if(ioctl(fd,SIOCGIFFLAGS,(char *) &buf[intrface])) {
+        ifreq = (struct ifreq *)(buf + offset);
+        int len = sizeof(*ifreq);
+#ifdef __APPLE__
+        len = IFNAMSIZ + ifreq->ifr_addr.sa_len;
+#endif
+        offset += len;
+        if(ioctl(fd,SIOCGIFFLAGS,(char *)ifreq)) {
             continue;
         }
-        if(buf[intrface].ifr_flags&IFF_LOOPBACK) continue;
-        if (!(buf[intrface].ifr_flags&IFF_UP)) continue;
-        if (dev_name != NULL && strcmp(dev_name, buf[intrface].ifr_name)) continue;
-        if (!(ioctl(fd, SIOCGIFADDR, (char *) &buf[intrface]))) {
+        if(ifreq->ifr_flags&IFF_LOOPBACK) continue;
+        if (!(ifreq->ifr_flags&IFF_UP)) continue;
+        if (dev_name != NULL && strcmp(dev_name, ifreq->ifr_name)) continue;
+        if (!(ioctl(fd, SIOCGIFADDR, (char *) ifreq))) {
             close(fd);
-            return ((struct sockaddr_in *) (&buf[intrface].ifr_addr))->sin_addr.s_addr;
+            return ((struct sockaddr_in *) (&ifreq->ifr_addr))->sin_addr.s_addr;
         }
     }
     close(fd);
